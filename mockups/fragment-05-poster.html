@@ -116,12 +116,51 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
 .cta{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
 
 /* work: one slab, shared internal contours, no gaps.
-   you cannot tell which card owns which line. */
+   you cannot tell which card owns which line. each tile is a lid. */
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));
   border-top:var(--rule);border-left:var(--rule);
-  box-shadow:var(--lift) var(--lift) 0 var(--ink)}
+  box-shadow:var(--lift) var(--lift) 0 var(--ink);
+  perspective:1900px}
 .card{border-right:var(--rule);border-bottom:var(--rule);
-  display:flex;flex-direction:column;min-height:238px}
+  position:relative;min-height:262px;background:var(--black);transform-style:preserve-3d}
+
+/* what is behind the lid */
+.reveal{position:absolute;inset:0;background:var(--black);
+  display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:13px}
+.reveal .what{font-family:"Bodoni Moda",serif;font-size:1.2rem;color:var(--chalk);opacity:.9}
+.reveal .tag{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--kraft);opacity:.45}
+
+/* the lid itself */
+.door{position:absolute;inset:0;width:100%;height:100%;padding:0;
+  display:flex;flex-direction:column;align-items:stretch;gap:0;text-align:left;
+  background:var(--bg);color:var(--on);cursor:pointer;
+  transform-origin:left center;backface-visibility:hidden;
+  transition:transform .52s cubic-bezier(.36,.02,.2,1)}
+.card.hinge-r .door{transform-origin:right center}
+.door::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;
+  background:linear-gradient(90deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.42) 100%);
+  transition:opacity .52s ease}
+.card.hinge-r .door::after{background:linear-gradient(270deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.42) 100%)}
+.door:focus-visible{outline:3px solid var(--chrome);outline-offset:-6px}
+
+/* ajar on hover: the affordance */
+.card.hinge-l .door:hover{transform:rotateY(10deg)}
+.card.hinge-r .door:hover{transform:rotateY(-10deg)}
+.card.flipped.hinge-l .door,.card.flipped.hinge-l .door:hover{transform:rotateY(74deg)}
+.card.flipped.hinge-r .door,.card.flipped.hinge-r .door:hover{transform:rotateY(-74deg)}
+.card.flipped .door::after{opacity:1}
+
+/* the hinge, and the pull on the free edge */
+.hinge{position:absolute;top:0;bottom:0;width:5px;background:var(--ink);opacity:.55}
+.card.hinge-l .hinge{left:0}.card.hinge-r .hinge{right:0}
+.pull{position:absolute;bottom:0;width:26px;height:26px;background:var(--ink);color:var(--chalk);
+  display:flex;align-items:center;justify-content:center;font-size:11px;
+  transition:background .16s}
+.card.hinge-l .pull{right:0;clip-path:polygon(100% 0,100% 100%,0 100%)}
+.card.hinge-r .pull{left:0;clip-path:polygon(0 0,100% 100%,0 100%)}
+.door:hover .pull{background:var(--chrome);color:var(--ink)}
+
 .card .top{display:flex;justify-content:space-between;align-items:center;gap:10px;
   padding:11px 13px;border-bottom:var(--rule)}
 .card .top .n{font-family:"Bodoni Moda",serif;font-size:1.45rem;line-height:1;font-weight:500}
@@ -144,6 +183,8 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
   .rail .place{display:none}
 }
 @media (prefers-reduced-motion:reduce){
+  .door,.card .door:hover{transform:none!important}
+  .card.flipped .door{opacity:0}
   *{transition:none!important}
   html{scroll-behavior:auto}
 }
@@ -220,43 +261,64 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
     </div>
     <div class="grid">
       <div class="card field f-oxblood">
-        <div class="top"><span class="n">01</span><span class="t bld"><i></i>Building</span></div>
-        <div class="body"><h3>Autograd from scratch</h3>
-          <div class="ph"><b>[2 sentences.]</b> What it is, and why by hand.</div>
-          <div class="foot">[tags] · [date]</div></div>
+        <div class="reveal"><span class="what">The graph, animated</span><span class="tag">Backprop stepping through a live computation graph</span></div>
+        <button class="door" aria-expanded="false">
+          <span class="hinge"></span><span class="pull">&#9656;</span>
+          <div class="top"><span class="n">01</span><span class="t bld"><i></i>Building</span></div>
+          <div class="body"><h3>Autograd from scratch</h3>
+            <div class="ph"><b>[2 sentences.]</b> What it is, and why by hand.</div>
+            <div class="foot">[tags] · [date]</div></div>
+        </button>
       </div>
       <div class="card field f-ultra open-r">
-        <div class="top"><span class="n">02</span><span class="t bld"><i></i>Building</span></div>
-        <div class="body"><h3>RL on Ultimate&nbsp;TTT</h3>
-          <div class="ph"><b>[2 sentences.]</b> What it plays. Whether it's playable yet.</div>
-          <div class="foot">[tags] · [playable?]</div></div>
+        <div class="reveal"><span class="what">Play it here</span><span class="tag">Board you can actually take a turn on</span></div>
+        <button class="door" aria-expanded="false">
+          <span class="hinge"></span><span class="pull">&#9656;</span>
+          <div class="top"><span class="n">02</span><span class="t bld"><i></i>Building</span></div>
+          <div class="body"><h3>RL on Ultimate&nbsp;TTT</h3>
+            <div class="ph"><b>[2 sentences.]</b> What it plays. Whether it's playable yet.</div>
+            <div class="foot">[tags] · [playable?]</div></div>
+        </button>
       </div>
       <div class="card field f-bottle">
-        <div class="top"><span class="n">03</span><span class="t did"><i></i>Did</span></div>
-        <div class="body"><h3>EMG&nbsp;&rarr;&nbsp;arm</h3>
-          <div class="ph"><b>[3 sentences.]</b> What the team built, which part was yours.
-            Lead with the hardest thing you solved.</div>
-          <div class="foot">[team] · [term]</div></div>
+        <div class="reveal"><span class="what">Real signal, real arm</span><span class="tag">Recorded EMG driving a 3D arm in the browser</span></div>
+        <button class="door" aria-expanded="false">
+          <span class="hinge"></span><span class="pull">&#9656;</span>
+          <div class="top"><span class="n">03</span><span class="t did"><i></i>Did</span></div>
+          <div class="body"><h3>EMG&nbsp;&rarr;&nbsp;arm</h3>
+            <div class="ph"><b>[3 sentences.]</b> What the team built, which part was yours. Lead with the hardest thing you solved.</div>
+            <div class="foot">[team] · [term]</div></div>
+        </button>
       </div>
       <div class="card field f-plum open-b">
-        <div class="top"><span class="n">04</span><span class="t want"><i></i>Want to</span></div>
-        <div class="body"><h3>SO-101 pair</h3>
-          <div class="ph"><b>[2 sentences.]</b> The hardware, and the intent. An
-            invitation, not a to-do.</div>
-          <div class="foot">[hardware] · [starting]</div></div>
+        <div class="reveal"><span class="what">Footage of the rig</span><span class="tag">Video of the two arms running leader&ndash;follower</span></div>
+        <button class="door" aria-expanded="false">
+          <span class="hinge"></span><span class="pull">&#9656;</span>
+          <div class="top"><span class="n">04</span><span class="t want"><i></i>Want to</span></div>
+          <div class="body"><h3>SO-101 pair</h3>
+            <div class="ph"><b>[2 sentences.]</b> The hardware, and the intent. An invitation, not a to-do.</div>
+            <div class="foot">[hardware] · [starting]</div></div>
+        </button>
       </div>
       <div class="card field f-olive">
-        <div class="top"><span class="n">05</span><span class="t want"><i></i>Want to</span></div>
-        <div class="body"><h3>Animal&nbsp;&rarr;&nbsp;human</h3>
-          <div class="ph"><b>[2 sentences.]</b> The direction, and why it grips you.
-            This card is for the right professor.</div>
-          <div class="foot">[research] · [seeking advisor]</div></div>
+        <div class="reveal"><span class="what">Nothing yet</span><span class="tag">Deliberately empty until there is something to show</span></div>
+        <button class="door" aria-expanded="false">
+          <span class="hinge"></span><span class="pull">&#9656;</span>
+          <div class="top"><span class="n">05</span><span class="t want"><i></i>Want to</span></div>
+          <div class="body"><h3>Animal&nbsp;&rarr;&nbsp;human</h3>
+            <div class="ph"><b>[2 sentences.]</b> The direction, and why it grips you. This card is for the right professor.</div>
+            <div class="foot">[research] · [seeking advisor]</div></div>
+        </button>
       </div>
       <div class="card field f-violet">
-        <div class="top"><span class="n">06</span><span class="t did"><i></i>Did</span></div>
-        <div class="body"><h3>IK toy</h3>
-          <div class="ph"><b>[1 sentence.]</b> The small thing that works.</div>
-          <div class="foot">[canvas] · [live]</div></div>
+        <div class="reveal"><span class="what">Drag the target</span><span class="tag">Live canvas, three joints, no libraries</span></div>
+        <button class="door" aria-expanded="false">
+          <span class="hinge"></span><span class="pull">&#9656;</span>
+          <div class="top"><span class="n">06</span><span class="t did"><i></i>Did</span></div>
+          <div class="body"><h3>IK toy</h3>
+            <div class="ph"><b>[1 sentence.]</b> The small thing that works.</div>
+            <div class="foot">[canvas] · [live]</div></div>
+        </button>
       </div>
     </div>
   </div>
@@ -293,3 +355,25 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
   </div>
 </div>
 
+<script>
+const grid=document.querySelector(".grid");
+function hinges(){
+  const gc=grid.getBoundingClientRect();
+  const mid=gc.left+gc.width/2;
+  grid.querySelectorAll(".card").forEach(c=>{
+    const r=c.getBoundingClientRect();
+    const left=(r.left+r.width/2)<=mid;
+    c.classList.toggle("hinge-l",left);
+    c.classList.toggle("hinge-r",!left);
+  });
+}
+grid.querySelectorAll(".door").forEach(d=>{
+  d.addEventListener("click",()=>{
+    const card=d.closest(".card");
+    const open=card.classList.toggle("flipped");
+    d.setAttribute("aria-expanded",open?"true":"false");
+  });
+});
+hinges();
+addEventListener("resize",hinges);
+</script>
