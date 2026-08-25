@@ -1,0 +1,340 @@
+<title>Kraft Poster Fragment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --kraft:#E9DCC0;--kraft-hi:#F3EAD6;--ink:#17120F;
+  --ink-60:rgba(23,18,15,.62);--ink-38:rgba(23,18,15,.38);
+  --vermillion:#DC4A2C;--oxblood:#A2322A;--orange:#DE8126;--chrome:#F2C230;
+  --ochre:#D7BC51;--sap:#7E9B3C;--olive:#5C5D29;--bottle:#2C5F47;
+  --cerulean:#2E7B99;--ultramarine:#344984;--periwinkle:#646098;
+  --violet:#4A3465;--plum:#5C3148;--rose:#C8456F;
+  --lift:6px;                       /* interactive things only */
+  --rule:3px solid var(--ink);
+  --bg:var(--kraft);--on:var(--ink);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--kraft);color:var(--ink);
+  font-family:"Archivo","Helvetica Neue",Arial,sans-serif;font-size:15.5px;line-height:1.45;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:99;pointer-events:none;opacity:.5;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.075'/%3E%3C/svg%3E");
+}
+.wrap{max-width:1240px;margin:0 auto;padding:0 26px;width:100%}
+
+/* colour fields */
+.f-vermillion{--bg:var(--vermillion);--on:var(--kraft-hi)}
+.f-oxblood{--bg:var(--oxblood);--on:var(--kraft-hi)}
+.f-orange{--bg:var(--orange);--on:var(--ink)}
+.f-chrome{--bg:var(--chrome);--on:var(--ink)}
+.f-sap{--bg:var(--sap);--on:var(--ink)}
+.f-bottle{--bg:var(--bottle);--on:var(--kraft-hi)}
+.f-cerulean{--bg:var(--cerulean);--on:var(--kraft-hi)}
+.f-ultra{--bg:var(--ultramarine);--on:var(--kraft-hi)}
+.f-violet{--bg:var(--violet);--on:var(--kraft-hi)}
+.f-plum{--bg:var(--plum);--on:var(--kraft-hi)}
+.f-rose{--bg:var(--rose);--on:var(--kraft-hi)}
+.field{background:var(--bg);color:var(--on)}
+
+/* buttons — the only things that lift */
+button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inherit;
+  display:inline-flex;align-items:center;gap:9px;text-decoration:none}
+:is(button,.btn):focus-visible{outline:3px solid currentColor;outline-offset:4px}
+.btn-1,.btn-2{border:var(--rule);padding:13px 24px;font-weight:700;font-size:15px;letter-spacing:.03em;
+  box-shadow:var(--lift) var(--lift) 0 var(--ink);transition:transform .09s ease,box-shadow .09s ease}
+.btn-1{background:var(--vermillion);color:var(--kraft-hi)}
+.btn-2{background:var(--kraft-hi);color:var(--ink)}
+:is(.btn-1,.btn-2):hover{transform:translate(3px,3px);box-shadow:3px 3px 0 var(--ink)}
+:is(.btn-1,.btn-2):active{transform:translate(6px,6px);box-shadow:0 0 0 var(--ink)}
+.btn-3{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;border-bottom:2px solid currentColor;opacity:.6;padding-bottom:3px;
+  transition:opacity .14s,border-bottom-width .14s}
+.btn-3:hover{opacity:1;border-bottom-width:4px}
+
+.ph{font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.6;color:inherit;
+  border:2px dashed currentColor;padding:10px 12px;
+  background:repeating-linear-gradient(45deg,transparent 0 7px,rgba(23,18,15,.07) 7px 14px)}
+.field .ph{background:repeating-linear-gradient(45deg,transparent 0 7px,rgba(0,0,0,.13) 7px 14px)}
+.ph b{font-weight:600;letter-spacing:.05em}
+
+.t{display:inline-flex;align-items:center;gap:7px;border:2.5px solid currentColor;padding:5px 11px;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.14em;
+  text-transform:uppercase;font-weight:600}
+.t i{width:8px;height:8px;display:block;border:1.5px solid currentColor}
+.t.did i,.t.bld i{background:currentColor}
+
+/* ══════════════ FOLD ══════════════ */
+.fold{height:100svh;min-height:540px;display:grid;
+  grid-template-rows:auto auto minmax(0,1fr) auto auto}
+
+.rail{display:flex;flex-wrap:wrap;gap:6px 20px;align-items:center;
+  border-bottom:var(--rule);padding:11px 0 10px;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-60)}
+.rail .live{display:inline-flex;align-items:center;gap:7px;color:var(--ink)}
+.rail .live i{width:9px;height:9px;background:var(--vermillion);border:2px solid var(--ink);display:block}
+.rail .spacer{margin-left:auto}
+.rail a{color:var(--ink);text-decoration:none;border-bottom:2px solid var(--ink-38)}
+.rail a:hover{border-bottom-color:var(--vermillion)}
+
+.mast{padding:clamp(9px,1.5vh,18px) 0 0}
+.mast .line{display:flex;justify-content:space-between;align-items:baseline;
+  font-family:"Bodoni Moda",Didot,"Times New Roman",serif;font-weight:500;
+  font-size:clamp(1.7rem,6.2vw,4.7rem);line-height:.96;font-optical-sizing:auto}
+.mast .kicker{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--ink-60);padding-top:clamp(6px,1.2vh,12px)}
+
+/* the arm: enormous, full bleed, no frame, no caption */
+.stage{min-height:0;position:relative;display:flex;align-items:flex-end;justify-content:center}
+.stage svg{width:100%;height:100%;display:block;overflow:visible}
+#arm{fill:none;stroke:var(--ink);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:1000;stroke-dashoffset:1000}
+#arm.go{animation:ink 3.6s cubic-bezier(.55,.02,.35,1) forwards}
+@keyframes ink{to{stroke-dashoffset:0}}
+.replay{position:absolute;right:0;bottom:9px}
+.livechip{position:absolute;left:0;bottom:9px;opacity:0;transition:opacity .5s ease .1s}
+.livechip.on{opacity:1}
+
+/* the arm stands on this rule; the rule is also the section's edge */
+.strip{display:flex;width:100%;border-top:var(--rule);border-bottom:var(--rule)}
+.strip i{flex:1;height:clamp(15px,2.4vh,26px);border-right:1.5px solid var(--ink)}
+.strip i:last-child{border-right:none}
+
+.cue{display:flex;align-items:center;gap:14px;padding:10px 0;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-60)}
+.cue .bar{flex:1;height:3px;background:var(--ink)}
+
+/* ══════════════ SLABS ══════════════ */
+.slab{padding:clamp(34px,5.5vw,64px) 0;border-bottom:var(--rule)}
+.sh{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:24px}
+.sh h2{font-family:"Bodoni Moda",Didot,serif;font-weight:500;
+  font-size:clamp(2rem,5.2vw,3.7rem);line-height:1}
+.sh .idx{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.15em;
+  text-transform:uppercase;opacity:.7;text-align:right;line-height:1.7}
+.two{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(18px,2.6vw,40px);align-items:start}
+.col{display:flex;flex-direction:column;gap:15px}
+.cta{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+
+/* work: one slab, shared internal contours, no gaps.
+   you cannot tell which card owns which line. */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));
+  border-top:var(--rule);border-left:var(--rule);
+  box-shadow:var(--lift) var(--lift) 0 var(--ink)}
+.card{border-right:var(--rule);border-bottom:var(--rule);
+  display:flex;flex-direction:column;min-height:238px}
+.card .top{display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:11px 13px;border-bottom:var(--rule)}
+.card .top .n{font-family:"Bodoni Moda",serif;font-size:1.45rem;line-height:1;font-weight:500}
+.card .body{padding:14px 13px 13px;display:flex;flex-direction:column;gap:10px;flex:1}
+.card h3{font-family:"Bodoni Moda",Didot,serif;font-weight:500;font-size:1.45rem;line-height:1.05}
+.card .foot{margin-top:auto;padding-top:10px;border-top:2px solid currentColor;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.11em;
+  text-transform:uppercase;opacity:.8}
+/* two boxes deliberately refuse to close */
+.card.open-r{border-right-color:transparent}
+.card.open-b .top{border-bottom-color:transparent}
+
+/* the calm pocket: one section that is allowed to be empty */
+.quiet{padding:clamp(60px,11vw,140px) 0;border-bottom:var(--rule);text-align:center}
+.quiet .ph{display:inline-block;text-align:left;max-width:52ch}
+
+@media (max-width:860px){
+  .two{grid-template-columns:1fr}
+  :root{--lift:5px}
+  .rail .place{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  #arm{stroke-dashoffset:0;animation:none}
+  *{transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+
+<!-- ═══════════════ FOLD ═══════════════ -->
+<div class="fold">
+  <div class="wrap">
+    <div class="rail">
+      <span class="live"><i></i>Open to work</span>
+      <span class="place">Urbana&ndash;Champaign · UIUC</span>
+      <span class="spacer"></span>
+      <span><a href="#">Email</a></span><span><a href="#">GitHub</a></span>
+      <span><a href="#">LinkedIn</a></span><span><a href="#">Resume</a></span>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="mast">
+      <div class="line"><span>A</span><span>Y</span><span>Y</span><span>A</span><span>Z</span><span>U</span><span>L</span></div>
+      <div class="line"><span>H</span><span>A</span><span>S</span><span>S</span><span>A</span><span>N</span></div>
+      <div class="kicker">
+        <span>[ROLE LINE &mdash; 3 to 6 words]</span>
+        <span>Fragment 05</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap stage">
+    <svg viewBox="0 0 1200 470" preserveAspectRatio="xMidYMax meet" aria-label="A three-joint arm">
+      <path id="arm" pathLength="1000" d="
+        M 236 470
+        L 236 344
+        L 470 202
+        L 700 288
+        L 878 138
+        a 26 26 0 1 0 0 -52 a 26 26 0 1 0 0 52
+        L 1010 256
+        L 1010 470"/>
+    </svg>
+    <span class="livechip btn-3" id="chip">Live &mdash; drag it</span>
+    <button class="replay btn-3" id="replay">Replay</button>
+  </div>
+
+  <div class="strip">
+    <i style="background:var(--vermillion)"></i><i style="background:var(--oxblood)"></i>
+    <i style="background:var(--orange)"></i><i style="background:var(--chrome)"></i>
+    <i style="background:var(--ochre)"></i><i style="background:var(--sap)"></i>
+    <i style="background:var(--olive)"></i><i style="background:var(--bottle)"></i>
+    <i style="background:var(--cerulean)"></i><i style="background:var(--ultramarine)"></i>
+    <i style="background:var(--periwinkle)"></i><i style="background:var(--violet)"></i>
+    <i style="background:var(--plum)"></i><i style="background:var(--rose)"></i>
+  </div>
+
+  <div class="wrap">
+    <div class="cue"><span>&darr;</span><span class="bar"></span><span>Everything else</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════ PITCH ═══════════════ -->
+<div class="slab field f-ultra">
+  <div class="wrap">
+    <div class="sh">
+      <h2>[The one-line claim]</h2>
+      <div class="idx">00</div>
+    </div>
+    <div class="two">
+      <div class="col">
+        <div class="ph"><b>[HEADLINE &mdash; 6 to 12 words.]</b> What you do and who
+          for. Survives a three-second scan. Concrete nouns, no adjectives.</div>
+        <div class="ph"><b>[POSITION &mdash; 2 to 3 sentences.]</b> What you want and
+          what you'll take. Reads as range, not as hedging. Name what you're
+          building right now.</div>
+        <div class="cta">
+          <a class="btn btn-1" href="#">Email me</a>
+          <a class="btn btn-2" href="#">Resume</a>
+          <a class="btn btn-2" href="#">GitHub</a>
+        </div>
+      </div>
+      <div class="col">
+        <div class="ph"><b>[PROOF &mdash; 3 lines, numbers only.]</b> Countable things
+          a stranger can check in a minute. Set large, Bodoni numerals.</div>
+        <div class="ph"><b>[FOR WHOM &mdash; 2 lines.]</b> Name the reader so the right
+          one recognises themselves.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ WORK ═══════════════ -->
+<div class="slab">
+  <div class="wrap">
+    <div class="sh">
+      <h2>Everything else</h2>
+      <div class="idx">Six · each carries its tense</div>
+    </div>
+    <div class="grid">
+      <div class="card field f-vermillion">
+        <div class="top"><span class="n">01</span><span class="t bld"><i></i>Building</span></div>
+        <div class="body"><h3>Autograd from scratch</h3>
+          <div class="ph"><b>[2 sentences.]</b> What it is, and why by hand.</div>
+          <div class="foot">[tags] · [date]</div></div>
+      </div>
+      <div class="card field f-ultra open-r">
+        <div class="top"><span class="n">02</span><span class="t bld"><i></i>Building</span></div>
+        <div class="body"><h3>RL on Ultimate&nbsp;TTT</h3>
+          <div class="ph"><b>[2 sentences.]</b> What it plays. Whether it's playable yet.</div>
+          <div class="foot">[tags] · [playable?]</div></div>
+      </div>
+      <div class="card field f-bottle">
+        <div class="top"><span class="n">03</span><span class="t did"><i></i>Did</span></div>
+        <div class="body"><h3>EMG&nbsp;&rarr;&nbsp;arm</h3>
+          <div class="ph"><b>[3 sentences.]</b> What the team built, which part was yours.
+            Lead with the hardest thing you solved.</div>
+          <div class="foot">[team] · [term]</div></div>
+      </div>
+      <div class="card field f-rose open-b">
+        <div class="top"><span class="n">04</span><span class="t want"><i></i>Want to</span></div>
+        <div class="body"><h3>SO-101 pair</h3>
+          <div class="ph"><b>[2 sentences.]</b> The hardware, and the intent. An
+            invitation, not a to-do.</div>
+          <div class="foot">[hardware] · [starting]</div></div>
+      </div>
+      <div class="card field f-chrome">
+        <div class="top"><span class="n">05</span><span class="t want"><i></i>Want to</span></div>
+        <div class="body"><h3>Animal&nbsp;&rarr;&nbsp;human</h3>
+          <div class="ph"><b>[2 sentences.]</b> The direction, and why it grips you.
+            This card is for the right professor.</div>
+          <div class="foot">[research] · [seeking advisor]</div></div>
+      </div>
+      <div class="card field f-violet">
+        <div class="top"><span class="n">06</span><span class="t did"><i></i>Did</span></div>
+        <div class="body"><h3>IK toy</h3>
+          <div class="ph"><b>[1 sentence.]</b> The small thing that works.</div>
+          <div class="foot">[canvas] · [live]</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- the calm pocket -->
+<div class="quiet">
+  <div class="wrap">
+    <div class="ph"><b>[ONE LINE. Nothing else on this screen.]</b> The only place the
+      page is allowed to be quiet. Whatever you want a reader to carry away after
+      they close the tab. Not a slogan.</div>
+  </div>
+</div>
+
+<!-- ═══════════════ CONTACT ═══════════════ -->
+<div class="slab field f-oxblood" style="border-bottom:none">
+  <div class="wrap">
+    <div class="sh"><h2>Say something</h2><div class="idx">Reply within a day</div></div>
+    <div class="two">
+      <div class="col">
+        <div class="ph"><b>[CLOSER &mdash; 2 sentences.]</b> What you want to hear and
+          what happens next. No "feel free to reach out".</div>
+        <div class="cta">
+          <a class="btn btn-1" style="background:var(--chrome);color:var(--ink)" href="#">Email me</a>
+          <a class="btn btn-2" href="#">LinkedIn</a>
+          <a class="btn btn-2" href="#">Twitter</a>
+        </div>
+      </div>
+      <div class="col">
+        <div class="ph"><b>[AVAILABILITY &mdash; 1 line.]</b> Dates, format, what you
+          are looking for.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const arm=document.getElementById("arm"),chip=document.getElementById("chip"),
+      replay=document.getElementById("replay");
+const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function play(){
+  chip.classList.remove("on");
+  arm.classList.remove("go"); void arm.getBBox();
+  if(reduced){chip.classList.add("on");return;}
+  arm.classList.add("go");
+}
+arm.addEventListener("animationend",()=>chip.classList.add("on"));
+replay.addEventListener("click",play);
+play();
+</script>

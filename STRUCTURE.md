@@ -17,6 +17,9 @@ earlier tool was rejected wholesale and is retained only as a counter-example.
 | `DESIGN.md` | The locked visual system — ground, type roles, colour rules, depth convention, copy policy, honesty grammar. Authoritative for anything visual. |
 | `FEATURES.md` | Ayyaz's own brief: background, hiring thesis, required features, style references. The source of intent; not edited by Claude. |
 | `STRUCTURE.md` | This file. Architecture summary and filemap. |
+| `mockups/fragment-05-poster.html` | Current working mockup. The arm demo as the fold, kraft ground, Bodoni masthead in ink, shared-contour work slab. This is the live direction. |
+| `mockups/fragment-01-specimens.html` | Specimen sheet: ground candidates, pigments sampled from the gouache, masthead typeface comparison, button behaviours. How the palette and display face were chosen. |
+| `mockups/fragment-04-devices.html` | Six spatial probes. Devices 04 (self-drawing load) and 06 (ambiguous depth) survived review; the rest were rejected for repainting the reference images. Kept as a record of what was ruled out. |
 | `mockup.html` | Rejected v0 single-file mockup. Kept as a reference for what to avoid; not linked from anything. |
 | `iterations/` | Rejected v0 exploratory fragments (`iter1-88.html` … `iter5-06.html`) plus an index. Superseded. |
 | `iterations-clean/` | Rejected v0 second-round fragments (`iter1-editorial.html` … `iter5-plain.html`) plus an index. Superseded. |

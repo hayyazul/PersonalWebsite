@@ -1,0 +1,458 @@
+<title>Spatial Devices</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --kraft:#E9DCC0;--kraft-hi:#F3EAD6;--ink:#17120F;
+  --ink-60:rgba(23,18,15,.62);--ink-38:rgba(23,18,15,.38);
+  --void:#0B0A0D;               /* the dark. not black — it has plum in it */
+  --void-2:#141119;
+  --glow:#E3DCCB;               /* light, which is not a pigment */
+  --vermillion:#DC4A2C;--oxblood:#A2322A;--orange:#DE8126;--chrome:#F2C230;
+  --ochre:#D7BC51;--sap:#7E9B3C;--olive:#5C5D29;--bottle:#2C5F47;
+  --cerulean:#2E7B99;--ultramarine:#344984;--periwinkle:#646098;
+  --violet:#4A3465;--plum:#5C3148;--rose:#C8456F;
+  --rule:3px solid var(--ink);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--kraft);color:var(--ink);
+  font-family:"Archivo","Helvetica Neue",Arial,sans-serif;font-size:15px;line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:99;pointer-events:none;opacity:.5;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.075'/%3E%3C/svg%3E");
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 26px 90px}
+
+header{border-bottom:6px solid var(--ink);padding:32px 0 14px;
+  display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between}
+header h1{font-family:"Bodoni Moda",Didot,serif;font-weight:500;font-size:clamp(1.9rem,4.6vw,3rem);line-height:1}
+header .stamp{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-60);text-align:right;line-height:1.7}
+.lede{max-width:64ch;margin:20px 0 6px;font-size:15.5px}
+
+/* ── plate + caption: the Der Mensch convention ── */
+.plate{margin-top:44px}
+.plate-hd{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:9px}
+.plate-hd .no{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;
+  background:var(--ink);color:var(--kraft);padding:3px 8px}
+.plate-hd h2{font-family:"Bodoni Moda",Didot,serif;font-weight:500;font-size:1.7rem;line-height:1}
+.plate-hd .src{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-60);margin-left:auto}
+.frame{border:var(--rule);box-shadow:6px 6px 0 var(--ink);overflow:hidden;position:relative}
+.cap{font-family:"IBM Plex Mono",monospace;font-size:12px;line-height:1.6;color:var(--ink-60);
+  padding:11px 2px 0;max-width:74ch}
+.cap b{color:var(--ink);font-weight:600}
+
+/* ═══ 01 fisheye rail ═══ */
+.fisheye{display:flex;height:104px;background:var(--kraft-hi);align-items:stretch;touch-action:none}
+.fisheye i{
+  display:block;flex:1 1 0;border-right:2px solid var(--ink);
+  transform-origin:center bottom;
+  transition:flex-grow .12s cubic-bezier(.3,.8,.4,1),transform .12s cubic-bezier(.3,.8,.4,1);
+}
+.fisheye i:last-child{border-right:none}
+
+/* ═══ 02 the monument ═══ */
+#monument{display:block;width:100%;height:min(64vh,540px);background:var(--void)}
+
+/* ═══ 03 sourceless light ═══ */
+.pools{position:relative;height:340px;background:var(--void);overflow:hidden}
+.horizon{                       /* convex ground — the hill actually bulges */
+  position:absolute;left:-40%;right:-40%;bottom:-108%;height:170%;
+  border-radius:50% 50% 0 0/38% 38% 0 0;
+  background:var(--void-2);border-top:1.5px solid rgba(227,220,203,.30);
+}
+.pool{position:absolute;border-radius:50%;
+  background:radial-gradient(ellipse at center,rgba(227,220,203,.92) 0%,rgba(227,220,203,.55) 46%,rgba(227,220,203,0) 72%)}
+.pool.a{width:280px;height:44px;left:14%;bottom:24%}
+.pool.b{width:190px;height:28px;left:52%;bottom:37%}
+.figure{position:absolute;width:3px;background:var(--void);transform-origin:bottom center}
+.figure::after{content:"";position:absolute;left:-1px;bottom:-2px;width:34px;height:2px;
+  background:rgba(11,10,13,.85);transform-origin:left center}
+.f1{height:22px;left:20%;bottom:26%}
+.f1::after{transform:rotate(6deg) scaleX(1.5)}
+.f2{height:15px;left:30%;bottom:25%}
+.f2::after{transform:rotate(-9deg)}
+.f3{height:11px;left:57%;bottom:38%}
+.f3::after{transform:rotate(15deg) scaleX(.7)}
+.stars{position:absolute;inset:0}
+.stars i{position:absolute;background:var(--glow);width:1.5px;height:1.5px;opacity:.8}
+
+/* ═══ 04 self-drawing ═══ */
+.draws{background:var(--kraft-hi);padding:0;position:relative;height:320px;
+  display:flex;align-items:center;justify-content:center}
+.draws svg{width:100%;height:100%}
+.draws path,.draws line,.draws circle{
+  fill:none;stroke:var(--ink);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;
+}
+#armpath{stroke-dasharray:1400;stroke-dashoffset:1400;animation:drawon 5.2s ease-in-out infinite}
+@keyframes drawon{
+  0%{stroke-dashoffset:1400}
+  46%{stroke-dashoffset:0}
+  86%{stroke-dashoffset:0;opacity:1}
+  92%{stroke-dashoffset:0;opacity:.15}
+  100%{stroke-dashoffset:1400;opacity:1}
+}
+.livechip{position:absolute;right:14px;bottom:14px;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.14em;
+  border:2.5px solid var(--ink);background:var(--chrome);color:var(--ink);padding:5px 10px;
+  opacity:0;animation:pop 5.2s ease-in-out infinite}
+@keyframes pop{0%,44%{opacity:0}52%,86%{opacity:1}90%,100%{opacity:0}}
+
+/* ═══ 05 emphasis inversion ═══ */
+.inv{background:var(--kraft-hi);padding:26px;position:relative;min-height:300px}
+.machine{max-width:560px;margin:0 auto}
+.machine svg{width:100%;display:block}
+.aside{position:absolute;right:14px;top:14px;max-width:150px;
+  font-family:"IBM Plex Mono",monospace;font-size:9.5px;line-height:1.55;
+  letter-spacing:.1em;text-transform:uppercase;color:rgba(23,18,15,.32);text-align:right}
+
+/* ═══ 06 shadows ═══ */
+.shadows{background:var(--kraft-hi);padding:34px 26px;display:flex;flex-wrap:wrap;gap:34px;justify-content:center}
+.sq{width:92px;height:92px;border:var(--rule);background:var(--kraft)}
+.sq.s1{box-shadow:7px 7px 0 var(--ink)}
+.sq.s2{box-shadow:-7px 7px 0 var(--ink)}
+.sq.s3{box-shadow:7px -7px 0 var(--ink)}
+.sq.s4{box-shadow:-7px -7px 0 var(--ink)}
+.sqwrap{display:flex;flex-direction:column;align-items:center;gap:14px}
+.sqwrap span{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.12em;color:var(--ink-60)}
+
+.verdict{margin-top:52px;border-left:9px solid var(--vermillion);padding:2px 0 2px 18px}
+.verdict h2{font-family:"Archivo",sans-serif;font-size:14px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:9px}
+.verdict ol{margin-left:19px;max-width:64ch;line-height:1.65}
+.verdict li{margin-bottom:6px}
+
+@media (max-width:700px){
+  .frame{box-shadow:5px 5px 0 var(--ink)}
+  #monument{height:52vh}
+  .pools{height:260px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  #armpath{stroke-dashoffset:0}
+  .livechip{opacity:1}
+}
+</style>
+
+<div class="wrap">
+
+<header>
+  <h1>Spatial devices</h1>
+  <div class="stamp">Fragment 04 · six probes<br>Dark shown on kraft, in context</div>
+</header>
+
+<p class="lede">Not colour studies. These test the things in the two plates that only exist in
+motion or in space &mdash; curvature, sourceless light, unresolvable depth, and one coil
+interrupting a lot of straight lines. Judge them as devices, not as layouts.</p>
+
+<!-- 01 ─────────────────────────────────────── -->
+<div class="plate">
+  <div class="plate-hd"><span class="no">01</span><h2>Fisheye</h2>
+    <span class="src">Move across it</span></div>
+  <div class="frame"><div class="fisheye" id="fish"></div></div>
+  <div class="cap"><b>The colour strip, bent.</b> Space near the cursor dilates and space
+    far from it compresses &mdash; the plate's convex ground applied to something the site
+    already has. Nothing moves except the widths, so it stays a printed object rather than
+    becoming a carousel.</div>
+</div>
+
+<!-- 02 ─────────────────────────────────────── -->
+<div class="plate">
+  <div class="plate-hd"><span class="no">02</span><h2>The monument</h2>
+    <span class="src">Candidate for the intro slot</span></div>
+  <div class="frame"><canvas id="monument"></canvas></div>
+  <div class="cap"><b>Hard wedges from one off-centre point, three punched ellipses, one coil.</b>
+    The coil is the only curve in a field of straight lines, which is the whole tension in the
+    Fomenko. Deliberately underlit &mdash; detail arrives after a few seconds of looking rather
+    than immediately. The small thing at the bottom is a three-joint arm, dwarfed: your work as
+    the figure, so the scale relationship is made of your own subject and not borrowed.</div>
+</div>
+
+<!-- 03 ─────────────────────────────────────── -->
+<div class="plate">
+  <div class="plate-hd"><span class="no">03</span><h2>Sourceless light</h2>
+    <span class="src">Static</span></div>
+  <div class="frame">
+    <div class="pools">
+      <div class="stars" id="stars"></div>
+      <div class="horizon"></div>
+      <div class="pool a"></div><div class="pool b"></div>
+      <i class="figure f1"></i><i class="figure f2"></i><i class="figure f3"></i>
+    </div>
+  </div>
+  <div class="cap"><b>Flat ellipses lying on the ground, no lamp anywhere.</b> The figures cast
+    shadows and the light still refuses to explain itself. This forces one amendment to the rules:
+    <b>pigment is flat, light is not pigment.</b> A colour field never gets a gradient; a light
+    pool has to have falloff or it stops being light.</div>
+</div>
+
+<!-- 04 ─────────────────────────────────────── -->
+<div class="plate">
+  <div class="plate-hd"><span class="no">04</span><h2>The demo draws itself</h2>
+    <span class="src">Loops</span></div>
+  <div class="frame">
+    <div class="draws">
+      <svg viewBox="0 0 620 300" preserveAspectRatio="xMidYMid meet" aria-label="A linkage drawing itself in one continuous stroke">
+        <path id="armpath" d="M120 250 L120 236 M96 250 L144 250
+          M120 236 L214 150 L318 186 L392 112
+          M392 112 m-13 0 a13 13 0 1 0 26 0 a13 13 0 1 0 -26 0
+          M214 150 m-8 0 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0
+          M318 186 m-8 0 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0
+          M470 96 l0 -26 M470 96 l0 26 M470 96 l-26 0 M470 96 l26 0
+          M392 112 C 424 104, 444 100, 470 96"/>
+      </svg>
+      <span class="livechip">LIVE &mdash; DRAG THE TARGET</span>
+    </div>
+  </div>
+  <div class="cap"><b>One continuous stroke, then it hands over.</b> This is where the hand earns
+    its place: the loading state <i>is</i> the drawing, so the line is functional rather than
+    decorative. Every demo on the site would open this way &mdash; and the same trick reads as
+    a skeleton screen while the real thing boots.</div>
+</div>
+
+<!-- 05 ─────────────────────────────────────── -->
+<div class="plate">
+  <div class="plate-hd"><span class="no">05</span><h2>Emphasis inversion</h2>
+    <span class="src">Static</span></div>
+  <div class="frame">
+    <div class="inv">
+      <div class="machine">
+        <svg viewBox="0 0 560 230" aria-label="A schematic drawn with clinical precision">
+          <g fill="none" stroke="#17120F" stroke-width="2">
+            <rect x="60" y="52" width="300" height="126"/>
+            <rect x="74" y="66" width="74" height="98"/>
+            <rect x="160" y="66" width="186" height="44"/>
+            <rect x="160" y="122" width="88" height="42"/>
+            <rect x="258" y="122" width="88" height="42"/>
+            <path d="M360 84 h74 M360 146 h74 M434 60 v110"/>
+            <path d="M434 84 h58 M434 146 h58"/>
+            <circle cx="504" cy="84" r="11"/><circle cx="504" cy="146" r="11"/>
+            <path d="M60 178 v22 M360 178 v22 M60 196 h300"/>
+          </g>
+          <g stroke="#17120F" stroke-width="1" opacity=".42">
+            <path d="M170 74 h166 M170 82 h166 M170 90 h166 M170 98 h166"/>
+          </g>
+          <g font-family="IBM Plex Mono, monospace" font-size="9" fill="#17120F" letter-spacing="1.4">
+            <text x="60" y="42">FIG. A</text>
+            <text x="196" y="214">300.0</text>
+            <text x="512" y="88">01</text>
+            <text x="512" y="150">02</text>
+          </g>
+        </svg>
+      </div>
+      <div class="aside">the reason any of this is worth doing</div>
+    </div>
+  </div>
+  <div class="cap"><b>The machine gun is drawn sharper than the man, and the cross is an aside.</b>
+    The tool gets clinical precision, dimensions, callouts. The thing that actually matters sits
+    tiny in the corner at thirty percent opacity and is never explained. This is your rule about
+    not stating your philosophy, turned into a composition rule instead of a prohibition.</div>
+</div>
+
+<!-- 06 ─────────────────────────────────────── -->
+<div class="plate">
+  <div class="plate-hd"><span class="no">06</span><h2>Unresolvable ground</h2>
+    <span class="src">Static</span></div>
+  <div class="frame">
+    <div class="shadows">
+      <div class="sqwrap"><div class="sq s1"></div><span>SE</span></div>
+      <div class="sqwrap"><div class="sq s2"></div><span>SW</span></div>
+      <div class="sqwrap"><div class="sq s3"></div><span>NE</span></div>
+      <div class="sqwrap"><div class="sq s4"></div><span>NW</span></div>
+    </div>
+  </div>
+  <div class="cap"><b>Four identical objects that disagree about where the light is.</b> In the
+    Fomenko you cannot find the ground plane, and that is most of why it is unsettling. On a page
+    it is a real cost: shadows are how a reader knows what is clickable. My recommendation is to
+    keep one consistent direction for anything interactive and break the rule only on decorative
+    plates &mdash; but you should see the broken version before deciding.</div>
+</div>
+
+<div class="verdict">
+  <h2>What I need from you</h2>
+  <ol>
+    <li>Which devices survive: 01 fisheye, 02 monument, 03 sourceless light, 04 self-drawing, 05 emphasis inversion, 06 ambiguous ground.</li>
+    <li>The monument &mdash; too literal a copy of the Fomenko, or far enough from it?</li>
+    <li>Does the dark work on kraft, or does it read as two websites stapled together?</li>
+    <li>Still owed: which man you meant. The one with the wine glass, or the one behind the goggles.</li>
+  </ol>
+</div>
+
+</div>
+
+<script>
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ── 01 fisheye rail ─────────────────────────────── */
+const PIGMENTS = ["#DC4A2C","#A2322A","#DE8126","#F2C230","#D7BC51","#7E9B3C","#5C5D29",
+                  "#2C5F47","#2E7B99","#344984","#646098","#4A3465","#5C3148","#C8456F"];
+const fish = document.getElementById("fish");
+PIGMENTS.forEach(p=>{ const i=document.createElement("i"); i.style.background=p; fish.appendChild(i); });
+const bars = [...fish.children];
+function lens(px){
+  const r = fish.getBoundingClientRect();
+  bars.forEach((b,idx)=>{
+    if(px===null){ b.style.flexGrow=1; b.style.transform="scaleY(1)"; return; }
+    const c = r.left + r.width*(idx+0.5)/bars.length;
+    const d = Math.abs(px-c)/(r.width*0.22);
+    const m = Math.exp(-d*d);                    // gaussian: dilate near, compress far
+    b.style.flexGrow = (1 + m*2.6).toFixed(3);
+    b.style.transform = "scaleY("+(1+m*0.10).toFixed(3)+")";
+  });
+}
+fish.addEventListener("pointermove", e=>lens(e.clientX));
+fish.addEventListener("pointerleave", ()=>lens(null));
+
+/* ── 03 stars ────────────────────────────────────── */
+const starBox = document.getElementById("stars");
+for(let i=0;i<90;i++){
+  const s=document.createElement("i");
+  s.style.left=(Math.random()*100)+"%";
+  s.style.top=(Math.random()*62)+"%";
+  const big=Math.random()>0.9;
+  if(big){s.style.width="2.5px";s.style.height="2.5px";}
+  s.style.opacity=(0.25+Math.random()*0.65).toFixed(2);
+  starBox.appendChild(s);
+}
+
+/* ── 02 the monument ─────────────────────────────── */
+const cv = document.getElementById("monument");
+const ctx = cv.getContext("2d");
+let W=0,H=0,grain=null;
+
+/* wedge boundaries: an irregular fan, widths deliberately uneven */
+const BOUNDS=[-2.98,-2.79,-2.58,-2.31,-2.07,-1.88,-1.61,-1.36,-1.11,-0.87,-0.60,-0.36,-0.15];
+const HOLES=[{r:.30,a:-1.42,rx:.030,ry:.055},{r:.52,a:-0.62,rx:.024,ry:.042},{r:.44,a:-2.10,rx:.020,ry:.036}];
+
+function buildGrain(){
+  const g=document.createElement("canvas"); g.width=W; g.height=H;
+  const c=g.getContext("2d");
+  const n=Math.floor(W*H/260);
+  for(let i=0;i<n;i++){
+    const x=Math.random()*W, y=Math.random()*H;
+    const up=1-(y/H);                              // denser in the sky, like the stipple
+    c.fillStyle="rgba(227,220,203,"+(0.020+Math.random()*0.075*up).toFixed(3)+")";
+    c.fillRect(x,y,1,1);
+  }
+  for(let i=0;i<Math.floor(W/9);i++){              // scratched stars
+    const x=Math.random()*W, y=Math.random()*H*0.5;
+    c.fillStyle="rgba(227,220,203,"+(0.25+Math.random()*0.5).toFixed(2)+")";
+    c.fillRect(x,y,Math.random()>0.85?2:1,1);
+  }
+  return g;
+}
+
+function resize(){
+  const dpr=Math.min(devicePixelRatio||1,2);
+  const r=cv.getBoundingClientRect();
+  W=Math.max(1,Math.round(r.width)); H=Math.max(1,Math.round(r.height));
+  cv.width=W*dpr; cv.height=H*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  grain=buildGrain();
+}
+
+function coil(cx,cy,rot,scale){
+  ctx.save(); ctx.translate(cx,cy); ctx.rotate(rot);
+  ctx.beginPath(); ctx.arc(0,0,scale*1.55,0,Math.PI*2);
+  ctx.fillStyle="#07070A"; ctx.fill();
+  for(let band=0;band<5;band++){
+    ctx.beginPath();
+    const off=band*0.30;
+    for(let th=0;th<Math.PI*5.4;th+=0.05){
+      const rr=(scale*0.14)+(scale*0.148)*th*(1-band*0.055)+off*scale*0.05;
+      const x=Math.cos(th)*rr, y=Math.sin(th)*rr*0.86;
+      th===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.strokeStyle="rgba(222,215,198,"+(0.68-band*0.108).toFixed(2)+")";
+    ctx.lineWidth=Math.max(0.8,scale*0.030-band*0.3);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function arm(bx,by,s,t){
+  const a1=-1.02+Math.sin(t*0.42)*0.16, a2=0.78+Math.sin(t*0.31+1)*0.20, a3=0.52+Math.sin(t*0.5+2)*0.16;
+  const L=[s*1.0,s*0.82,s*0.52];
+  let x=bx,y=by,a=a1; const pts=[[x,y]];
+  [a1,a1+a2,a1+a2+a3].forEach((ang,i)=>{ x+=Math.cos(ang)*L[i]; y+=Math.sin(ang)*L[i]; pts.push([x,y]); });
+  ctx.strokeStyle="rgba(233,226,209,.88)"; ctx.lineWidth=Math.max(1.3,s*0.075);
+  ctx.lineCap="round"; ctx.lineJoin="round";
+  ctx.beginPath(); pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])); ctx.stroke();
+  ctx.fillStyle="rgba(233,226,209,.92)";
+  pts.forEach((p,i)=>{ if(i===pts.length-1)return;
+    ctx.beginPath(); ctx.arc(p[0],p[1],Math.max(1.2,s*0.062),0,Math.PI*2); ctx.fill(); });
+  ctx.beginPath(); ctx.moveTo(bx-s*0.34,by); ctx.lineTo(bx+s*0.34,by); ctx.stroke();
+}
+
+function draw(ms){
+  const t = reduced ? 0 : ms/1000;
+  const px = W*0.42, py = H*0.50;
+  const R  = Math.hypot(W,H)*1.35;
+  const spin = t*0.016;
+
+  ctx.fillStyle="#0B0A0D"; ctx.fillRect(0,0,W,H);
+
+  /* the fan */
+  ctx.save(); ctx.translate(px,py); ctx.rotate(spin);
+  for(let i=0;i<BOUNDS.length-1;i++){
+    const a0=BOUNDS[i], a1=BOUNDS[i+1];
+    ctx.beginPath(); ctx.moveTo(0,0);
+    ctx.lineTo(Math.cos(a0)*R,Math.sin(a0)*R);
+    ctx.lineTo(Math.cos(a1)*R,Math.sin(a1)*R);
+    ctx.closePath();
+    const pale = i%2===0;
+    ctx.fillStyle = pale
+      ? "rgba(226,219,202,"+(0.60+((i*37)%5)*0.075).toFixed(2)+")"
+      : "rgba(9,9,12,0.94)";
+    ctx.fill();
+    ctx.strokeStyle="rgba(9,9,12,0.9)"; ctx.lineWidth=1.2; ctx.stroke();
+  }
+  /* punched holes, riding the plates */
+  HOLES.forEach(h=>{
+    const d=h.r*R*0.5;
+    ctx.save(); ctx.translate(Math.cos(h.a)*d,Math.sin(h.a)*d); ctx.rotate(h.a+1.2);
+    ctx.beginPath(); ctx.ellipse(0,0,h.rx*R*0.5,h.ry*R*0.5,0,0,Math.PI*2);
+    ctx.fillStyle="#EDE7D8"; ctx.fill(); ctx.restore();
+  });
+  ctx.restore();
+
+  coil(px,py,-spin*2.1,Math.min(W,H)*0.085);
+
+  /* horizon and its striations */
+  const hy=H*0.735;
+  ctx.fillStyle="#08080B"; ctx.fillRect(0,hy,W,H-hy);
+  ctx.fillStyle="rgba(226,219,202,.9)"; ctx.fillRect(0,hy-1,W,1.6);
+  for(let i=0;i<22;i++){
+    const y=hy+Math.pow(i/22,1.75)*(H-hy);
+    ctx.fillStyle="rgba(226,219,202,"+(0.20*(1-i/22)+0.02).toFixed(3)+")";
+    ctx.fillRect(0,y,W,1);
+  }
+  /* flat pools of light lying on the water — no lamp */
+  [[0.30,0.80,0.20,0.020],[0.62,0.86,0.13,0.014]].forEach(p=>{
+    const g=ctx.createRadialGradient(W*p[0],H*p[1],0,W*p[0],H*p[1],W*p[2]);
+    g.addColorStop(0,"rgba(237,231,216,.95)");
+    g.addColorStop(0.45,"rgba(237,231,216,.45)");
+    g.addColorStop(1,"rgba(237,231,216,0)");
+    ctx.save(); ctx.translate(W*p[0],H*p[1]); ctx.scale(1,p[3]/p[2]);
+    ctx.translate(-W*p[0],-H*p[1]);
+    ctx.fillStyle=g; ctx.beginPath();
+    ctx.arc(W*p[0],H*p[1],W*p[2],0,Math.PI*2); ctx.fill(); ctx.restore();
+  });
+
+  arm(W*0.50,H*0.945,Math.min(W,H)*0.055,t);
+
+  if(grain) ctx.drawImage(grain,0,0,W,H);
+
+  requestAnimationFrame(draw);
+}
+
+resize();
+addEventListener("resize",()=>{resize();});
+requestAnimationFrame(draw);
+</script>
