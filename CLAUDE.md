@@ -113,4 +113,7 @@ visual. Highlights that are not negotiable:
 - Depth is hard zero-blur offset shadows, never blurred or atmospheric.
 - **Claude does not write the site's prose.** Mockups use bracket placeholders
   describing what each block of text must do. Ayyaz writes the words.
+- **No corner tabs.** Never a dog-ear, wedge, ribbon, notch, or badge parked in
+  a panel's corner to signal interactivity. It competes with the panel's own
+  geometry and gets misread as a rendering artifact. See DESIGN.md.
 - The site never names its own influences or states its philosophy.

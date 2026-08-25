@@ -67,6 +67,24 @@ geometry; mitred extrusions; per-tile bevels; gradient falloff along a fold.
 
 No blurred shadows, no glassmorphism, no depth animated on scroll.
 
+## No corner tabs
+
+**Never put a mark in the corner of a panel.** No dog-ear, no folded-page
+triangle, no wedge, no ribbon, no notch, no badge — nothing whose job is to sit
+in a corner and hint that a thing is interactive.
+
+This was tried once, as a small ink triangle in each work panel's bottom corner
+meaning "this opens". It was wrong on its own and it kept poisoning everything
+built afterwards. A corner is where a panel meets two neighbours and, on a
+folded surface, where its geometry is doing the most work; anything parked there
+competes with that geometry and loses. Worse, it *reads* as geometry — every
+later depth experiment had its corners misread as voids, holes, or artifacts,
+and the diagnosis went to the fold each time when the tab was the problem.
+
+If a panel needs to advertise that it opens, the panel does it: the hinge spine
+on its bound edge, the way it behaves under the cursor, its interior. Not a
+sticker in the corner.
+
 ## Copy
 
 Body copy is written by Ayyaz, not by Claude. Mockups carry bracket
