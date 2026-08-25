@@ -11,6 +11,7 @@
   --ochre:#D7BC51;--sap:#7E9B3C;--olive:#5C5D29;--bottle:#2C5F47;
   --cerulean:#2E7B99;--ultramarine:#344984;--periwinkle:#646098;
   --violet:#4A3465;--plum:#5C3148;--rose:#C8456F;
+  --chalk:#F8F4EC;--black:#100E0C;
   --lift:6px;                       /* interactive things only */
   --rule:3px solid var(--ink);
   --bg:var(--kraft);--on:var(--ink);
@@ -29,17 +30,18 @@ body::before{
 .wrap{max-width:1240px;margin:0 auto;padding:0 26px;width:100%}
 
 /* colour fields */
-.f-vermillion{--bg:var(--vermillion);--on:var(--kraft-hi)}
-.f-oxblood{--bg:var(--oxblood);--on:var(--kraft-hi)}
+.f-vermillion{--bg:var(--vermillion);--on:var(--chalk)}
+.f-oxblood{--bg:var(--oxblood);--on:var(--chalk)}
 .f-orange{--bg:var(--orange);--on:var(--ink)}
 .f-chrome{--bg:var(--chrome);--on:var(--ink)}
 .f-sap{--bg:var(--sap);--on:var(--ink)}
-.f-bottle{--bg:var(--bottle);--on:var(--kraft-hi)}
-.f-cerulean{--bg:var(--cerulean);--on:var(--kraft-hi)}
-.f-ultra{--bg:var(--ultramarine);--on:var(--kraft-hi)}
-.f-violet{--bg:var(--violet);--on:var(--kraft-hi)}
-.f-plum{--bg:var(--plum);--on:var(--kraft-hi)}
-.f-rose{--bg:var(--rose);--on:var(--kraft-hi)}
+.f-olive{--bg:var(--olive);--on:var(--chalk)}
+.f-bottle{--bg:var(--bottle);--on:var(--chalk)}
+.f-cerulean{--bg:var(--cerulean);--on:var(--chalk)}
+.f-ultra{--bg:var(--ultramarine);--on:var(--chalk)}
+.f-violet{--bg:var(--violet);--on:var(--chalk)}
+.f-plum{--bg:var(--plum);--on:var(--chalk)}
+.f-rose{--bg:var(--rose);--on:var(--chalk)}
 .field{background:var(--bg);color:var(--on)}
 
 /* buttons — the only things that lift */
@@ -48,7 +50,7 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
 :is(button,.btn):focus-visible{outline:3px solid currentColor;outline-offset:4px}
 .btn-1,.btn-2{border:var(--rule);padding:13px 24px;font-weight:700;font-size:15px;letter-spacing:.03em;
   box-shadow:var(--lift) var(--lift) 0 var(--ink);transition:transform .09s ease,box-shadow .09s ease}
-.btn-1{background:var(--vermillion);color:var(--kraft-hi)}
+.btn-1{background:var(--vermillion);color:var(--chalk)}
 .btn-2{background:var(--kraft-hi);color:var(--ink)}
 :is(.btn-1,.btn-2):hover{transform:translate(3px,3px);box-shadow:3px 3px 0 var(--ink)}
 :is(.btn-1,.btn-2):active{transform:translate(6px,6px);box-shadow:0 0 0 var(--ink)}
@@ -71,7 +73,7 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
 
 /* ══════════════ FOLD ══════════════ */
 .fold{height:100svh;min-height:540px;display:grid;
-  grid-template-rows:auto auto minmax(0,1fr) auto auto}
+  grid-template-rows:auto auto minmax(0,1fr) auto}
 
 .rail{display:flex;flex-wrap:wrap;gap:6px 20px;align-items:center;
   border-bottom:var(--rule);padding:11px 0 10px;
@@ -91,21 +93,11 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
   font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.15em;
   text-transform:uppercase;color:var(--ink-60);padding-top:clamp(6px,1.2vh,12px)}
 
-/* the arm: enormous, full bleed, no frame, no caption */
-.stage{min-height:0;position:relative;display:flex;align-items:flex-end;justify-content:center}
-.stage svg{width:100%;height:100%;display:block;overflow:visible}
-#arm{fill:none;stroke:var(--ink);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round;
-  stroke-dasharray:1000;stroke-dashoffset:1000}
-#arm.go{animation:ink 3.6s cubic-bezier(.55,.02,.35,1) forwards}
-@keyframes ink{to{stroke-dashoffset:0}}
-.replay{position:absolute;right:0;bottom:9px}
-.livechip{position:absolute;left:0;bottom:9px;opacity:0;transition:opacity .5s ease .1s}
-.livechip.on{opacity:1}
-
-/* the arm stands on this rule; the rule is also the section's edge */
-.strip{display:flex;width:100%;border-top:var(--rule);border-bottom:var(--rule)}
-.strip i{flex:1;height:clamp(15px,2.4vh,26px);border-right:1.5px solid var(--ink)}
-.strip i:last-child{border-right:none}
+/* the demo slot: blacked out until there is something real to put in it */
+.stage{min-height:0;padding-bottom:clamp(10px,1.8vh,18px)}
+.slot{height:100%;background:var(--black);border:var(--rule);position:relative}
+.slot-tag{position:absolute;left:11px;bottom:9px;color:var(--kraft);opacity:.5;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase}
 
 .cue{display:flex;align-items:center;gap:14px;padding:10px 0;
   font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;
@@ -152,7 +144,6 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
   .rail .place{display:none}
 }
 @media (prefers-reduced-motion:reduce){
-  #arm{stroke-dashoffset:0;animation:none}
   *{transition:none!important}
   html{scroll-behavior:auto}
 }
@@ -182,29 +173,7 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
   </div>
 
   <div class="wrap stage">
-    <svg viewBox="0 0 1200 470" preserveAspectRatio="xMidYMax meet" aria-label="A three-joint arm">
-      <path id="arm" pathLength="1000" d="
-        M 236 470
-        L 236 344
-        L 470 202
-        L 700 288
-        L 878 138
-        a 26 26 0 1 0 0 -52 a 26 26 0 1 0 0 52
-        L 1010 256
-        L 1010 470"/>
-    </svg>
-    <span class="livechip btn-3" id="chip">Live &mdash; drag it</span>
-    <button class="replay btn-3" id="replay">Replay</button>
-  </div>
-
-  <div class="strip">
-    <i style="background:var(--vermillion)"></i><i style="background:var(--oxblood)"></i>
-    <i style="background:var(--orange)"></i><i style="background:var(--chrome)"></i>
-    <i style="background:var(--ochre)"></i><i style="background:var(--sap)"></i>
-    <i style="background:var(--olive)"></i><i style="background:var(--bottle)"></i>
-    <i style="background:var(--cerulean)"></i><i style="background:var(--ultramarine)"></i>
-    <i style="background:var(--periwinkle)"></i><i style="background:var(--violet)"></i>
-    <i style="background:var(--plum)"></i><i style="background:var(--rose)"></i>
+    <div class="slot"><span class="slot-tag">Demo 01</span></div>
   </div>
 
   <div class="wrap">
@@ -250,7 +219,7 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
       <div class="idx">Six · each carries its tense</div>
     </div>
     <div class="grid">
-      <div class="card field f-vermillion">
+      <div class="card field f-oxblood">
         <div class="top"><span class="n">01</span><span class="t bld"><i></i>Building</span></div>
         <div class="body"><h3>Autograd from scratch</h3>
           <div class="ph"><b>[2 sentences.]</b> What it is, and why by hand.</div>
@@ -269,14 +238,14 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
             Lead with the hardest thing you solved.</div>
           <div class="foot">[team] · [term]</div></div>
       </div>
-      <div class="card field f-rose open-b">
+      <div class="card field f-plum open-b">
         <div class="top"><span class="n">04</span><span class="t want"><i></i>Want to</span></div>
         <div class="body"><h3>SO-101 pair</h3>
           <div class="ph"><b>[2 sentences.]</b> The hardware, and the intent. An
             invitation, not a to-do.</div>
           <div class="foot">[hardware] · [starting]</div></div>
       </div>
-      <div class="card field f-chrome">
+      <div class="card field f-olive">
         <div class="top"><span class="n">05</span><span class="t want"><i></i>Want to</span></div>
         <div class="body"><h3>Animal&nbsp;&rarr;&nbsp;human</h3>
           <div class="ph"><b>[2 sentences.]</b> The direction, and why it grips you.
@@ -294,7 +263,7 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
 </div>
 
 <!-- the calm pocket -->
-<div class="quiet">
+<div class="quiet field f-chrome">
   <div class="wrap">
     <div class="ph"><b>[ONE LINE. Nothing else on this screen.]</b> The only place the
       page is allowed to be quiet. Whatever you want a reader to carry away after
@@ -324,17 +293,3 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
   </div>
 </div>
 
-<script>
-const arm=document.getElementById("arm"),chip=document.getElementById("chip"),
-      replay=document.getElementById("replay");
-const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
-function play(){
-  chip.classList.remove("on");
-  arm.classList.remove("go"); void arm.getBBox();
-  if(reduced){chip.classList.add("on");return;}
-  arm.classList.add("go");
-}
-arm.addEventListener("animationend",()=>chip.classList.add("on"));
-replay.addEventListener("click",play);
-play();
-</script>

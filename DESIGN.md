@@ -35,6 +35,20 @@ Consequence: the palette can be wide without becoming noise, which is the whole
 argument against minimalism here. There is **no grey** in the source painting.
 Shadow is plum, not grey.
 
+## Type on colour
+
+Every colour field carries white type (`--chalk #F8F4EC`). A pigment that
+cannot hold white is not used as a field — it stays a button or a tab. The six
+field pigments are oxblood, ultramarine, bottle, plum, violet, olive; all clear
+7:1 against chalk. Bright pigments (vermillion, chrome, orange, rose, sap) take
+ink type and appear as whole sections or controls, never as card grounds.
+
+## Placeholders
+
+Anything not built yet is a **solid black rectangle** with a small tag, never a
+sketch or a simulation of the finished thing. A drawing of a demo is a claim
+that the demo exists.
+
 ## Depth
 
 Strategic, physical, never atmospheric. One convention:
