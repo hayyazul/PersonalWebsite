@@ -57,10 +57,10 @@ Two conventions, and they do different jobs.
 light from the upper-left so the offset falls down-right. Pressing collapses the
 offset to zero and the object sinks into the page. Nothing else uses this.
 
-**The work grid is one letterpress button.** Not six. Borders collapse inside
-the slab — the grid owns top and left, each panel owns right and bottom — and a
-single offset shadow sits under the whole block. No panel owns its own edges or
-its own shadow, and there is no gap between them.
+**The work grid is flat.** Borders collapse inside the slab — the grid owns top
+and left, each panel owns right and bottom — so no panel owns its own edges. It
+sits *on* the page, with no offset beneath it. The letterpress offset belongs to
+controls: buttons, and nothing the size of a section.
 
 Rejected: per-panel shadows with gaps between the panels; creased-sheet
 geometry; mitred extrusions; per-tile bevels; gradient falloff along a fold.

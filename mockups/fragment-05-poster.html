@@ -115,11 +115,11 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
 .col{display:flex;flex-direction:column;gap:15px}
 .cta{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
 
-/* the whole grid is one letterpress button: collapsed borders inside, a single
-   offset under the entire slab. no panel owns its own edges or its own shadow. */
+/* one flat slab with collapsed borders inside: the grid owns top and left, each
+   panel owns right and bottom, so no panel owns its own edges. it sits on the
+   page rather than above it - the letterpress offset belongs to controls only. */
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));
-  border-top:var(--rule);border-left:var(--rule);
-  box-shadow:var(--lift) var(--lift) 0 var(--ink)}
+  border-top:var(--rule);border-left:var(--rule)}
 .card{border-right:var(--rule);border-bottom:var(--rule);
   position:relative;min-height:262px;background:var(--black);perspective:1250px}
 
