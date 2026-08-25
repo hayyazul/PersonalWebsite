@@ -57,21 +57,29 @@ Two conventions, and they do different jobs.
 light from the upper-left so the offset falls down-right. Pressing collapses the
 offset to zero and the object sinks into the page. Nothing else uses this.
 
-**Surfaces fold.** The work grid is a single sheet creased at every seam, not a
-set of separate tiles:
+**Surfaces fold.** The work grid is a single sheet creased at every seam, and
+the crease is *geometry*, not shading:
 
-```
-__01__/\__02__
-```
+    __01__/\__02__
+    |     |     |
+    |     |     |
+    __01__/\__02__
+    |     |     |
 
-Each face lies flat. Approaching a seam it tilts up, and the two neighbours meet
-at a ridge that pops toward the viewer. With light from the upper-left, the
-earlier face of any pair catches the light and the later one falls into shade —
-so the same rule on every tile produces a correct ridge at every join, on both
-axes, at any column count.
+Every face carries half an upward peak at each vertical seam, and the identical
+peak is cut out of its underside. Rows overlap by exactly the peak height, so the
+row below plugs the void the row above leaves — one shared crease per join, never
+a doubled line. The silhouette is a `clip-path` polygon; the ink contour follows
+the diagonals via zero-blur drop shadows, because a border cannot turn a corner
+that isn't square.
 
-Rejected: per-tile bevels and mitred extrusions. They read as separate blocks
-rather than one creased sheet, which loses the point.
+Cuts are hard 45-degree angles. The two facets of a peak are flat tints of the
+face's own pigment — the rising edge catches the upper-left light, the falling
+edge does not — with a hard boundary between them.
+
+Rejected: per-tile bevels and mitred extrusions, which read as separate blocks
+rather than one sheet. Rejected: gradient falloff along the crease. It reads
+smooth, and smooth is the wrong register for this ground — the pop must be blunt.
 
 No blurred shadows, no glassmorphism, no depth animated on scroll.
 

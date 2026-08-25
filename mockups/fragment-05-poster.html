@@ -115,78 +115,83 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
 .col{display:flex;flex-direction:column;gap:15px}
 .cta{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
 
-/* work: one slab, shared internal contours, no gaps.
-   you cannot tell which card owns which line. each tile is a lid. */
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));
-  border-top:var(--rule);border-left:var(--rule)}
-.card{border-right:var(--rule);border-bottom:var(--rule);
-  position:relative;min-height:268px;background:var(--black);
-  perspective:1250px}
+/* the grid is one creased sheet:   __01__/\__02__
+                                     |     ||     |
+   every face carries half a peak at each vertical seam and a matching notch
+   underneath, so the row below plugs the void the row above leaves. the shape
+   is real geometry, not shading: hard 45-degree cuts, flat facets, no blending. */
+.grid{--A:26px;display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));
+  margin-bottom:var(--A)}
+.card{position:relative;min-height:292px;
+  margin-bottom:calc(-1 * var(--A));perspective:1250px}
+
+/* one silhouette, worn by the lid and by the slot behind it.
+   the ink contour is built from zero-blur drop shadows so it follows the
+   diagonals, which a border cannot do. */
+.reveal,.door::before{
+  clip-path:polygon(
+    0 0, var(--A) var(--A), calc(100% - var(--A)) var(--A), 100% 0,
+    100% calc(100% - var(--A)), calc(100% - var(--A)) 100%,
+    var(--A) 100%, 0 calc(100% - var(--A)));
+  filter:
+    drop-shadow(3px 0 0 var(--ink)) drop-shadow(-3px 0 0 var(--ink))
+    drop-shadow(0 3px 0 var(--ink)) drop-shadow(0 -3px 0 var(--ink))
+    drop-shadow(2px 2px 0 var(--ink)) drop-shadow(-2px -2px 0 var(--ink));
+}
 
 /* what is behind the lid */
 .reveal{position:absolute;inset:0;background:var(--black);
-  display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:19px;
-  box-shadow:inset 0 0 0 3px rgba(248,244,236,.16),inset 5px 5px 16px rgba(0,0,0,.9)}
-.reveal .what{font-family:"Bodoni Moda",serif;font-size:1.2rem;color:var(--chalk);opacity:.9}
+  display:flex;flex-direction:column;justify-content:flex-end;gap:6px;
+  padding:0 30px 26px}
+.reveal .what{font-family:"Bodoni Moda",serif;font-size:1.2rem;color:var(--chalk)}
 .reveal .tag{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--kraft);opacity:.45}
+  text-transform:uppercase;color:var(--kraft);opacity:.5}
 
-/* the grid is one sheet, creased at every seam: __01__/\__02__
-   each face is flat; approaching a seam it tilts up, lit from the upper-left.
-   the earlier face of a pair catches the light, the later one falls into shade,
-   so two neighbours read as one ridge popping toward you. */
-.door::before{
-  content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
-  background:
-    linear-gradient(90deg,rgba(0,0,0,.30),rgba(0,0,0,0) 21px),
-    linear-gradient(270deg,rgba(255,255,255,.30),rgba(255,255,255,0) 21px),
-    linear-gradient(0deg,rgba(255,255,255,.22),rgba(255,255,255,0) 17px),
-    linear-gradient(180deg,rgba(0,0,0,.22),rgba(0,0,0,0) 17px);
-}
-.card .top,.card .body{position:relative;z-index:2}
-.pull{z-index:4}
-
-/* the lid itself */
-.door{position:absolute;inset:0;width:100%;height:100%;padding:0;
-  display:flex;flex-direction:column;align-items:stretch;gap:0;text-align:left;
-  background:var(--bg);color:var(--on);cursor:pointer;
+/* the lid */
+.door{position:absolute;inset:0;width:100%;height:100%;
+  padding:var(--A) 0 0;display:flex;flex-direction:column;align-items:stretch;
+  gap:0;text-align:left;background:none;color:var(--on);cursor:pointer;
   transform-origin:left center;
-  transition:transform .62s cubic-bezier(.34,.03,.16,1),border-width .11s ease}
+  transition:transform .62s cubic-bezier(.34,.03,.16,1)}
+/* the face, and the two facets of the crease.
+   light from the upper-left: the rising edge catches it, the falling edge
+   does not. flat tints, hard edges, no gradient. */
+.door::before{
+  --shade:color-mix(in srgb,var(--bg) 64%,#000000);
+  --lit:color-mix(in srgb,var(--bg) 58%,#FFFFFF);
+  content:"";position:absolute;inset:0;z-index:0;
+  background:
+    linear-gradient(var(--shade),var(--shade)) 0 0 / var(--A) var(--A) no-repeat,
+    linear-gradient(var(--lit),var(--lit)) 100% 0 / var(--A) var(--A) no-repeat,
+    var(--bg);
+}
+.card .top,.card .body{position:relative;z-index:1}
 .card.hinge-r .door{transform-origin:right center}
-.door::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;z-index:3;
-  background:linear-gradient(90deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.42) 100%);
-  transition:opacity .52s ease}
-.card.hinge-r .door::after{background:linear-gradient(270deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.42) 100%)}
-.door:focus-visible{outline:3px solid var(--chrome);outline-offset:-6px}
+.door:focus-visible{outline:3px solid var(--chrome);outline-offset:-10px}
 
-/* ajar on hover: the affordance */
 .card.hinge-l .door:hover{transform:rotateY(6deg)}
 .card.hinge-r .door:hover{transform:rotateY(-6deg)}
 .card.flipped.hinge-l .door,.card.flipped.hinge-l .door:hover{transform:rotateY(96deg)}
 .card.flipped.hinge-r .door,.card.flipped.hinge-r .door:hover{transform:rotateY(-96deg)}
-.card.flipped .door::after{opacity:1}
 
-/* the hinge, and the pull on the free edge */
-.hinge{position:absolute;top:0;bottom:0;width:6px;background:var(--ink);z-index:3;pointer-events:none}
+.hinge{position:absolute;top:var(--A);bottom:var(--A);width:6px;background:var(--ink);
+  z-index:3;pointer-events:none}
 .card.hinge-l .hinge{left:0}.card.hinge-r .hinge{right:0}
-.pull{position:absolute;bottom:0;width:26px;height:26px;background:var(--ink);color:var(--chalk);
-  display:flex;align-items:center;justify-content:center;font-size:11px;
+.pull{position:absolute;top:50%;width:24px;height:24px;background:var(--ink);color:var(--chalk);
+  display:flex;align-items:center;justify-content:center;font-size:11px;z-index:4;
   transition:background .16s}
-.card.hinge-l .pull{right:0;clip-path:polygon(100% 0,100% 100%,0 100%)}
-.card.hinge-r .pull{left:0;clip-path:polygon(0 0,100% 100%,0 100%)}
+.card.hinge-l .pull{right:0;transform:translateY(-50%);clip-path:polygon(100% 0,100% 100%,0 50%)}
+.card.hinge-r .pull{left:0;transform:translateY(-50%);clip-path:polygon(0 0,0 100%,100% 50%)}
 .door:hover .pull{background:var(--chrome);color:var(--ink)}
 
 .card .top{display:flex;justify-content:space-between;align-items:center;gap:10px;
-  padding:11px 13px;border-bottom:var(--rule)}
+  padding:11px 16px;border-bottom:var(--rule)}
 .card .top .n{font-family:"Bodoni Moda",serif;font-size:1.45rem;line-height:1;font-weight:500}
-.card .body{padding:14px 13px 13px;display:flex;flex-direction:column;gap:10px;flex:1}
+.card .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px;flex:1}
 .card h3{font-family:"Bodoni Moda",Didot,serif;font-weight:500;font-size:1.45rem;line-height:1.05}
 .card .foot{margin-top:auto;padding-top:10px;border-top:2px solid currentColor;
   font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.11em;
   text-transform:uppercase;opacity:.8}
-/* two boxes deliberately refuse to close */
-.card.open-r{border-right-color:transparent}
-.card.open-b .top{border-bottom-color:transparent}
 
 /* the calm pocket: one section that is allowed to be empty */
 .quiet{padding:clamp(60px,11vw,140px) 0;border-bottom:var(--rule);text-align:center}
@@ -199,7 +204,6 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
 }
 @media (prefers-reduced-motion:reduce){
   .door,.card .door:hover{transform:none!important}
-  .card.flipped .door{opacity:0}
   *{transition:none!important}
   html{scroll-behavior:auto}
 }
@@ -285,7 +289,7 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
             <div class="foot">[tags] · [date]</div></div>
         </button>
       </div>
-      <div class="card field f-ultra open-r">
+      <div class="card field f-ultra">
         <span class="hinge"></span><div class="reveal"><span class="what">Play it here</span><span class="tag">Board you can actually take a turn on</span></div>
         <button class="door" aria-expanded="false">
           <span class="pull">&#9656;</span>
@@ -305,7 +309,7 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
             <div class="foot">[team] · [term]</div></div>
         </button>
       </div>
-      <div class="card field f-plum open-b">
+      <div class="card field f-plum">
         <span class="hinge"></span><div class="reveal"><span class="what">Footage of the rig</span><span class="tag">Video of the two arms running leader&ndash;follower</span></div>
         <button class="door" aria-expanded="false">
           <span class="pull">&#9656;</span>
