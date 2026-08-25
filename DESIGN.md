@@ -57,13 +57,13 @@ Two conventions, and they do different jobs.
 light from the upper-left so the offset falls down-right. Pressing collapses the
 offset to zero and the object sinks into the page. Nothing else uses this.
 
-**The work panels are the same control at panel scale.** Same ink rule, same
-offset, same press. They are objects you push, not tiles you read — a press that
-lands swings the panel open on its hinge and the offset collapses to zero.
+**The work grid is one letterpress button.** Not six. Borders collapse inside
+the slab — the grid owns top and left, each panel owns right and bottom — and a
+single offset shadow sits under the whole block. No panel owns its own edges or
+its own shadow, and there is no gap between them.
 
-Rejected: creased-sheet geometry, mitred extrusions, per-tile bevels, gradient
-falloff along a fold. Every one of them made the grid into a separate visual
-system from the buttons. There is one depth convention on this site.
+Rejected: per-panel shadows with gaps between the panels; creased-sheet
+geometry; mitred extrusions; per-tile bevels; gradient falloff along a fold.
 
 No blurred shadows, no glassmorphism, no depth animated on scroll.
 

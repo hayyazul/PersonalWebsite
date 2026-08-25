@@ -115,55 +115,49 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
 .col{display:flex;flex-direction:column;gap:15px}
 .cta{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
 
-/* the six panels are the button, at panel scale: flat pigment face, ink rule,
-   hard zero-blur offset. it presses under the cursor like a key, and a press
-   that lands swings it open on its hinge. */
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(262px,1fr));
-  gap:calc(var(--lift) + 20px);padding-bottom:var(--lift)}
-.card{position:relative;min-height:282px;perspective:1250px}
+/* the whole grid is one letterpress button: collapsed borders inside, a single
+   offset under the entire slab. no panel owns its own edges or its own shadow. */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));
+  border-top:var(--rule);border-left:var(--rule);
+  box-shadow:var(--lift) var(--lift) 0 var(--ink)}
+.card{border-right:var(--rule);border-bottom:var(--rule);
+  position:relative;min-height:262px;background:var(--black);perspective:1250px}
 
-/* the well behind the lid: sunk, so it never competes with the raised face */
-.reveal{position:absolute;inset:0;border:var(--rule);background:var(--black);
-  display:flex;flex-direction:column;justify-content:flex-end;gap:6px;
-  padding:0 20px 20px}
-.reveal .what{font-family:"Bodoni Moda",serif;font-size:1.2rem;color:var(--chalk)}
+/* what is behind the lid */
+.reveal{position:absolute;inset:0;background:var(--black);
+  display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:13px}
+.reveal .what{font-family:"Bodoni Moda",serif;font-size:1.2rem;color:var(--chalk);opacity:.9}
 .reveal .tag{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--kraft);opacity:.5}
+  text-transform:uppercase;color:var(--kraft);opacity:.45}
 
-/* the lid */
+/* the lid itself */
 .door{position:absolute;inset:0;width:100%;height:100%;padding:0;
   display:flex;flex-direction:column;align-items:stretch;gap:0;text-align:left;
-  border:var(--rule);background:var(--bg);color:var(--on);cursor:pointer;
-  box-shadow:var(--lift) var(--lift) 0 var(--ink);
-  transform-origin:left center;
-  transition:transform .09s ease,box-shadow .09s ease}
+  background:var(--bg);color:var(--on);cursor:pointer;
+  transform-origin:left center;  transition:transform .62s cubic-bezier(.34,.03,.16,1)}
 .card.hinge-r .door{transform-origin:right center}
-.door:focus-visible{outline:3px solid var(--chrome);outline-offset:-9px}
+.card.hinge-r .door:focus-visible{outline:3px solid var(--chrome);outline-offset:-6px}
 
-/* pressing */
-.card:not(.flipped) .door:hover{transform:translate(3px,3px);box-shadow:3px 3px 0 var(--ink)}
-.card:not(.flipped) .door:active{transform:translate(var(--lift),var(--lift));box-shadow:0 0 0 var(--ink)}
-
-/* opening */
-.card.flipped .door{box-shadow:0 0 0 var(--ink);
-  transition:transform .62s cubic-bezier(.34,.03,.16,1),box-shadow .2s ease}
+/* ajar on hover: the affordance */
+.card.hinge-l .door:hover{transform:rotateY(10deg)}
+.card.hinge-r .door:hover{transform:rotateY(-10deg)}
 .card.flipped.hinge-l .door,.card.flipped.hinge-l .door:hover{transform:rotateY(96deg)}
 .card.flipped.hinge-r .door,.card.flipped.hinge-r .door:hover{transform:rotateY(-96deg)}
-
-.hinge{position:absolute;top:0;bottom:0;width:6px;background:var(--ink);
-  z-index:3;pointer-events:none}
+.card.flipped 
+/* the hinge, and the pull on the free edge */
+.hinge{position:absolute;top:0;bottom:0;width:5px;background:var(--ink);opacity:.55}
 .card.hinge-l .hinge{left:0}.card.hinge-r .hinge{right:0}
-.pull{position:absolute;bottom:0;width:26px;height:26px;background:var(--ink);
-  color:var(--chalk);display:flex;align-items:center;justify-content:center;
-  font-size:11px;z-index:4;transition:background .16s}
+.pull{position:absolute;bottom:0;width:26px;height:26px;background:var(--ink);color:var(--chalk);
+  display:flex;align-items:center;justify-content:center;font-size:11px;
+  transition:background .16s}
 .card.hinge-l .pull{right:0;clip-path:polygon(100% 0,100% 100%,0 100%)}
 .card.hinge-r .pull{left:0;clip-path:polygon(0 0,100% 100%,0 100%)}
 .door:hover .pull{background:var(--chrome);color:var(--ink)}
 
 .card .top{display:flex;justify-content:space-between;align-items:center;gap:10px;
-  padding:11px 15px;border-bottom:var(--rule)}
+  padding:11px 13px;border-bottom:var(--rule)}
 .card .top .n{font-family:"Bodoni Moda",serif;font-size:1.45rem;line-height:1;font-weight:500}
-.card .body{padding:14px 15px 15px;display:flex;flex-direction:column;gap:10px;flex:1}
+.card .body{padding:14px 13px 13px;display:flex;flex-direction:column;gap:10px;flex:1}
 .card h3{font-family:"Bodoni Moda",Didot,serif;font-weight:500;font-size:1.45rem;line-height:1.05}
 .card .foot{margin-top:auto;padding-top:10px;border-top:2px solid currentColor;
   font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.11em;
