@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Iter 1 — Editorial Paper — 88th %ile common</title>
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F7F1E6;--ink:#131310;--line:rgba(19,19,16,0.12)}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--paper);color:var(--ink);font-family:Inter,sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:1120px;margin:0 auto;padding:0 24px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--line);font:11px "Fragment Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(19,19,16,.55)}
+nav b{font:22px "Instrument Serif",serif;text-transform:none;font-style:italic;color:var(--ink);letter-spacing:-.02em}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:32px;padding:28px 0 20px}
+h1{font:400 52px/0.95 "Instrument Serif",serif;letter-spacing:-.03em;margin:12px 0 14px}
+h1 em{font-style:italic}
+.sub{font-size:14px;line-height:1.6;color:rgba(19,19,16,.58);max-width:520px}
+.pill{border:1px solid var(--ink);padding:8px 14px;border-radius:999px;font:600 12px Inter,sans-serif}
+.stage{background:#EDE5D3;border:1px solid var(--line);border-radius:12px;aspect-ratio:1.05;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.stage-top{font:10px "Fragment Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(19,19,16,.5);padding:10px 12px;border-bottom:1px solid rgba(19,19,16,.07);display:flex;justify-content:space-between}
+.stage-canvas{flex:1;display:grid;place-items:center;position:relative;background:radial-gradient(ellipse 70% 50% at 50% 38%,rgba(225,184,79,.15),transparent 60%),linear-gradient(#EDE5D3,#E8DEC6)}
+figure-svg{width:88%;height:auto}
+figure-svg path{fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1800;stroke-dashoffset:1800}
+figure-svg.animate path{animation:draw 2.8s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.rays{position:absolute;inset:0;opacity:.10;pointer-events:none}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:22px}
+.grid3>div{padding:16px 18px;border-right:1px solid var(--line)} .grid3>div:last-child{border:none}
+.grid3 h4{font:10px "Fragment Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(19,19,16,.5);margin-bottom:8px}
+.grid3 p{font-size:12.5px;line-height:1.5;color:rgba(19,19,16,.6)}
+.tag{font:10px "Fragment Mono",monospace;padding:3px 7px;border:1px solid var(--line);border-radius:999px}
+.hero-ctrl{margin-top:8px;display:flex;gap:8px;align-items:center}
+.hero-ctrl button{font:11px "Fragment Mono",monospace;padding:6px 10px;border-radius:999px;border:1px solid rgba(19,19,16,.15);background:white;cursor:pointer}
+.hero-ctrl button.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.caption{font:italic 11px Georgia,serif;color:rgba(19,19,16,.5);margin-top:6px;display:flex;justify-content:space-between}
+.badge{position:absolute;right:12px;top:48px;width:110px;height:110px;border-radius:50%;border:1.5px solid var(--ink);background:rgba(247,241,230,.94);display:grid;place-items:center;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,.12)}
+.badge b{font:400 22px "Instrument Serif",serif;display:block}
+.badge span{font:9px "Fragment Mono",monospace;letter-spacing:.08em;text-transform:uppercase}
+@media(max-width:860px){.hero{grid-template-columns:1fr}.grid3{grid-template-columns:1fr}.grid3>div{border-right:none;border-bottom:1px solid var(--line)}}
+</style>
+</head><body>
+<div class="page">
+<nav><div style="display:flex;gap:18px;align-items:center"><b>ayyaz.</b> 88th %ile — Most Familiar</div><div>Editorial Paper • Safe hire</div></nav>
+
+<div class="hero">
+<div>
+<div style="font:11px 'Fragment Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(19,19,16,.5)">Frontier AI • Systems • UIUC — v1 editorial</div>
+<h1>Systems that<br><em>show</em> their work</h1>
+<p class="sub">The safe, Anthropic-adjacent read. Warm paper, serif display, quiet line art. Every other portfolio in 2025-26 looks a bit like this — that’s why it’s <b>88th percentile common</b>. High legibility, low risk. Fomenko & fish-eye are whispers here, not architecture.</p>
+<div class="hero-ctrl"><button class="primary" onclick="replay()">↻ Replay line formation</button><button onclick="document.getElementById('fig').classList.toggle('animate')">Toggle</button><span style="font:11px 'Fragment Mono',monospace;color:rgba(19,19,16,.5)">2.8s continuous stroke</span></div>
+<p class="sub" style="margin-top:14px;font-size:12px">Takes from: <b>ym</b> as hero illustration, <b>Fomenko</b> as 10% opacity rays, <b>DER MENSCH</b> as small fisheye badge “◉ 92%”, <b>file2</b> as accent tags (rust/mustard). Nothing confrontational.</p>
+</div>
+
+<div>
+<div class="stage">
+<div class="stage-top"><span>Fig.01 — lounging study / after ymv0i7</span><span>● ● ○</span></div>
+<div class="stage-canvas">
+<svg class="rays" viewBox="0 0 400 400"><g stroke="#131310" fill="none" opacity=".7"><line x1="200" y1="245" x2="330" y2="50"/><line x1="200" y1="245" x2="380" y2="110"/><line x1="200" y1="245" x2="110" y2="80"/></g><polygon points="200,245 320,58 360,95" fill="#131310"/><ellipse cx="318" cy="104" rx="9" ry="16" fill="#F7F1E6" transform="rotate(-20 318 104)"/></svg>
+
+<svg id="fig" class="animate" viewBox="0 0 420 290" style="width:88%;position:relative;z-index:2"><path d="M32 118 C42 108 68 102 96 110 L124 118 L128 96 L116 84 L124 78 L138 80 L142 92 L132 108 L148 115 C168 120 188 132 202 152 L186 182 L112 198 L42 190 L38 124 Z M96 110 C74 122 52 142 66 176 M202 152 L212 158 L228 168 L242 164 L258 178 L252 192 L236 188 L182 178 M182 68 C186 58 192 54 198 62 C200 66 198 72 194 74 M208 62 C212 54 218 54 222 62 C224 66 222 70 218 72 M186 78 C192 90 202 96 210 88 M182 100 L208 102 M262 54 L252 78 C248 84 248 96 252 106 L262 122 L304 122 L312 106 L308 80 L292 56 M304 56 L322 52 M322 52 C326 44 324 32 332 24 M198 118 L202 102 L212 100 L214 104 L206 116 Z M292 56 C298 36 302 32 308 30"/></svg>
+
+<div class="badge"><div><b>◉ 71%</b><span>fisheye<br>whisper</span></div></div>
+</div>
+</div>
+<div class="caption"><span>One continuous line forms — then stays.</span><span style="font:10px 'Fragment Mono',monospace">COMMONALITY 88% • SAFE</span></div>
+</div>
+</div>
+
+<div class="grid3">
+<div><h4>Why 88%?</h4><p>Beige editorial + serif + line illustration is the incumbent “tasteful” template (Linear, Anthropic, Perplexity). You’ll be liked instantly, remembered rarely. Best if you want hiring managers to feel <em>comfortable</em>.</p></div>
+<div><h4>What it keeps</h4><p>Fomenko as faint gray rays (10%), fish-eye as decorative badge, file2 only as <span class="tag">rust tags</span> <span class="tag" style="background:#131310;color:#F7F1E6">ink</span>.</p></div>
+<div><h4>What it hides</h4><p>Plain is background texture, not structure. No curved horizon, no crowd system, no confrontation. Generic by choice.</p></div>
+</div>
+<p style="font:11px 'Fragment Mono',monospace;color:rgba(19,19,16,.45);margin:10px 0 24px">Next → 71% Lab Notebook — same line animation, but Fomenko becomes the grid itself.</p>
+</div>
+<script>
+function replay(){
+  const el=document.getElementById('fig');
+  el.classList.remove('animate');
+  void el.offsetWidth;
+  el.classList.add('animate');
+}
+window.addEventListener('load',()=> setTimeout(replay, 300));
+</script>
+</body></html>

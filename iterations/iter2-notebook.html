@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Iter 2 — Lab Notebook — 71st %ile</title>
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F3EFE2;--ink:#131310;--line:rgba(19,19,16,.14);--grid:rgba(19,19,16,.07);--red:#D9402A;--blue:#1F2F4A}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--paper);color:var(--ink);font-family:Inter,sans-serif}
+.page{max-width:1160px;margin:0 auto;padding:0 20px}
+.topbar{border-top:3px solid var(--ink);border-bottom:1px solid var(--ink);padding:6px 0;display:flex;justify-content:space-between;font:10px "Fragment Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(19,19,16,.6)}
+.topbar b{letter-spacing:.18em}
+nav{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0 10px;border-bottom:1px solid var(--line)}
+nav h1{font:400 30px "Instrument Serif",serif;letter-spacing:-.02em} nav h1 i{font-style:italic}
+.sheet{border:1px solid var(--line);background:
+  linear-gradient(to right, transparent 56px, rgba(217,64,42,.18) 56px, transparent 57px),
+  repeating-linear-gradient(to bottom, transparent 0 27px, var(--grid) 27px 28px),
+  var(--paper);
+  border-radius:6px;overflow:hidden;margin-top:16px;display:grid;grid-template-columns:1.05fr .95fr;min-height:420px;
+  box-shadow:0 2px 0 rgba(19,19,16,.06), 0 10px 30px rgba(19,19,16,.07);
+}
+.sheet-left{padding:22px 22px 18px 72px;position:relative}
+.sheet-left::before{content:"";position:absolute;left:0;top:0;bottom:0;width:38px;background:repeating-linear-gradient(to bottom, transparent 0 28px, rgba(19,19,16,.06) 28px 28px); border-right:1px solid rgba(19,19,16,.08)}
+.eyebrow{font:10px "Fragment Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(19,19,16,.5)}
+.hero-title{font:400 44px/0.92 "Instrument Serif",serif;letter-spacing:-.03em;margin:10px 0}
+.hero-title em{font-style:italic;background:linear-gradient(to top, rgba(225,184,79,.35) 45%, transparent 45%)}
+.note{font-size:12.5px;line-height:1.55;color:rgba(19,19,16,.62);border-left:2px solid var(--red);padding-left:10px;margin:14px 0}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;font-size:11px}
+.meta div{border:1px solid var(--line);background:white;padding:8px 9px;border-radius:6px}
+.meta b{font:600 10px "Fragment Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(19,19,16,.5);display:block;margin-bottom:4px}
+.sheet-right{border-left:1px solid var(--line);background:rgba(255,255,255,.55);position:relative;display:flex;flex-direction:column}
+.sheet-head{font:10px "Fragment Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:rgba(19,19,16,.5);padding:8px 10px;border-bottom:1px dashed var(--line);display:flex;justify-content:space-between}
+.fig-area{flex:1;display:grid;place-items:center;position:relative;overflow:hidden;padding:14px;background:
+  radial-gradient(ellipse 60% 40% at 50% 35%, rgba(225,184,79,.12), transparent 65%),
+  repeating-linear-gradient(90deg, transparent 0 38px, rgba(19,19,16,.04) 38px 39px),
+  white;
+}
+.fig-area svg{width:92%;height:auto}
+.fig-area path{fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1800;stroke-dashoffset:1800}
+.fig-area.animate path{animation:draw 3s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.margin-note{position:absolute;right:8px;top:44px;width:98px;background:#FFF9C2;border:1px solid rgba(19,19,16,.12);border-left:3px solid var(--red);padding:6px 7px;font:10px/1.35 "Fragment Mono",monospace;transform:rotate(1.2deg);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.dim{position:absolute;left:10px;bottom:10px;font:9px "Fragment Mono",monospace;color:rgba(19,19,16,.4);display:flex;gap:8px;align-items:center}
+.dim i{width:22px;height:1px;background:rgba(19,19,16,.2);display:inline-block}
+.controls{padding:10px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;background:var(--paper)}
+.controls button{font:11px "Fragment Mono",monospace;padding:6px 10px;border-radius:999px;border:1px solid rgba(19,19,16,.15);background:white;cursor:pointer}
+.controls button.primary{background:var(--ink);color:white;border-color:var(--ink)}
+.fomenko-label{position:absolute;bottom:0;left:0;right:0;height:36%;border-top:1px solid var(--line);background:repeating-linear-gradient(90deg, transparent 0 36px, rgba(19,19,16,.05) 36px 37px), linear-gradient(to top, rgba(19,19,16,.04), transparent);display:flex;align-items:center;justify-content:center;gap:10px;font:9px "Fragment Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(19,19,16,.45)}
+.fomenko-label i{width:18px;height:1px;background:rgba(19,19,16,.15)}
+.below{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0 24px}
+.card{border:1px solid var(--line);background:white;border-radius:8px;padding:12px}
+.card h4{font:700 12px Inter,sans-serif;margin-bottom:6px;display:flex;gap:6px;align-items:center}
+.card p{font-size:12px;line-height:1.5;color:rgba(19,19,16,.6)}
+.dot{width:7px;height:7px;border-radius:50%}
+@media(max-width:900px){.sheet{grid-template-columns:1fr}.sheet-left{padding-left:58px}.sheet-right{border-left:none;border-top:1px solid var(--line)}.below{grid-template-columns:1fr}}
+</style>
+</head><body>
+<div class="page">
+<div class="topbar"><span>DER MENSCH — FIELD NOTES № 02</span><span>71st %ile — Lab Notebook</span><span>FOMENKO GRID • FISHEYE LENS</span></div>
+<nav><h1><i>ayyaz.</i> — notebook</h1><div style="font:10px 'Fragment Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(19,19,16,.5)">71% common • denser • still hire-safe</div></nav>
+
+<div class="sheet">
+  <div class="sheet-left">
+    <div class="eyebrow">UIUC • Frontier systems • 40.11°N</div>
+    <div class="hero-title">Measure,<br><em>then</em> claim.</div>
+    <div class="note">Density over whitespace. The demo <i>is</i> the resume — FABRIK IK + real biceps EMG. Honest numbers, no inflated accuracy. <b style="color:var(--ink)">You are what you do.</b></div>
+    <div class="meta">
+      <div><b>Now • building</b>Autograd from 0 • UTTT RL • SO-101 ×2</div>
+      <div><b>Plain logic</b>Fomenko repetition as ruling — every 28px / 38px verifies scale.</div>
+      <div><b>Tail</b>Frontier interp track — reading → notes → probes</div>
+      <div><b>Hedge</b>Agentic SWE / ops for AI labs — ships fast</div>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><span style="font:10px 'Fragment Mono',monospace;padding:4px 8px;border:1px solid var(--line);border-radius:999px;background:white">INTERPRETABILITY</span><span style="font:10px 'Fragment Mono',monospace;padding:4px 8px;background:var(--red);color:white;border-radius:999px">LIVE DEMOS</span><span style="font:10px 'Fragment Mono',monospace;padding:4px 8px;border:1px solid var(--line);border-radius:999px">S0-101</span></div>
+  </div>
+
+  <div class="sheet-right">
+    <div class="sheet-head"><span>Fig. A — ymv0i7 • single line • 2.1px</span><span>ink on paper — animates on load</span></div>
+    <div class="fig-area animate" id="fig2">
+      <svg viewBox="0 0 420 290"><path d="M32 118 C42 108 68 102 96 110 L124 118 L128 96 L116 84 L124 78 L138 80 L142 92 L132 108 L148 115 C168 120 188 132 202 152 L186 182 L112 198 L42 190 L38 124 Z M96 110 C74 122 52 142 66 176 M202 152 L212 158 L228 168 L242 164 L258 178 L252 192 L236 188 L182 178 M182 68 C186 58 192 54 198 62 C200 66 198 72 194 74 M208 62 C212 54 218 54 222 62 C224 66 222 70 218 72 M186 78 C192 90 202 96 210 88 M182 100 L208 102 M262 54 L252 78 C248 84 248 96 252 106 L262 122 L304 122 L312 106 L308 80 L292 56 M304 56 L322 52 M322 52 C326 44 324 32 332 24 M198 118 L202 102 L212 100 L214 104 L206 116 Z M292 56 C298 36 302 32 308 30"/></svg>
+      <div class="margin-note">→ continuous!<br>one stroke<br><b>no lift</b></div>
+      <div class="dim"><i></i> 2.1px MONOLINE <i></i> 28px ruling</div>
+      <svg viewBox="0 0 360 140" style="position:absolute;inset:auto 0 36% 0;height:36%;width:100%;opacity:.16;pointer-events:none"><g stroke="#131310" fill="none"><line x1="180" y1="140" x2="300" y2="10"/><line x1="180" y1="140" x2="340" y2="40"/><line x1="180" y1="140" x2="80" y2="30"/></g><polygon points="180,140 290,18 320,48" fill="#131310"/><ellipse cx="284" cy="38" rx="7" ry="12" fill="white" transform="rotate(-18 284 38)"/></svg>
+      <div class="fomenko-label"><i></i> plain — geometric repetition — not decoration <i></i></div>
+      <div style="position:absolute;right:10px;top:10px;width:86px;height:86px;border-radius:50%;border:1.5px solid var(--ink);background:rgba(255,255,255,.96);display:grid;place-items:center;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.12)"><div style="font:9px 'Fragment Mono',monospace;line-height:1.2"><b style="font:400 20px 'Instrument Serif',serif;display:block">◯ 64px</b>fisheye<br>MEA SURE</div></div>
+    </div>
+    <div class="controls"><button class="primary" onclick="replay2()">↻ Replay formation</button><button onclick="document.getElementById('fig2').classList.toggle('animate')">Pause</button><span style="font:11px 'Fragment Mono',monospace;color:rgba(19,19,16,.45)">DER MENSCH frame: top bar + bottom caption, fisheye lens over figure</span></div>
+  </div>
+</div>
+
+<div class="below">
+  <div class="card"><h4><span class="dot" style="background:var(--red)"></span> Why 71%</h4><p>Notebook is familiar to engineers (lab, Zettel), rarer for portfolios than editorial. Adds asmaa-like density without being alien. Still scans as “serious”.</p></div>
+  <div class="card"><h4><span class="dot" style="background:var(--blue)"></span> Fomenko deepened</h4><p>Not faint rays — the 28px ruling <i>is</i> the plain. Demos sit on the same repetition. Scale comes from margin + small figure vs wide rule.</p></div>
+  <div class="card"><h4><span class="dot" style="background:#E1B84F"></span> File2 hint</h4><p>Red/blue tags become highlighter swatches (hand-drawn). Crowd idea not yet used — that’s 46th %ile next.</p></div>
+</div>
+</div>
+<script>
+function replay2(){const el=document.getElementById('fig2');el.classList.remove('animate');void el.offsetWidth;el.classList.add('animate')}
+window.addEventListener('load',()=> setTimeout(replay2,400));
+</script>
+</body></html>

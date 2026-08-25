@@ -1,0 +1,12 @@
+node_modules/
+dist/
+build/
+.DS_Store
+*.log
+.env
+.env.*
+
+# Reference art by other people (Fomenko, the gouache, the line drawing, Der Mensch).
+# Kept local, not redistributed — this repo may end up public on GitHub Pages.
+# Remove this line if you decide otherwise.
+Cool Pics/

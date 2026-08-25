@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ayyaz — Mockup v0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7F1E6;
+    --paper-2:#EDE5D3;
+    --paper-3:#E8DEC6;
+    --ink:#131310;
+    --ink-55:rgba(19,19,16,0.55);
+    --ink-14:rgba(19,19,16,0.14);
+    --ink-08:rgba(19,19,16,0.08);
+    --rust:#D9402A;
+    --rust-soft:#F26B3A;
+    --mustard:#E1B84F;
+    --slate:#1F2F4A;
+    --teal:#2A6B5E;
+    --line:1px solid var(--ink-14);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Inter",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    line-height:1.5;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events:none;opacity:0.6;mix-blend-mode:multiply;
+  }
+  a{color:inherit;text-decoration:none}
+  .page{max-width:1180px;margin:0 auto;padding:0 24px;position:relative}
+  /* NAV */
+  nav{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 0 16px;border-bottom:var(--line);
+    font-family:"Fragment Mono",monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--ink-55);
+  }
+  nav .left{display:flex;gap:28px;align-items:center}
+  nav .mark{
+    font-family:"Instrument Serif",serif;font-size:22px;letter-spacing:-0.02em;
+    color:var(--ink);text-transform:none;font-style:italic;
+  }
+  nav .links{display:flex;gap:18px}
+  nav .links a:hover{color:var(--ink)}
+  nav .right{display:flex;gap:12px;align-items:center}
+  .pill{
+    border:1px solid var(--ink);padding:7px 14px;border-radius:999px;
+    font-family:"Inter",sans-serif;font-size:12px;font-weight:600;letter-spacing:0.02em;text-transform:none;
+    color:var(--ink);transition:all .2s;
+  }
+  .pill:hover{background:var(--ink);color:var(--paper)}
+  .pill.muted{border-color:var(--ink-14);color:var(--ink-55)}
+  .pill.muted:hover{border-color:var(--ink);color:var(--ink);background:transparent}
+
+  /* HERO */
+  .hero{
+    display:grid;grid-template-columns:1.15fr 0.85fr;gap:28px;
+    padding:34px 0 0;
+    border-bottom:var(--line);
+  }
+  .hero-left{padding:8px 0 28px}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:"Fragment Mono",monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;
+    color:var(--ink-55);margin-bottom:18px;
+  }
+  .eyebrow i{width:6px;height:6px;background:var(--rust);border-radius:50%;display:inline-block;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+  .hero h1{
+    font-family:"Instrument Serif",serif;font-weight:400;
+    font-size:54px;line-height:0.95;letter-spacing:-0.03em;
+    margin-bottom:16px;
+  }
+  .hero h1 em{font-style:italic;font-weight:400}
+  .hero h1 .line-art{position:relative;display:inline-block}
+  .hero h1 .line-art::after{
+    content:"";position:absolute;left:-2px;right:-2px;bottom:3px;height:8px;
+    background:var(--mustard);opacity:0.35;z-index:-1;
+  }
+  .sub{
+    font-size:15px;line-height:1.6;max-width:520px;color:var(--ink-55);
+    margin-bottom:22px;
+  }
+  .sub strong{color:var(--ink);font-weight:600}
+  .cta-row{display:flex;gap:10px;align-items:center;margin-bottom:28px}
+  .btn-primary{
+    background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:999px;
+    font-size:13px;font-weight:600;display:inline-flex;gap:8px;align-items:center;
+    border:1px solid var(--ink);
+  }
+  .btn-primary:hover{background:transparent;color:var(--ink)}
+  .btn-ghost{
+    padding:11px 14px;font-size:13px;font-weight:500;color:var(--ink-55);display:inline-flex;gap:6px;align-items:center;
+  }
+  .btn-ghost:hover{color:var(--ink)}
+  /* dense meta under hero like asmaa dense but styled */
+  .dense-meta{
+    display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;
+    border-top:var(--line);padding-top:16px;
+  }
+  .meta-col h4{
+    font-family:"Fragment Mono",monospace;font-size:10px;letter-spacing:0.11em;text-transform:uppercase;
+    color:var(--ink-55);margin-bottom:8px;
+  }
+  .meta-col ul{list-style:none;font-size:12.5px;line-height:1.5}
+  .meta-col li{padding:1px 0}
+  .meta-col li span{color:var(--ink-55)}
+  .mono{font-family:"Fragment Mono",monospace}
+
+  /* HERO RIGHT - drawing stage */
+  .hero-right{position:relative;padding-bottom:18px}
+  .stage{
+    background:var(--paper-2);
+    border:1px solid var(--ink-14);
+    border-radius:14px;
+    aspect-ratio: 1.02;
+    position:relative;
+    overflow:hidden;
+    display:flex;flex-direction:column;
+  }
+  .stage-top{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:10px 12px 8px;
+    border-bottom:1px solid var(--ink-08);
+    font-family:"Fragment Mono",monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-55);
+  }
+  .stage-top .dots{display:flex;gap:5px}
+  .stage-top .dot{width:8px;height:8px;border-radius:50%;border:1px solid var(--ink-14)}
+  .stage-top .dot.filled{background:var(--ink)}
+  .stage-canvas{
+    flex:1;position:relative;display:grid;place-items:center;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 35%, rgba(225,184,79,0.18) 0%, transparent 60%),
+      linear-gradient(to bottom, var(--paper-2), var(--paper-3));
+    overflow:hidden;
+  }
+  /* Fomenko rays behind */
+  .rays{
+    position:absolute;inset:0;pointer-events:none;opacity:0.85;
+  }
+  .rays svg{width:100%;height:100%}
+  .plain{
+    position:absolute;bottom:0;left:0;right:0;height:38%;
+    background:
+      linear-gradient(to top, rgba(19,19,16,0.06), transparent),
+      repeating-linear-gradient(90deg, transparent 0 34px, rgba(19,19,16,0.07) 34px 35px);
+    border-top:1px solid var(--ink-08);
+    display:flex;align-items:flex-end;justify-content:center;
+    padding-bottom:8px;
+  }
+  .plain-label{
+    font-family:"Fragment Mono",monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;
+    color:var(--ink-55);display:flex;gap:14px;align-items:center
+  }
+  .plain-label i{width:26px;height:1px;background:var(--ink-14);display:inline-block}
+  /* single line figure */
+  .figure-wrap{position:relative;z-index:2;width:92%;max-width:420px;aspect-ratio:1.45;display:grid;place-items:center}
+  .figure-wrap svg{width:100%;height:auto;overflow:visible}
+  .figure-wrap path, .figure-wrap line{
+    fill:none;stroke:var(--ink);stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round;
+    stroke-dasharray:1200;stroke-dashoffset:1200;
+    animation:draw 2.2s cubic-bezier(.4,0,.2,1) forwards;
+  }
+  .figure-wrap path:nth-child(2){animation-delay:.15s}
+  .figure-wrap path:nth-child(3){animation-delay:.3s}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .stage:hover .figure-wrap path{stroke:var(--ink)}
+  /* fisheye lens */
+  .lens{
+    position:absolute;width:132px;height:132px;border-radius:50%;
+    border:1.5px solid var(--ink);background:rgba(247,241,230,0.92);
+    box-shadow:0 10px 30px rgba(0,0,0,0.16), inset 0 0 0 1px rgba(255,255,255,0.6);
+    display:grid;place-items:center;
+    right:18px;top:18px;z-index:5;
+    overflow:hidden;
+    transform:translateZ(0);
+    transition:transform .35s cubic-bezier(.16,1,.3,1);
+  }
+  .stage:hover .lens{transform:scale(1.04)}
+  .lens::before{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), transparent 55%);
+    pointer-events:none;
+  }
+  .lens-inner{
+    width:100%;height:100%;display:grid;place-items:center;position:relative;
+    font-family:"Fragment Mono",monospace;font-size:10px;color:var(--ink-55);text-align:center;line-height:1.3;
+  }
+  .lens-inner b{font-family:"Instrument Serif",serif;font-size:28px;line-height:1;color:var(--ink);display:block;font-weight:400}
+  .lens-cross{position:absolute;inset:0;pointer-events:none}
+  .lens-cross::before,.lens-cross::after{
+    content:"";position:absolute;background:var(--ink-14)
+  }
+  .lens-cross::before{left:50%;top:8%;bottom:8%;width:1px}
+  .lens-cross::after{top:50%;left:8%;right:8%;height:1px}
+  .caption{
+    font-family:"Newsreader",serif;font-style:italic;font-size:12px;color:var(--ink-55);
+    margin-top:8px;display:flex;justify-content:space-between;align-items:center;gap:12px;
+  }
+  .caption .mono{font-style:normal;font-size:10px;letter-spacing:0.07em;text-transform:uppercase;font-family:"Fragment Mono",monospace}
+  /* DENSITY STRIP */
+  .density{
+    display:grid;grid-template-columns:1.1fr 0.9fr 1fr;
+    gap:0;border-bottom:var(--line);
+  }
+  .density .col{padding:18px 18px 18px 0;border-right:var(--line)}
+  .density .col:last-child{border-right:none;padding-right:0;padding-left:18px}
+  .density .col:nth-child(2){padding-left:18px}
+  .density h3{
+    font-family:"Instrument Serif",serif;font-size:17px;font-weight:400;letter-spacing:-0.02em;margin-bottom:10px;display:flex;align-items:center;gap:8px
+  }
+  .density h3 i{width:7px;height:7px;border-radius:50%;display:inline-block}
+  .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+  .tag{
+    font-family:"Fragment Mono",monospace;font-size:10px;letter-spacing:0.06em;
+    padding:4px 8px;border-radius:999px;border:1px solid var(--ink-14);background:var(--paper);
+    color:var(--ink-55);
+  }
+  .tag.accent{background:var(--rust);color:white;border-color:var(--rust)}
+  .tag.dark{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .density p{font-size:13px;line-height:1.55;color:var(--ink-55)}
+  .density p strong{color:var(--ink);font-weight:600}
+  .list-mini{list-style:none;font-size:12.5px}
+  .list-mini li{display:flex;gap:8px;padding:4px 0;border-bottom:1px solid var(--ink-08);align-items:baseline}
+  .list-mini li:last-child{border-bottom:none}
+  .list-mini .k{font-family:"Fragment Mono",monospace;font-size:11px;min-width:68px;color:var(--ink-55)}
+  .list-mini .v{flex:1}
+  /* DEMOS */
+  .demos{
+    display:grid;grid-template-columns:1fr 1fr;gap:14px;
+    padding:20px 0;border-bottom:var(--line);
+  }
+  .demo-card{
+    background:var(--paper-2);border:1px solid var(--ink-14);border-radius:12px;overflow:hidden;
+    display:flex;flex-direction:column;min-height:320px;
+  }
+  .demo-head{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:10px 12px;border-bottom:1px solid var(--ink-08);
+    font-family:"Fragment Mono",monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-55);
+  }
+  .demo-head b{color:var(--ink);letter-spacing:0.06em}
+  .live{color:var(--rust);display:flex;align-items:center;gap:6px}
+  .live::before{content:"";width:6px;height:6px;background:var(--rust);border-radius:50%;box-shadow:0 0 0 4px rgba(217,64,42,0.12);animation:pulse 1.4s infinite}
+  .demo-body{flex:1;position:relative;background:var(--paper);display:grid;place-items:center;overflow:hidden}
+  #ik{display:block;width:100%;height:100%;cursor:crosshair}
+  .demo-footer{
+    padding:10px 12px;border-top:1px solid var(--ink-08);background:var(--paper-2);
+    display:flex;justify-content:space-between;align-items:center;gap:12px;
+  }
+  .demo-footer p{font-size:12px;line-height:1.4;color:var(--ink-55);max-width:260px}
+  .demo-footer a{font-size:12px;font-weight:600;white-space:nowrap}
+  .demo-footer a:hover{text-decoration:underline}
+  /* emg */
+  .emg-wrap{width:100%;height:100%;padding:14px;display:flex;flex-direction:column;gap:10px}
+  .emg-canvas{flex:1;border:1px solid var(--ink-14);border-radius:8px;background:white;position:relative;overflow:hidden}
+  .emg-canvas canvas{width:100%;height:100%;display:block}
+  .emg-controls{display:flex;gap:8px;flex-wrap:wrap}
+  .emg-controls button{
+    font-family:"Fragment Mono",monospace;font-size:11px;padding:6px 10px;border-radius:999px;
+    border:1px solid var(--ink-14);background:var(--paper);cursor:pointer;color:var(--ink);
+  }
+  .emg-controls button.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .arm-3d{
+    position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;
+  }
+  .arm-svg{width:62%;opacity:0.9;filter:drop-shadow(0 8px 16px rgba(0,0,0,0.08))}
+  /* PROJECTS */
+  .section-head{
+    display:flex;align-items:baseline;justify-content:space-between;
+    padding:18px 0 12px;border-bottom:var(--line);
+  }
+  .section-head h2{font-family:"Instrument Serif",serif;font-size:26px;font-weight:400;letter-spacing:-0.02em}
+  .section-head .mono{font-family:"Fragment Mono",monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-55)}
+  .projects-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:14px 0 20px;border-bottom:var(--line);
+  }
+  .proj{
+    border:1px solid var(--ink-14);border-radius:10px;overflow:hidden;background:var(--paper-2);
+    display:flex;flex-direction:column;transition:transform .2s, box-shadow .2s;
+  }
+  .proj:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(19,19,16,0.08)}
+  .proj-thumb{height:112px;position:relative;overflow:hidden;border-bottom:1px solid var(--ink-08);display:grid;place-items:center}
+  .proj-thumb.rust{background:var(--rust)}
+  .proj-thumb.mustard{background:var(--mustard)}
+  .proj-thumb.slate{background:var(--slate)}
+  .proj-thumb .thumb-label{
+    font-family:"Instrument Serif",serif;font-size:22px;color:white;letter-spacing:-0.02em;
+    transform:rotate(-2deg);
+  }
+  .proj-thumb .thumb-sub{font-family:"Fragment Mono",monospace;font-size:10px;color:rgba(255,255,255,0.85);letter-spacing:0.08em;text-transform:uppercase;margin-top:2px;text-align:center}
+  .proj-body{padding:12px 12px 14px;flex:1;display:flex;flex-direction:column;gap:8px;background:var(--paper)}
+  .proj-body h4{font-size:13px;font-weight:700;line-height:1.3}
+  .proj-body p{font-size:12.5px;line-height:1.5;color:var(--ink-55);flex:1}
+  .proj-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+  .proj-meta span{font-family:"Fragment Mono",monospace;font-size:10px;padding:3px 6px;border-radius:999px;background:var(--paper-2);border:1px solid var(--ink-08);color:var(--ink-55)}
+  /* CONTACT */
+  .contact{
+    display:grid;grid-template-columns:1.2fr 0.8fr;gap:18px;padding:22px 0 30px;
+  }
+  .contact h3{font-family:"Instrument Serif",serif;font-size:30px;font-weight:400;letter-spacing:-0.02em;line-height:1;margin-bottom:10px}
+  .contact p{font-size:13px;color:var(--ink-55);line-height:1.6;max-width:480px}
+  .contact-cards{display:grid;gap:10px;align-content:start}
+  .c-card{
+    border:1px solid var(--ink-14);border-radius:10px;padding:12px 14px;
+    display:flex;justify-content:space-between;align-items:center;background:var(--paper-2);
+  }
+  .c-card .label{font-family:"Fragment Mono",monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-55)}
+  .c-card .value{font-size:13px;font-weight:600}
+  .c-card .action{font-size:12px;font-weight:600;color:var(--rust)}
+  .footer{
+    border-top:var(--line);padding:14px 0 28px;
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:"Fragment Mono",monospace;font-size:10px;letter-spacing:0.07em;text-transform:uppercase;color:var(--ink-55);
+  }
+  /* responsive */
+  @media(max-width:900px){
+    .hero{grid-template-columns:1fr}
+    .hero h1{font-size:42px}
+    .density{grid-template-columns:1fr}
+    .density .col{border-right:none;border-bottom:var(--line);padding:16px 0}
+    .density .col:last-child{padding-left:0;border-bottom:none}
+    .density .col:nth-child(2){padding-left:0}
+    .demos{grid-template-columns:1fr}
+    .projects-grid{grid-template-columns:1fr}
+    .contact{grid-template-columns:1fr}
+    .lens{width:112px;height:112px;right:10px;top:10px}
+  }
+  /* subtle fish-eye on hover for whole stage */
+  .stage-canvas{transition:transform .6s cubic-bezier(.16,1,.3,1)}
+  .stage:hover .stage-canvas{transform:scale(1.01)}
+</style>
+</head>
+<body>
+<div class="page">
+  <nav>
+    <div class="left">
+      <a class="mark" href="#">ayyaz.</a>
+      <div class="links">
+        <a href="#work">Work</a>
+        <a href="#demos">Demos</a>
+        <a href="#notes">Notes</a>
+      </div>
+    </div>
+    <div class="right">
+      <span class="mono" style="font-size:10px;letter-spacing:0.08em">Champaign, IL • 40.11°N</span>
+      <a class="pill" href="mailto:hello@ayyaz.dev">Contact — Email</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-left">
+      <div class="eyebrow"><i></i> Frontier AI • Interpretability • Systems • UIUC</div>
+      <h1>Systems that<br><em>show</em> their work <span style="font-family:'Fragment Mono',monospace;font-size:11px;vertical-align:middle;border:1px solid var(--ink-14);padding:3px 7px;border-radius:999px;letter-spacing:0.06em;text-transform:uppercase;font-style:normal;font-weight:500">open by design</span></h1>
+      <p class="sub">
+        I’m Ayyaz — student builder at Illinois. I work where <strong>model internals, hardware, and interaction</strong> meet.
+        Hedge: agentic SWE / technical ops for AI labs. Dream: frontier interpretability.
+        <span style="color:var(--ink)">You are what you do, not what you say.</span> So the demos are the resume.
+      </p>
+      <div class="cta-row">
+        <a class="btn-primary" href="#demos">See live demos —→</a>
+        <a class="btn-ghost" href="#work">Reading list · Resume <span style="font-size:14px">↗</span></a>
+        <span class="mono" style="font-size:11px;color:var(--ink-55);margin-left:4px">Sound on: subtle ⌥</span>
+      </div>
+
+      <div class="dense-meta">
+        <div class="meta-col">
+          <h4>Now building</h4>
+          <ul>
+            <li><b>Autograd from scratch</b> <span>— no frameworks</span></li>
+            <li>RL on Ultimate TTT</li>
+            <li>SO-101 teleop rig <span style="color:var(--rust)">• at home</span></li>
+          </ul>
+        </div>
+        <div class="meta-col">
+          <h4>Traction</h4>
+          <ul class="mono" style="font-size:11px;line-height:1.7">
+            <li>IK demo — 60fps, 3 joints</li>
+            <li>BCI — real EMG → 3D arm</li>
+            <li>2× SO-101 • low-latency</li>
+          </ul>
+        </div>
+        <div class="meta-col">
+          <h4>For you if…</h4>
+          <ul style="font-size:12px">
+            <li>You need a guy who <u>ships</u> probes into models & products</li>
+            <li>Animal→human translation, ops, or interpretability adjacent</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="stage">
+        <div class="stage-top">
+          <span>Fig. 01 — Lounging Study <span style="text-transform:none;letter-spacing:0">/ after ymv0i7</span></span>
+          <div class="dots"><div class="dot filled"></div><div class="dot"></div><div class="dot"></div></div>
+        </div>
+        <div class="stage-canvas" id="stageCanvas">
+          <!-- Fomenko rays -->
+          <div class="rays">
+            <svg viewBox="0 0 400 400" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0" stop-color="#131310" stop-opacity="0"/>
+                  <stop offset="1" stop-color="#131310" stop-opacity="0.14"/>
+                </linearGradient>
+              </defs>
+              <!-- radiating planes from horizon centre ~60% y -->
+              <g stroke="#131310" stroke-opacity="0.11" fill="none">
+                <line x1="200" y1="245" x2="340" y2="30" stroke-width="2.5"/>
+                <line x1="200" y1="245" x2="390" y2="70" stroke-width="2.2"/>
+                <line x1="200" y1="245" x2="400" y2="130" stroke-width="1.8"/>
+                <line x1="200" y1="245" x2="400" y2="190" stroke-width="1.2"/>
+                <line x1="200" y1="245" x2="80"  y2="60" stroke-width="1.6"/>
+                <line x1="200" y1="245" x2="130" y2="85" stroke-width="1.2"/>
+                <line x1="200" y1="245" x2="170" y2="95" stroke-width="1"/>
+              </g>
+              <!-- solid sharp planes -->
+              <polygon points="200,245 320,45 365,90" fill="#131310" opacity="0.92"/>
+              <polygon points="200,245 365,90 400,140 390,170" fill="#131310" opacity="0.88"/>
+              <polygon points="200,245 90,80 140,98" fill="#131310" opacity="0.82"/>
+              <ellipse cx="320" cy="105" rx="10" ry="18" fill="#F7F1E6" opacity="0.9" transform="rotate(-22 320 105)"/>
+              <ellipse cx="365" cy="188" rx="7" ry="14" fill="#F7F1E6" opacity="0.9" transform="rotate(-18 365 188)"/>
+            </svg>
+          </div>
+
+          <div class="figure-wrap">
+            <!-- Single continuous line figure, inspired by ymv0i7 -->
+            <svg viewBox="0 0 420 290" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- The long continuous line — simplified trace of lounging man -->
+              <path d="M32 118 C 42 108, 68 102, 96 110 L 124 118 L 128 96 L 116 84 L 124 78 L 138 80 L 142 92 L 132 108 L 148 115 C 168 120, 188 132, 202 152 L 186 182 L 112 198 L 42 190 L 38 124 Z
+                       M96 110 C 74 122, 52 142, 66 176
+                       M202 152 L 212 158 L 228 168 L 242 164 L 258 178 L 252 192 L 236 188 L 182 178
+                       M124 118 C 138 124, 160 126, 176 118"
+                    />
+              <!-- face / cigarette / glass details as second path -->
+              <path d="M 182 68 C 186 58, 192 54, 198 62 C 200 66, 198 72, 194 74
+                       M 208 62 C 212 54, 218 54, 222 62 C 224 66, 222 70, 218 72
+                       M 186 78 C 192 90, 202 96, 210 88
+                       M 182 100 L 208 102
+                       M 262 54 L 252 78 C 248 84, 248 96, 252 106 L 262 122 L 304 122 L 312 106 L 308 80 L 292 56"
+                    />
+              <!-- smoke + glass stem -->
+              <path d="M 304 56 L 322 52 M 322 52 C 326 44, 324 32, 332 24 M 198 118 L 202 102 L 212 100 L 214 104 L 206 116 Z
+                       M 292 56 C 298 36, 302 32, 308 30"
+                    />
+            </svg>
+          </div>
+
+          <!-- fisheye lens detail -->
+          <div class="lens" id="lens">
+            <div class="lens-cross"></div>
+            <div class="lens-inner">
+              <div><b>◉ 92%</b>lens<br>fisheye</div>
+              <div class="mono" style="margin-top:6px;letter-spacing:0.08em">DER MENSCH<br>— frontality</div>
+            </div>
+          </div>
+
+          <div class="plain">
+            <div class="plain-label"><i></i> plain • geometry • grandness — after Fomenko <i></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="caption">
+        <span>One line, quiet confidence. Warm paper, imperfect ink. The rest is density elsewhere.</span>
+        <span class="mono">Hover → fisheye + ray parallax</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="density">
+    <div class="col">
+      <h3><i style="background:var(--rust)"></i> Why this site exists</h3>
+      <p><strong>You have a $250k/yr problem.</strong> You need someone you can trust to fix it. Not a line that says “did ML” — a thing you can <em>touch</em> that proves it. <span style="text-decoration:underline;text-decoration-color:var(--mustard);text-decoration-thickness:3px;text-underline-offset:2px">The demo is the proof.</span></p>
+      <div class="tag-row" style="margin-top:10px">
+        <span class="tag dark">frontier AI</span><span class="tag">interpretability</span><span class="tag">SWE • agentic</span><span class="tag">S0-101</span>
+      </div>
+    </div>
+    <div class="col">
+      <h3><i style="background:var(--mustard)"></i> Philosophy</h3>
+      <ul class="list-mini">
+        <li><span class="k">New Sincerity</span><span class="v">Not post-ironic. Mean it.</span></li>
+        <li><span class="k">Gestalt</span><span class="v">Use everything — not superficial whales.</span></li>
+        <li><span class="k">Know where</span><span class="v">…the money comes from. Plug into it.</span></li>
+      </ul>
+      <p style="margin-top:8px;font-size:11px" class="mono">Grant Sanderson • The Last Psychiatrist</p>
+    </div>
+    <div class="col">
+      <h3><i style="background:var(--teal)"></i> What I’m open to</h3>
+      <p><strong>Primary:</strong> Interpretability / frontier AI adjacent. <strong>Hedge:</strong> General SWE — agentic systems, ops for AI co’s. <strong>Also:</strong> Research — animal→human translation. Student @ UIUC, available.</p>
+      <div class="tag-row" style="margin-top:10px">
+        <span class="tag accent">Hire — technical</span><span class="tag">Research</span><span class="tag">Intern</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="demos" id="demos">
+    <div class="demo-card">
+      <div class="demo-head"><b>Demo 01 — Inverse Kinematics</b><span class="live">live</span></div>
+      <div class="demo-body" style="background:radial-gradient(ellipse at 30% 20%, rgba(217,64,42,0.08), transparent 55%), var(--paper)">
+        <canvas id="ik" width="520" height="320"></canvas>
+        <div style="position:absolute;left:10px;bottom:10px;background:var(--ink);color:var(--paper);font-family:'Fragment Mono',monospace;font-size:10px;padding:5px 8px;border-radius:999px;letter-spacing:0.06em">drag → reach</div>
+        <div style="position:absolute;right:10px;top:10px;background:white;border:1px solid var(--ink-14);padding:6px 8px;border-radius:8px;font-family:'Fragment Mono',monospace;font-size:10px;line-height:1.4">
+          θ1 <span id="t1" style="color:var(--rust)">0°</span> • θ2 <span id="t2" style="color:var(--slate)">0°</span> • err <span id="err">0.0</span>
+        </div>
+      </div>
+      <div class="demo-footer">
+        <p><strong>3-joint FABRIK.</strong> Move the target. No libraries. Replaceable with your next artifact — API is just a canvas.</p>
+        <a href="#">View source ↗</a>
+      </div>
+    </div>
+
+    <div class="demo-card">
+      <div class="demo-head"><b>Demo 02 — EMG → Arm</b><span style="color:var(--ink-55)">SIGRobotics • real signals</span></div>
+      <div class="demo-body" style="padding:0">
+        <div class="emg-wrap">
+          <div class="emg-canvas">
+            <canvas id="emg" width="520" height="150"></canvas>
+            <!-- tiny 3d arm overlay -->
+            <div class="arm-3d">
+              <svg class="arm-svg" viewBox="0 0 200 140" fill="none">
+                <path d="M40 90 C50 70, 80 40, 110 46 L 148 62 L 142 76 L 108 62 C90 68, 64 86, 56 104Z" stroke="#1F2F4A" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="rgba(31,47,74,0.06)"/>
+                <circle cx="148" cy="68" r="7" fill="#D9402A" stroke="#131310" stroke-width="1.5"/>
+                <circle cx="40" cy="90" r="5" fill="#E1B84F" stroke="#131310" stroke-width="1.3"/>
+                <line x1="108" y1="62" x2="102" y2="30" stroke="#131310" stroke-width="1.4" stroke-dasharray="4 4" opacity="0.35"/>
+              </svg>
+            </div>
+            <div style="position:absolute;left:8px;top:8px;font-family:'Fragment Mono',monospace;font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-55);background:rgba(247,241,230,0.92);padding:3px 6px;border-radius:999px;border:1px solid var(--ink-08)">biceps • 2 ch • 1kHz ↓ 120Hz</div>
+          </div>
+          <div class="emg-controls">
+            <button class="active" data-mode="flex">Flex</button>
+            <button data-mode="rest">Rest</button>
+            <button data-mode="co">Co-contract</button>
+            <button data-mode="noise">Noise</button>
+            <span style="margin-left:auto;font-family:'Fragment Mono',monospace;font-size:11px;color:var(--ink-55);align-self:center">Classify → <b id="cls" style="color:var(--teal)">EXTEND</b> • <span id="conf">0.84</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="demo-footer">
+        <p><strong>Real EMG, honest framing.</strong> Electrodes on bicep only — good demo, limited accuracy. No inflated claims.</p>
+        <a href="#">How it works ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="section-head">
+      <h2>Selected work <span style="font-family:'Fragment Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-55);margin-left:8px;vertical-align:middle">— 6 dense, not sparse</span></h2>
+      <span class="mono">UI does not have to be plain → color blocks after file.webp</span>
+    </div>
+    <div class="projects-grid">
+      <article class="proj">
+        <div class="proj-thumb rust">
+          <div style="text-align:center">
+            <div class="thumb-label">Autograd</div>
+            <div class="thumb-sub">scalar • graph • from zero</div>
+          </div>
+        </div>
+        <div class="proj-body">
+          <h4>Autograd from scratch <span style="font-weight:400;color:var(--ink-55)">— week sprint</span></h4>
+          <p>Forward & reverse mode, no PyTorch. Visual graph, grad check, tiny MNIST. Built to <em>understand</em>, not abstract away.</p>
+          <div class="proj-meta"><span>Python</span><span>no deps</span><span class="mono" style="background:var(--rust);color:white;border-color:var(--rust)">in progress</span></div>
+        </div>
+      </article>
+      <article class="proj">
+        <div class="proj-thumb mustard">
+          <div style="text-align:center;color:var(--ink)">
+            <div class="thumb-label" style="color:var(--ink)">Ultimate TTT × RL</div>
+            <div class="thumb-sub" style="color:rgba(19,19,16,0.6)">self-play • UTTT</div>
+          </div>
+        </div>
+        <div class="proj-body">
+          <h4>RL plays Ultimate Tic-Tac-Toe</h4>
+          <p>Hand-rolled env, MCTS + learned value. All by hand — again, to learn. Play against it live.</p>
+          <div class="proj-meta"><span>RL</span><span>JS</span><span>playable</span></div>
+        </div>
+      </article>
+      <article class="proj">
+        <div class="proj-thumb slate">
+          <div style="text-align:center">
+            <div class="thumb-label">SO-101 ×2</div>
+            <div class="thumb-sub">at home • teleop • LeRobot</div>
+          </div>
+        </div>
+        <div class="proj-body">
+          <h4>Low-latency SO-101 rig</h4>
+          <p>Two SO-101s, leader–follower, latency budget & ops discipline. Exploring animal→human translation probes here next.</p>
+          <div class="proj-meta"><span>Hardware</span><span>3D</span><span>teleop</span></div>
+        </div>
+      </article>
+      <article class="proj">
+        <div class="proj-thumb" style="background:var(--paper-3);border-bottom-color:var(--ink-08)">
+          <div style="text-align:center">
+            <div class="thumb-label" style="color:var(--ink);font-style:italic">BCI — SIGRobotics</div>
+            <div class="thumb-sub" style="color:var(--ink-55)">EMG • bicep 2ch • arm</div>
+          </div>
+        </div>
+        <div class="proj-body">
+          <h4>BCI robot arm <span style="font-weight:400;color:var(--ink-55)">— team</span></h4>
+          <p>What worked, what didn’t: chest/back electrodes missing, collection code rough. Honest write-up, real 3D control demo.</p>
+          <div class="proj-meta"><span>Signal</span><span>Three.js</span><span>team</span></div>
+        </div>
+      </article>
+      <article class="proj">
+        <div class="proj-thumb" style="background:var(--teal)">
+          <div style="text-align:center">
+            <div class="thumb-label">IK Playground</div>
+            <div class="thumb-sub">FABRIK • 60fps</div>
+          </div>
+        </div>
+        <div class="proj-body">
+          <h4>IK demo — above</h4>
+          <p>The toy that starts conversations. Plug-and-play canvas — next demos slot in same contract.</p>
+          <div class="proj-meta"><span>Canvas</span><span>utils</span><span>swap next</span></div>
+        </div>
+      </article>
+      <article class="proj">
+        <div class="proj-thumb" style="background:var(--ink)">
+          <div style="text-align:center">
+            <div class="thumb-label" style="font-family:'Fragment Mono',monospace;font-size:12px;letter-spacing:0.12em;text-transform:uppercase">Coming — Frontier notes</div>
+            <div class="thumb-sub">interpretability reading → writing</div>
+          </div>
+        </div>
+        <div class="proj-body">
+          <h4>Notes on interpretability</h4>
+          <p>Hedge acknowledged, dream intact. Public notes as I learn — not claiming expertise I don’t have yet.</p>
+          <div class="proj-meta"><span>Writing</span><span>soon</span></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="contact" id="notes">
+    <div>
+      <h3>Let’s plug in.<br><em style="font-family:'Instrument Serif',serif;font-style:italic;font-weight:400">Where the money comes from → where I fit.</em></h3>
+      <p>Best way to vet me: move the red dot above, watch the EMG, read the source. Then email. I’m at UIUC most weeks, open to intern / contract / research — frontier-adjacent or straight SWE agentic ops where shipping matters.</p>
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+        <span class="mono" style="font-size:11px;padding:6px 10px;border:1px solid var(--ink-14);border-radius:999px;background:var(--paper-2)">Also at: Twitter • LinkedIn • GitHub</span>
+        <span class="mono" style="font-size:11px;padding:6px 10px;border:1px solid var(--ink-14);border-radius:999px">UIUC — Champaign</span>
+      </div>
+    </div>
+    <div class="contact-cards">
+      <a class="c-card" href="mailto:hello@ayyaz.dev">
+        <div><div class="label">Email</div><div class="value">hello@ayyaz.dev</div></div><div class="action">Copy →</div>
+      </a>
+      <a class="c-card" href="#">
+        <div><div class="label">LinkedIn</div><div class="value">linkedin.com/in/ayyaz</div></div><div class="action">Open ↗</div>
+      </a>
+      <a class="c-card" href="#">
+        <div><div class="label">GitHub</div><div class="value">github.com/ayyaz</div></div><div class="action">Open ↗</div>
+      </a>
+      <div style="font-family:'Fragment Mono',monospace;font-size:10px;letter-spacing:0.07em;color:var(--ink-55);padding:0 2px">Response time: &lt; 1 day • Timezone ET • “You are what you do.”</div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>© 2026 Ayyaz — Built as static client • No backend • <a href="#" style="text-decoration:underline">Colophon</a></span>
+    <span>Set in Instrument Serif + Inter + Fragment Mono • Paper: F7F1E6 / Ink: 131310</span>
+  </footer>
+</div>
+
+<script>
+// IK Demo - simple 2-segment FABRIK-like + CCD
+const ikCanvas = document.getElementById('ik');
+const t1El = document.getElementById('t1');
+const t2El = document.getElementById('t2');
+const errEl = document.getElementById('err');
+if(ikCanvas){
+  const ctx = ikCanvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  function resize(){
+    const rect = ikCanvas.getBoundingClientRect();
+    ikCanvas.width = rect.width * dpr;
+    ikCanvas.height = rect.height * dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  resize(); window.addEventListener('resize', resize);
+  let target = {x: 280, y: 150};
+  let mouse = {x: target.x, y: target.y, down:false};
+  const base = {x: 110, y: 195};
+  const L1=86, L2=78, L3=44;
+  let angles=[0.25, -0.6, 0.3];
+  function fk(a){
+    let x=base.x, y=base.y, ang=0;
+    const pts=[{x,y}];
+    for(let i=0;i<3;i++){ ang+=a[i]; x+= Math.cos(ang)*[L1,L2,L3][i]; y+= Math.sin(ang)*[L1,L2,L3][i]; pts.push({x,y,ang})}
+    return pts;
+  }
+  function solve(){
+    // simple iterative CCD
+    for(let iter=0; iter<8; iter++){
+      let pts=fk(angles);
+      for(let i=2;i>=0;i--){
+        const joint=pts[i];
+        const end=pts[3];
+        const toEnd = Math.atan2(end.y - joint.y, end.x - joint.x);
+        const toTarget = Math.atan2(target.y - joint.y, target.x - joint.x);
+        let delta = toTarget - toEnd;
+        // normalize
+        while(delta > Math.PI) delta-= 2*Math.PI;
+        while(delta < -Math.PI) delta+= 2*Math.PI;
+        angles[i]+= delta*0.9;
+      }
+    }
+  }
+  function draw(){
+    const w = ikCanvas.getBoundingClientRect().width;
+    const h = ikCanvas.getBoundingClientRect().height;
+    ctx.clearRect(0,0,w,h);
+    // subtle Fomenko plain ground
+    ctx.fillStyle = 'rgba(19,19,16,0.04)';
+    ctx.fillRect(0, h-48, w, 48);
+    ctx.strokeStyle='rgba(19,19,16,0.07)';
+    ctx.lineWidth=1;
+    for(let x=0;x<w;x+=36){
+      ctx.beginPath(); ctx.moveTo(x, h-48); ctx.lineTo(x-18, h); ctx.stroke();
+    }
+    // grid
+    ctx.strokeStyle='rgba(19,19,16,0.05)'; ctx.lineWidth=0.8;
+    for(let x=0;x<w;x+=28){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke();}
+    for(let y=0;y<h;y+=28){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();}
+    solve();
+    const pts = fk(angles);
+    const end=pts[3];
+    // target fisheye radial (DER MENSCH)
+    ctx.save();
+    const grad = ctx.createRadialGradient(target.x, target.y, 4, target.x, target.y, 72);
+    grad.addColorStop(0,'rgba(217,64,42,0.18)'); grad.addColorStop(1,'rgba(217,64,42,0)');
+    ctx.fillStyle=grad; ctx.beginPath(); ctx.arc(target.x,target.y,72,0,Math.PI*2); ctx.fill();
+    // radial spokes
+    ctx.strokeStyle='rgba(217,64,42,0.18)'; ctx.lineWidth=1;
+    for(let a=0;a<Math.PI*2;a+=Math.PI/6){
+      ctx.beginPath(); ctx.moveTo(target.x,target.y); ctx.lineTo(target.x+Math.cos(a)*72, target.y+Math.sin(a)*72); ctx.stroke();
+    }
+    ctx.restore();
+    // target
+    ctx.fillStyle='#D9402A'; ctx.strokeStyle='#131310'; ctx.lineWidth=1.4;
+    ctx.beginPath(); ctx.arc(target.x,target.y,7,0,Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle='white'; ctx.beginPath(); ctx.arc(target.x,target.y,2.2,0,Math.PI*2); ctx.fill();
+    // arm
+    // shadow
+    ctx.strokeStyle='rgba(19,19,16,0.10)'; ctx.lineWidth=9; ctx.lineCap='round'; ctx.lineJoin='round';
+    ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+    for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x, pts[i].y); ctx.stroke();
+    // segments
+    const colors=['#1F2F4A','#D9402A','#E1B84F'];
+    for(let i=0;i<3;i++){
+      ctx.strokeStyle=colors[i]; ctx.lineWidth=6; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[i+1].x, pts[i+1].y); ctx.stroke();
+      // joint
+      ctx.fillStyle='white'; ctx.strokeStyle='#131310'; ctx.lineWidth=1.4;
+      ctx.beginPath(); ctx.arc(pts[i].x, pts[i].y, 6,0,Math.PI*2); ctx.fill(); ctx.stroke();
+    }
+    // end effector
+    ctx.fillStyle='#131310'; ctx.beginPath(); ctx.arc(end.x,end.y,5,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='white'; ctx.font='10px "Fragment Mono", monospace'; ctx.fillText(`err ${(Math.hypot(end.x-target.x,end.y-target.y)).toFixed(1)}`, end.x+10, end.y-8);
+    // angles readout
+    if(t1El){ t1El.textContent = Math.round(angles[0]*180/Math.PI)+'°'; t2El.textContent = Math.round(angles[1]*180/Math.PI)+'°'; errEl.textContent = Math.hypot(end.x-target.x,end.y-target.y).toFixed(1); }
+    requestAnimationFrame(draw);
+  }
+  function pos(e){
+    const rect=ikCanvas.getBoundingClientRect();
+    const x = (e.touches? e.touches[0].clientX : e.clientX) - rect.left;
+    const y = (e.touches? e.touches[0].clientY : e.clientY) - rect.top;
+    target.x = Math.max(12, Math.min(rect.width-12, x));
+    target.y = Math.max(12, Math.min(rect.height-12, y));
+  }
+  ikCanvas.addEventListener('pointermove', (e)=>{ if(e.buttons===1 || e.pointerType==='touch' || true){ pos(e) }});
+  ikCanvas.addEventListener('pointerdown', (e)=>{ pos(e); mouse.down=true; ikCanvas.setPointerCapture(e.pointerId)});
+  draw();
+}
+
+// EMG fake signal
+const emgCanvas = document.getElementById('emg');
+const clsEl=document.getElementById('cls');
+const confEl=document.getElementById('conf');
+let mode='flex';
+document.querySelectorAll('.emg-controls button').forEach(b=>{
+  b.addEventListener('click',()=>{ document.querySelectorAll('.emg-controls button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); mode=b.dataset.mode; })
+});
+if(emgCanvas){
+  const ctx=emgCanvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  function rsz(){
+    const rect=emgCanvas.getBoundingClientRect();
+    emgCanvas.width=rect.width*dpr; emgCanvas.height=rect.height*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  rsz(); window.addEventListener('resize', rsz);
+  let t=0;
+  function noise(){return (Math.random()-0.5)*2}
+  function sampleForMode(m, x){
+    if(m==='rest') return noise()*6;
+    if(m==='flex') return Math.sin(x*0.14)*18 + Math.sin(x*0.9)*8 + noise()*4 + 12*Math.exp(-Math.pow((x%180)-90,2)/300);
+    if(m==='co') return Math.sin(x*0.2)*22 + noise()*10;
+    if(m==='noise') return noise()*30 + Math.sin(x*0.3)*4;
+    return 0;
+  }
+  function drawEMG(){
+    const w=emgCanvas.getBoundingClientRect().width;
+    const h=emgCanvas.getBoundingClientRect().height;
+    t+=2;
+    ctx.clearRect(0,0,w,h);
+    // background grid
+    ctx.fillStyle='white'; ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle='rgba(19,19,16,0.06)'; ctx.lineWidth=1;
+    for(let y=12;y<h;y+=18){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();}
+    for(let x=0;x<w;x+=36){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke();}
+    // two channels
+    const mid1=h*0.32, mid2=h*0.72;
+    function drawChannel(mid, color, ampScale){
+      ctx.strokeStyle=color; ctx.lineWidth=1.7; ctx.lineJoin='round'; ctx.lineCap='round';
+      ctx.beginPath();
+      for(let x=0;x<w;x++){
+        const v= sampleForMode(mode, x+t) * ampScale;
+        const y = mid + v;
+        if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+      // envelope
+      ctx.fillStyle=color; ctx.globalAlpha=0.08;
+      ctx.beginPath();
+      for(let x=0;x<w;x++){
+        const v=Math.abs(sampleForMode(mode,x+t))*ampScale*0.55;
+        const y1=mid+v, y2=mid-v;
+        if(x===0) ctx.moveTo(x,y1); else ctx.lineTo(x,y1);
+      }
+      for(let x=w-1;x>=0;x--){ const v=Math.abs(sampleForMode(mode,x+t))*ampScale*0.55; ctx.lineTo(x, mid-v); }
+      ctx.closePath(); ctx.fill(); ctx.globalAlpha=1;
+    }
+    drawChannel(mid1, '#1F2F4A', 0.62);
+    drawChannel(mid2, '#D9402A', 0.58);
+    // labels
+    ctx.fillStyle='rgba(19,19,16,0.55)'; ctx.font='10px "Fragment Mono", monospace';
+    ctx.fillText('CH1 biceps long', 8, 14);
+    ctx.fillText('CH2 biceps short', 8, mid2-46);
+    // classify flicker
+    if(Math.random()<0.08){
+      const labels={flex:'FLEX',rest:'REST',co:'CO-CONTRACT',noise:'NOISE'};
+      const conf=(0.72+Math.random()*0.25).toFixed(2);
+      if(clsEl){ clsEl.textContent=labels[mode]; confEl.textContent=conf; clsEl.style.color = mode==='flex'?'#2A6B5E': mode==='rest'?'#1F2F4A':'#D9402A';}
+    }
+    requestAnimationFrame(drawEMG);
+  }
+  drawEMG();
+}
+
+// subtle parallax for rays on mouse
+const stage = document.getElementById('stageCanvas');
+const rays = document.querySelector('.rays');
+if(stage && rays){
+  stage.addEventListener('pointermove', (e)=>{
+    const r=stage.getBoundingClientRect();
+    const x=(e.clientX - r.left)/r.width -0.5;
+    const y=(e.clientY - r.top)/r.height -0.5;
+    rays.style.transform = `translate(${x*10}px, ${y*6}px)`;
+  });
+  stage.addEventListener('pointerleave', ()=> rays.style.transform='translate(0,0)');
+}
+
+// lens drag follows a bit
+const lens=document.getElementById('lens');
+if(lens && stage){
+  stage.addEventListener('pointermove', (e)=>{
+    const r=stage.getBoundingClientRect();
+    const nx=(e.clientX - r.left)/r.width;
+    const ny=(e.clientY - r.top)/r.height;
+    // keep within bounds
+    const lx = 14 + nx*28; // subtle shift 14-42
+    const ty = 14 + ny*22;
+    lens.style.right = (18 - (nx-0.5)*10)+'px';
+    lens.style.top = (18 - (ny-0.5)*8)+'px';
+  });
+}
+</script>
+</body>
+</html>

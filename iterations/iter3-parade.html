@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Iter 3 — Block Parade — 46th %ile</title>
+<link href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F7F1E6;--ink:#131310;--red:#E14B3F;--blue:#2B4A6B;--yellow:#F2C14E;--line:rgba(19,19,16,.12)}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--paper);color:var(--ink);font-family:Inter,sans-serif}
+.page{max-width:1160px;margin:0 auto;padding:0 20px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1.5px solid var(--ink);font:11px "Fragment Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(19,19,16,.6)}
+nav b{font:22px "Instrument Serif",serif;font-style:italic;text-transform:none;color:var(--ink)}
+.stage{position:relative;background:var(--ink);color:var(--paper);border-radius:12px;overflow:hidden;margin-top:16px;display:grid;grid-template-columns:1.05fr .95fr;min-height:430px}
+.stage-left{padding:22px;position:relative;background:
+  radial-gradient(ellipse 80% 60% at 14% 18%, rgba(242,193,78,.9) 0 18%, transparent 18.5%),
+  radial-gradient(ellipse 70% 45% at 50% 102%, rgba(225,75,63,.14), transparent 60%),
+  #131310;
+}
+.kicker{font:11px "Fragment Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(247,241,230,.6)}
+.h1{font:400 48px/0.9 "Instrument Serif",serif;letter-spacing:-.03em;margin:10px 0}
+.h1 em{font-style:italic;color:var(--yellow)}
+.h1 u{text-decoration:none;box-shadow:inset 0 -9px 0 rgba(242,193,78,.28)}
+.sub{font-size:13px;line-height:1.55;color:rgba(247,241,230,.72);max-width:520px}
+.sub b{color:var(--paper)}
+.cta{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.cta button{font:600 12px Inter,sans-serif;padding:9px 14px;border-radius:999px;border:1px solid var(--paper);cursor:pointer}
+.cta button.primary{background:var(--yellow);color:var(--ink);border-color:var(--yellow)}
+.cta button.ghost{background:transparent;color:var(--paper)}
+.stage-right{background:var(--paper);position:relative;display:flex;flex-direction:column}
+.head{font:10px "Fragment Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:rgba(19,19,16,.5);padding:9px 10px;border-bottom:1px solid rgba(19,19,16,.08);display:flex;justify-content:space-between}
+.fig{flex:1;display:grid;place-items:center;position:relative;overflow:hidden;background:linear-gradient(#F7F1E6,#EDE5D3)}
+.fig svg{width:90%;height:auto;position:relative;z-index:2}
+.fig path{fill:none;stroke:var(--ink);stroke-width:2.15;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1800;stroke-dashoffset:1800}
+.fig.animate path{animation:draw 2.6s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.spot{position:absolute;left: -6%; top:0; width:62%; height:100%; background:linear-gradient(100deg, rgba(242,193,78,.52) 0 42%, transparent 42.5%); clip-path:polygon(0 0, 46% 0, 78% 100%, 0 100%); opacity:.95; pointer-events:none}
+.fomenko-mini{position:absolute;bottom:0;left:0;right:0;height:38%;background:repeating-linear-gradient(90deg, transparent 0 30px, rgba(19,19,16,.06) 30px 31px), linear-gradient(to top, rgba(19,19,16,.05), transparent); border-top:1px solid rgba(19,19,16,.08); display:flex;align-items:center;justify-content:center; gap:8px; font:9px "Fragment Mono",monospace; letter-spacing:.11em; text-transform:uppercase; color:rgba(19,19,16,.45)}
+.crowd{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;padding:14px 14px 16px;background:var(--paper);border-top:1px solid var(--line)}
+.person{aspect-ratio:.72;border:1.5px solid var(--ink);border-radius:7px;display:flex;flex-direction:column;overflow:hidden;background:white;position:relative}
+.person.red{background:var(--red);color:white}
+.person.blue{background:var(--blue);color:white}
+.person.mustard{background:var(--yellow);color:var(--ink)}
+.person .p-head{height:42%;display:grid;place-items:center;font:700 13px Inter,sans-serif;border-bottom:1px solid rgba(19,19,16,.12)}
+.person .p-body{flex:1;padding:6px 6px 4px;font:10px "Fragment Mono",monospace;line-height:1.3}
+.person .arms{position:absolute;left: -4px; right:-4px; top:34%; height:16px; display:flex; justify-content:space-between; pointer-events:none}
+.person .arm{width:18px;height:7px;background:currentColor;border:1px solid var(--ink);border-radius:999px;transform-origin:center}
+.below{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0 24px}
+.card{border:1.5px solid var(--ink);border-radius:10px;padding:12px;background:white}
+.card h4{font:700 12px Inter,sans-serif;display:flex;gap:6px;align-items:center;margin-bottom:6px}
+.card p{font-size:12px;line-height:1.5;color:rgba(19,19,16,.6)}
+@media(max-width:900px){.stage{grid-template-columns:1fr}.crowd{grid-template-columns:repeat(3,1fr)}.below{grid-template-columns:1fr}}
+</style>
+</head><body>
+<div class="page">
+<nav><div style="display:flex;gap:14px;align-items:center"><b>ayyaz.</b> — 46th %ile • Block Parade</div><div>file2 crowd becomes the system</div></nav>
+
+<div class="stage">
+  <div class="stage-left">
+    <div class="kicker">Concert logic → portfolio</div>
+    <div class="h1">A crowd of<br><em>working</em> <u>blocks</u></div>
+    <p class="sub">After <b>file2.webp</b>: flat, blocky, red-vs-blue figures with raised arms. Each project is a <b>person in the crowd</b> facing your problem — the stage is the demo. Not generic cards — a parade you can read at a glance.</p>
+    <p class="sub" style="margin-top:10px;font-size:12px;color:rgba(247,241,230,.6)">Fomenko stays as the long plain under them. DER MENSCH fisheye is the spotlight cone on the left — you’re lit, not brooding.</p>
+    <div class="cta"><button class="primary" onclick="replay3()">↻ Replay line</button><button class="ghost">46% common • mid-uncommon</button></div>
+    <div style="margin-top:18px;display:flex;gap:6px;flex-wrap:wrap"><span style="font:10px 'Fragment Mono',monospace;padding:4px 8px;background:var(--red);color:white;border-radius:999px">RED CROWD</span><span style="font:10px 'Fragment Mono',monospace;padding:4px 8px;background:var(--blue);color:white;border-radius:999px">BLUE CROWD</span><span style="font:10px 'Fragment Mono',monospace;padding:4px 8px;background:var(--yellow);color:var(--ink);border-radius:999px">SPOTLIGHT</span></div>
+    <div style="position:absolute;right:14px;bottom:14px;width:92px;height:92px;border-radius:50%;border:1.5px solid rgba(247,241,230,.9);background:rgba(247,241,230,.06);display:grid;place-items:center;text-align:center;backdrop-filter:blur(4px)"><div style="font:9px 'Fragment Mono',monospace;color:rgba(247,241,230,.8)"><b style="font:400 22px 'Instrument Serif',serif;color:var(--paper);display:block">◉ 46%</b>mid</div></div>
+  </div>
+  <div class="stage-right">
+    <div class="head"><span>Fig. B — ym line • spotlight study</span><span>formation 2.6s</span></div>
+    <div class="fig animate" id="fig3">
+      <div class="spot"></div>
+      <svg viewBox="0 0 420 290"><path d="M32 118 C42 108 68 102 96 110 L124 118 L128 96 L116 84 L124 78 L138 80 L142 92 L132 108 L148 115 C168 120 188 132 202 152 L186 182 L112 198 L42 190 L38 124 Z M96 110 C74 122 52 142 66 176 M202 152 L212 158 L228 168 L242 164 L258 178 L252 192 L236 188 L182 178 M182 68 C186 58 192 54 198 62 C200 66 198 72 194 74 M208 62 C212 54 218 54 222 62 C224 66 222 70 218 72 M186 78 C192 90 202 96 210 88 M182 100 L208 102 M262 54 L252 78 C248 84 248 96 252 106 L262 122 L304 122 L312 106 L308 80 L292 56 M304 56 L322 52 M322 52 C326 44 324 32 332 24 M198 118 L202 102 L212 100 L214 104 L206 116 Z M292 56 C298 36 302 32 308 30"/></svg>
+      <div style="position:absolute;right:10px;top:10px;background:var(--ink);color:var(--paper);font:10px 'Fragment Mono',monospace;padding:4px 7px;border-radius:999px">SPOT: yellow 18% ✦</div>
+      <div class="fomenko-mini"><span>plain</span><i style="width:18px;height:1px;background:rgba(19,19,16,.15);display:inline-block"></i><span>repetition as ground</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="crowd">
+  <div class="person red"><div class="arms"><div class="arm" style="transform:rotate(-18deg)"></div><div class="arm" style="transform:rotate(18deg)"></div></div><div class="p-head">◰<br>Autograd</div><div class="p-body">scalar graph<br>no deps<br><b>→ live</b></div></div>
+  <div class="person blue"><div class="arms"><div class="arm" style="transform:rotate(-26deg)"></div><div class="arm" style="transform:rotate(26deg)"></div></div><div class="p-head">◱<br>UTTT</div><div class="p-body">RL × self-play<br>playable</div></div>
+  <div class="person mustard"><div class="arms"><div class="arm" style="transform:rotate(-12deg)"></div><div class="arm" style="transform:rotate(12deg)"></div></div><div class="p-head">⬢<br>S0-101</div><div class="p-body">×2 teleop<br>low-lat.</div></div>
+  <div class="person red"><div class="p-head">⬣<br>BCI</div><div class="p-body">EMG 2ch<br>real arm</div></div>
+  <div class="person blue"><div class="p-head">⬔<br>IK</div><div class="p-body">FABRIK<br>60fps</div></div>
+  <div class="person" style="background:var(--paper);border-style:dashed"><div class="p-head" style="font:10px 'Fragment Mono',monospace;letter-spacing:.08em">NOTES<br>SOON</div><div class="p-body">interp<br>writing</div></div>
+</div>
+
+<div class="below">
+  <div class="card"><h4><span style="width:7px;height:7px;background:var(--red);border-radius:50%;display:inline-block"></span> Why 46%</h4><p>Flat naive crowd as a <em>system</em> is mid-rare — blogs use illustrations, rarely as the grid itself. Still legible, but no longer “one more beige portfolio”.</p></div>
+  <div class="card"><h4><span style="width:7px;height:7px;background:var(--yellow);border-radius:50%;display:inline-block"></span> File2 fully used</h4><p>Red vs blue vs yellow, blocky sillhouettes, repetition of raised arms (now raised project cards). Spotlight cone is the yellow from file2’s stage lamp.</p></div>
+  <div class="card"><h4><span style="width:7px;height:7px;background:var(--ink);border-radius:50%;display:inline-block"></span> Fomenko + DER</h4><p>Plain under crowd (30px repetition), fisheye as spotlight, not broody etching. ym line sits <em>in</em> light — quiet confidence, lit.</p></div>
+</div>
+</div>
+<script>
+function replay3(){const el=document.getElementById('fig3');el.classList.remove('animate');void el.offsetWidth;el.classList.add('animate')}
+window.addEventListener('load',()=> setTimeout(replay3, 350));
+</script>
+</body></html>
