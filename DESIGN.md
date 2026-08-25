@@ -51,19 +51,29 @@ that the demo exists.
 
 ## Depth
 
-Objects are **extruded, not shadowed**. The flat offset shadow is retired — it
-read as a generic sticker button.
+Two conventions, and they do different jobs.
 
-- **Mitred bevel.** Four facets meet at 45-degree mitres around the edge, lit
-  from the upper-left: top lightest, bottom darkest. The top facet is deeper
-  than the others, so the form reads as rising toward the viewer rather than
-  sitting flat. The middle sits proud.
-- **Contours must be visible.** Every extrusion carries an ink outline on its
-  outer edge and an inset ink ring around its raised top face, so the facets
-  read as folds rather than as blur.
-- Depth is a single custom property, `--bevel`. Pressing an object drops it
-  toward `4px`; hovering raises it. Nothing animates depth on scroll.
-- No blurred shadows, no glassmorphism, no atmospheric perspective.
+**Controls press.** Buttons carry a hard offset shadow in ink, blur radius `0`,
+light from the upper-left so the offset falls down-right. Pressing collapses the
+offset to zero and the object sinks into the page. Nothing else uses this.
+
+**Surfaces fold.** The work grid is a single sheet creased at every seam, not a
+set of separate tiles:
+
+```
+__01__/\__02__
+```
+
+Each face lies flat. Approaching a seam it tilts up, and the two neighbours meet
+at a ridge that pops toward the viewer. With light from the upper-left, the
+earlier face of any pair catches the light and the later one falls into shade —
+so the same rule on every tile produces a correct ridge at every join, on both
+axes, at any column count.
+
+Rejected: per-tile bevels and mitred extrusions. They read as separate blocks
+rather than one creased sheet, which loses the point.
+
+No blurred shadows, no glassmorphism, no depth animated on scroll.
 
 ## Copy
 

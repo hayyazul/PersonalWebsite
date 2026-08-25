@@ -12,7 +12,7 @@
   --cerulean:#2E7B99;--ultramarine:#344984;--periwinkle:#646098;
   --violet:#4A3465;--plum:#5C3148;--rose:#C8456F;
   --chalk:#F8F4EC;--black:#100E0C;
-  --bevel:13px;                     /* extrusion depth */
+  --lift:6px;                       /* letterpress offset */
   --rule:3px solid var(--ink);
   --bg:var(--kraft);--on:var(--ink);
 }
@@ -48,25 +48,12 @@ body::before{
 button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inherit;
   display:inline-flex;align-items:center;gap:9px;text-decoration:none}
 :is(button,.btn):focus-visible{outline:3px solid currentColor;outline-offset:4px}
-/* the extrusion: four mitred facets, lit from upper-left, contours drawn in ink.
-   the middle sits proud; the top facet is deeper so the form reads as rising. */
-.emboss,.btn-1,.btn-2,.door{
-  border-style:solid;
-  border-width:calc(var(--bevel) + 5px) var(--bevel) var(--bevel) var(--bevel);
-  border-top-color:color-mix(in srgb,var(--bg) 58%,#FFFFFF);
-  border-left-color:color-mix(in srgb,var(--bg) 76%,#FFFFFF);
-  border-right-color:color-mix(in srgb,var(--bg) 70%,#000000);
-  border-bottom-color:color-mix(in srgb,var(--bg) 50%,#000000);
-  background:var(--bg);
-  box-shadow:inset 0 0 0 3px var(--ink);
-  transition:border-width .11s ease;
-}
-.btn-1,.btn-2{--bevel:11px;padding:11px 22px;font-weight:700;font-size:15px;letter-spacing:.03em;
-  outline:3px solid var(--ink);outline-offset:0}
-.btn-1{--bg:var(--vermillion);color:var(--chalk)}
-.btn-2{--bg:var(--kraft-hi);color:var(--ink)}
-:is(.btn-1,.btn-2):hover{--bevel:14px}
-:is(.btn-1,.btn-2):active{--bevel:4px}
+.btn-1,.btn-2{border:var(--rule);padding:13px 24px;font-weight:700;font-size:15px;letter-spacing:.03em;
+  box-shadow:var(--lift) var(--lift) 0 var(--ink);transition:transform .09s ease,box-shadow .09s ease}
+.btn-1{background:var(--vermillion);color:var(--chalk)}
+.btn-2{background:var(--kraft-hi);color:var(--ink)}
+:is(.btn-1,.btn-2):hover{transform:translate(3px,3px);box-shadow:3px 3px 0 var(--ink)}
+:is(.btn-1,.btn-2):active{transform:translate(6px,6px);box-shadow:0 0 0 var(--ink)}
 .btn-3{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;
   text-transform:uppercase;border-bottom:2px solid currentColor;opacity:.6;padding-bottom:3px;
   transition:opacity .14s,border-bottom-width .14s}
@@ -144,14 +131,29 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
 .reveal .tag{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;
   text-transform:uppercase;color:var(--kraft);opacity:.45}
 
+/* the grid is one sheet, creased at every seam: __01__/\__02__
+   each face is flat; approaching a seam it tilts up, lit from the upper-left.
+   the earlier face of a pair catches the light, the later one falls into shade,
+   so two neighbours read as one ridge popping toward you. */
+.door::before{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:
+    linear-gradient(90deg,rgba(0,0,0,.30),rgba(0,0,0,0) 21px),
+    linear-gradient(270deg,rgba(255,255,255,.30),rgba(255,255,255,0) 21px),
+    linear-gradient(0deg,rgba(255,255,255,.22),rgba(255,255,255,0) 17px),
+    linear-gradient(180deg,rgba(0,0,0,.22),rgba(0,0,0,0) 17px);
+}
+.card .top,.card .body{position:relative;z-index:2}
+.pull{z-index:4}
+
 /* the lid itself */
-.door{position:absolute;inset:0;width:100%;height:100%;--bevel:9px;
+.door{position:absolute;inset:0;width:100%;height:100%;padding:0;
   display:flex;flex-direction:column;align-items:stretch;gap:0;text-align:left;
-  color:var(--on);cursor:pointer;
+  background:var(--bg);color:var(--on);cursor:pointer;
   transform-origin:left center;
   transition:transform .62s cubic-bezier(.34,.03,.16,1),border-width .11s ease}
 .card.hinge-r .door{transform-origin:right center}
-.door::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;
+.door::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;z-index:3;
   background:linear-gradient(90deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.42) 100%);
   transition:opacity .52s ease}
 .card.hinge-r .door::after{background:linear-gradient(270deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.42) 100%)}
@@ -192,7 +194,7 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
 
 @media (max-width:860px){
   .two{grid-template-columns:1fr}
-  :root{--bevel:9px}
+  :root{--lift:5px}
   .rail .place{display:none}
 }
 @media (prefers-reduced-motion:reduce){
