@@ -54,6 +54,28 @@ placeholders stating what the text must do, why, and roughly how:
 [HEADLINE — what it must accomplish, for whom, constraint on length/tone]
 ```
 
+## The references are not source images
+
+**Nothing from `Cool Pics/` may appear on the site, redrawn or otherwise.** The
+references contribute *behaviour*, not pictures. A radiating fan of wedges, a
+gas mask, a coil, a lounging figure — all forbidden. What transfers is what the
+plates *do*:
+
+- Fomenko: formal rigour plus semantic mystery. One element enormous, exact,
+  and unlabelled. Extreme scale gap. Nothing is explained to you.
+- *Der Mensch*: the tool is rendered more carefully than the self-description.
+  Detail that resolves on attention rather than announcing itself.
+- The wine man: one unhesitating line. Economy, wit, ease. Nothing labelled.
+
+All three reduce to the same instruction: **do not explain yourself.** Which is
+the same rule as "never state the philosophy", arrived at from the other side.
+
+## The figure
+
+The site's posture is the wine man: legs crossed, drink up, entirely at ease
+with the device in hand. Not striving, not performing, not small. Confidence
+expressed as economy rather than as volume.
+
 ## Honesty grammar
 
 Every claim on the site carries its tense: `DID` / `BUILDING` / `WANT TO`.
