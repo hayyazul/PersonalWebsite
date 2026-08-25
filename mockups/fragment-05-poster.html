@@ -143,16 +143,10 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
 .card.hinge-r .door:hover{transform:rotateY(-10deg)}
 .card.flipped.hinge-l .door,.card.flipped.hinge-l .door:hover{transform:rotateY(96deg)}
 .card.flipped.hinge-r .door,.card.flipped.hinge-r .door:hover{transform:rotateY(-96deg)}
-.card.flipped 
-/* the hinge, and the pull on the free edge */
+
+/* the hinge spine on the bound edge */
 .hinge{position:absolute;top:0;bottom:0;width:5px;background:var(--ink);opacity:.55}
 .card.hinge-l .hinge{left:0}.card.hinge-r .hinge{right:0}
-.pull{position:absolute;bottom:0;width:26px;height:26px;background:var(--ink);color:var(--chalk);
-  display:flex;align-items:center;justify-content:center;font-size:11px;
-  transition:background .16s}
-.card.hinge-l .pull{right:0;clip-path:polygon(100% 0,100% 100%,0 100%)}
-.card.hinge-r .pull{left:0;clip-path:polygon(0 0,100% 100%,0 100%)}
-.door:hover .pull{background:var(--chrome);color:var(--ink)}
 
 .card .top{display:flex;justify-content:space-between;align-items:center;gap:10px;
   padding:11px 13px;border-bottom:var(--rule)}
@@ -252,7 +246,6 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
       <div class="card field f-oxblood">
         <span class="hinge"></span><div class="reveal"><span class="what">The graph, animated</span><span class="tag">Backprop stepping through a live computation graph</span></div>
         <button class="door" aria-expanded="false">
-          <span class="pull">&#9656;</span>
           <div class="top"><span class="n">01</span><span class="t bld"><i></i>Building</span></div>
           <div class="body"><h3>Autograd from scratch</h3>
             <div class="ph"><b>[2 sentences.]</b> What it is, and why by hand.</div>
@@ -262,7 +255,6 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
       <div class="card field f-ultra">
         <span class="hinge"></span><div class="reveal"><span class="what">Play it here</span><span class="tag">Board you can actually take a turn on</span></div>
         <button class="door" aria-expanded="false">
-          <span class="pull">&#9656;</span>
           <div class="top"><span class="n">02</span><span class="t bld"><i></i>Building</span></div>
           <div class="body"><h3>RL on Ultimate&nbsp;TTT</h3>
             <div class="ph"><b>[2 sentences.]</b> What it plays. Whether it's playable yet.</div>
@@ -272,7 +264,6 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
       <div class="card field f-bottle">
         <span class="hinge"></span><div class="reveal"><span class="what">Real signal, real arm</span><span class="tag">Recorded EMG driving a 3D arm in the browser</span></div>
         <button class="door" aria-expanded="false">
-          <span class="pull">&#9656;</span>
           <div class="top"><span class="n">03</span><span class="t did"><i></i>Did</span></div>
           <div class="body"><h3>EMG&nbsp;&rarr;&nbsp;arm</h3>
             <div class="ph"><b>[3 sentences.]</b> What the team built, which part was yours. Lead with the hardest thing you solved.</div>
@@ -282,7 +273,6 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
       <div class="card field f-plum">
         <span class="hinge"></span><div class="reveal"><span class="what">Footage of the rig</span><span class="tag">Video of the two arms running leader&ndash;follower</span></div>
         <button class="door" aria-expanded="false">
-          <span class="pull">&#9656;</span>
           <div class="top"><span class="n">04</span><span class="t want"><i></i>Want to</span></div>
           <div class="body"><h3>SO-101 pair</h3>
             <div class="ph"><b>[2 sentences.]</b> The hardware, and the intent. An invitation, not a to-do.</div>
@@ -292,7 +282,6 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
       <div class="card field f-olive">
         <span class="hinge"></span><div class="reveal"><span class="what">Nothing yet</span><span class="tag">Deliberately empty until there is something to show</span></div>
         <button class="door" aria-expanded="false">
-          <span class="pull">&#9656;</span>
           <div class="top"><span class="n">05</span><span class="t want"><i></i>Want to</span></div>
           <div class="body"><h3>Animal&nbsp;&rarr;&nbsp;human</h3>
             <div class="ph"><b>[2 sentences.]</b> The direction, and why it grips you. This card is for the right professor.</div>
@@ -302,7 +291,6 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
       <div class="card field f-violet">
         <span class="hinge"></span><div class="reveal"><span class="what">Drag the target</span><span class="tag">Live canvas, three joints, no libraries</span></div>
         <button class="door" aria-expanded="false">
-          <span class="pull">&#9656;</span>
           <div class="top"><span class="n">06</span><span class="t did"><i></i>Did</span></div>
           <div class="body"><h3>IK toy</h3>
             <div class="ph"><b>[1 sentence.]</b> The small thing that works.</div>
