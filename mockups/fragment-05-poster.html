@@ -12,7 +12,7 @@
   --cerulean:#2E7B99;--ultramarine:#344984;--periwinkle:#646098;
   --violet:#4A3465;--plum:#5C3148;--rose:#C8456F;
   --chalk:#F8F4EC;--black:#100E0C;
-  --lift:6px;                       /* interactive things only */
+  --bevel:13px;                     /* extrusion depth */
   --rule:3px solid var(--ink);
   --bg:var(--kraft);--on:var(--ink);
 }
@@ -44,16 +44,29 @@ body::before{
 .f-rose{--bg:var(--rose);--on:var(--chalk)}
 .field{background:var(--bg);color:var(--on)}
 
-/* buttons — the only things that lift */
+/* buttons */
 button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inherit;
   display:inline-flex;align-items:center;gap:9px;text-decoration:none}
 :is(button,.btn):focus-visible{outline:3px solid currentColor;outline-offset:4px}
-.btn-1,.btn-2{border:var(--rule);padding:13px 24px;font-weight:700;font-size:15px;letter-spacing:.03em;
-  box-shadow:var(--lift) var(--lift) 0 var(--ink);transition:transform .09s ease,box-shadow .09s ease}
-.btn-1{background:var(--vermillion);color:var(--chalk)}
-.btn-2{background:var(--kraft-hi);color:var(--ink)}
-:is(.btn-1,.btn-2):hover{transform:translate(3px,3px);box-shadow:3px 3px 0 var(--ink)}
-:is(.btn-1,.btn-2):active{transform:translate(6px,6px);box-shadow:0 0 0 var(--ink)}
+/* the extrusion: four mitred facets, lit from upper-left, contours drawn in ink.
+   the middle sits proud; the top facet is deeper so the form reads as rising. */
+.emboss,.btn-1,.btn-2,.door{
+  border-style:solid;
+  border-width:calc(var(--bevel) + 5px) var(--bevel) var(--bevel) var(--bevel);
+  border-top-color:color-mix(in srgb,var(--bg) 58%,#FFFFFF);
+  border-left-color:color-mix(in srgb,var(--bg) 76%,#FFFFFF);
+  border-right-color:color-mix(in srgb,var(--bg) 70%,#000000);
+  border-bottom-color:color-mix(in srgb,var(--bg) 50%,#000000);
+  background:var(--bg);
+  box-shadow:inset 0 0 0 3px var(--ink);
+  transition:border-width .11s ease;
+}
+.btn-1,.btn-2{--bevel:11px;padding:11px 22px;font-weight:700;font-size:15px;letter-spacing:.03em;
+  outline:3px solid var(--ink);outline-offset:0}
+.btn-1{--bg:var(--vermillion);color:var(--chalk)}
+.btn-2{--bg:var(--kraft-hi);color:var(--ink)}
+:is(.btn-1,.btn-2):hover{--bevel:14px}
+:is(.btn-1,.btn-2):active{--bevel:4px}
 .btn-3{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;
   text-transform:uppercase;border-bottom:2px solid currentColor;opacity:.6;padding-bottom:3px;
   transition:opacity .14s,border-bottom-width .14s}
@@ -118,25 +131,25 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
 /* work: one slab, shared internal contours, no gaps.
    you cannot tell which card owns which line. each tile is a lid. */
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));
-  border-top:var(--rule);border-left:var(--rule);
-  box-shadow:var(--lift) var(--lift) 0 var(--ink);
-  perspective:1900px}
+  border-top:var(--rule);border-left:var(--rule)}
 .card{border-right:var(--rule);border-bottom:var(--rule);
-  position:relative;min-height:262px;background:var(--black);transform-style:preserve-3d}
+  position:relative;min-height:268px;background:var(--black);
+  perspective:1250px}
 
 /* what is behind the lid */
 .reveal{position:absolute;inset:0;background:var(--black);
-  display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:13px}
+  display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:19px;
+  box-shadow:inset 0 0 0 3px rgba(248,244,236,.16),inset 5px 5px 16px rgba(0,0,0,.9)}
 .reveal .what{font-family:"Bodoni Moda",serif;font-size:1.2rem;color:var(--chalk);opacity:.9}
 .reveal .tag{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;
   text-transform:uppercase;color:var(--kraft);opacity:.45}
 
 /* the lid itself */
-.door{position:absolute;inset:0;width:100%;height:100%;padding:0;
+.door{position:absolute;inset:0;width:100%;height:100%;--bevel:9px;
   display:flex;flex-direction:column;align-items:stretch;gap:0;text-align:left;
-  background:var(--bg);color:var(--on);cursor:pointer;
-  transform-origin:left center;backface-visibility:hidden;
-  transition:transform .52s cubic-bezier(.36,.02,.2,1)}
+  color:var(--on);cursor:pointer;
+  transform-origin:left center;
+  transition:transform .62s cubic-bezier(.34,.03,.16,1),border-width .11s ease}
 .card.hinge-r .door{transform-origin:right center}
 .door::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;
   background:linear-gradient(90deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.42) 100%);
@@ -145,14 +158,14 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
 .door:focus-visible{outline:3px solid var(--chrome);outline-offset:-6px}
 
 /* ajar on hover: the affordance */
-.card.hinge-l .door:hover{transform:rotateY(10deg)}
-.card.hinge-r .door:hover{transform:rotateY(-10deg)}
-.card.flipped.hinge-l .door,.card.flipped.hinge-l .door:hover{transform:rotateY(74deg)}
-.card.flipped.hinge-r .door,.card.flipped.hinge-r .door:hover{transform:rotateY(-74deg)}
+.card.hinge-l .door:hover{transform:rotateY(6deg)}
+.card.hinge-r .door:hover{transform:rotateY(-6deg)}
+.card.flipped.hinge-l .door,.card.flipped.hinge-l .door:hover{transform:rotateY(96deg)}
+.card.flipped.hinge-r .door,.card.flipped.hinge-r .door:hover{transform:rotateY(-96deg)}
 .card.flipped .door::after{opacity:1}
 
 /* the hinge, and the pull on the free edge */
-.hinge{position:absolute;top:0;bottom:0;width:5px;background:var(--ink);opacity:.55}
+.hinge{position:absolute;top:0;bottom:0;width:6px;background:var(--ink);z-index:3;pointer-events:none}
 .card.hinge-l .hinge{left:0}.card.hinge-r .hinge{right:0}
 .pull{position:absolute;bottom:0;width:26px;height:26px;background:var(--ink);color:var(--chalk);
   display:flex;align-items:center;justify-content:center;font-size:11px;
@@ -179,7 +192,7 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
 
 @media (max-width:860px){
   .two{grid-template-columns:1fr}
-  :root{--lift:5px}
+  :root{--bevel:9px}
   .rail .place{display:none}
 }
 @media (prefers-reduced-motion:reduce){
@@ -261,9 +274,9 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
     </div>
     <div class="grid">
       <div class="card field f-oxblood">
-        <div class="reveal"><span class="what">The graph, animated</span><span class="tag">Backprop stepping through a live computation graph</span></div>
+        <span class="hinge"></span><div class="reveal"><span class="what">The graph, animated</span><span class="tag">Backprop stepping through a live computation graph</span></div>
         <button class="door" aria-expanded="false">
-          <span class="hinge"></span><span class="pull">&#9656;</span>
+          <span class="pull">&#9656;</span>
           <div class="top"><span class="n">01</span><span class="t bld"><i></i>Building</span></div>
           <div class="body"><h3>Autograd from scratch</h3>
             <div class="ph"><b>[2 sentences.]</b> What it is, and why by hand.</div>
@@ -271,9 +284,9 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
         </button>
       </div>
       <div class="card field f-ultra open-r">
-        <div class="reveal"><span class="what">Play it here</span><span class="tag">Board you can actually take a turn on</span></div>
+        <span class="hinge"></span><div class="reveal"><span class="what">Play it here</span><span class="tag">Board you can actually take a turn on</span></div>
         <button class="door" aria-expanded="false">
-          <span class="hinge"></span><span class="pull">&#9656;</span>
+          <span class="pull">&#9656;</span>
           <div class="top"><span class="n">02</span><span class="t bld"><i></i>Building</span></div>
           <div class="body"><h3>RL on Ultimate&nbsp;TTT</h3>
             <div class="ph"><b>[2 sentences.]</b> What it plays. Whether it's playable yet.</div>
@@ -281,9 +294,9 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
         </button>
       </div>
       <div class="card field f-bottle">
-        <div class="reveal"><span class="what">Real signal, real arm</span><span class="tag">Recorded EMG driving a 3D arm in the browser</span></div>
+        <span class="hinge"></span><div class="reveal"><span class="what">Real signal, real arm</span><span class="tag">Recorded EMG driving a 3D arm in the browser</span></div>
         <button class="door" aria-expanded="false">
-          <span class="hinge"></span><span class="pull">&#9656;</span>
+          <span class="pull">&#9656;</span>
           <div class="top"><span class="n">03</span><span class="t did"><i></i>Did</span></div>
           <div class="body"><h3>EMG&nbsp;&rarr;&nbsp;arm</h3>
             <div class="ph"><b>[3 sentences.]</b> What the team built, which part was yours. Lead with the hardest thing you solved.</div>
@@ -291,9 +304,9 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
         </button>
       </div>
       <div class="card field f-plum open-b">
-        <div class="reveal"><span class="what">Footage of the rig</span><span class="tag">Video of the two arms running leader&ndash;follower</span></div>
+        <span class="hinge"></span><div class="reveal"><span class="what">Footage of the rig</span><span class="tag">Video of the two arms running leader&ndash;follower</span></div>
         <button class="door" aria-expanded="false">
-          <span class="hinge"></span><span class="pull">&#9656;</span>
+          <span class="pull">&#9656;</span>
           <div class="top"><span class="n">04</span><span class="t want"><i></i>Want to</span></div>
           <div class="body"><h3>SO-101 pair</h3>
             <div class="ph"><b>[2 sentences.]</b> The hardware, and the intent. An invitation, not a to-do.</div>
@@ -301,9 +314,9 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
         </button>
       </div>
       <div class="card field f-olive">
-        <div class="reveal"><span class="what">Nothing yet</span><span class="tag">Deliberately empty until there is something to show</span></div>
+        <span class="hinge"></span><div class="reveal"><span class="what">Nothing yet</span><span class="tag">Deliberately empty until there is something to show</span></div>
         <button class="door" aria-expanded="false">
-          <span class="hinge"></span><span class="pull">&#9656;</span>
+          <span class="pull">&#9656;</span>
           <div class="top"><span class="n">05</span><span class="t want"><i></i>Want to</span></div>
           <div class="body"><h3>Animal&nbsp;&rarr;&nbsp;human</h3>
             <div class="ph"><b>[2 sentences.]</b> The direction, and why it grips you. This card is for the right professor.</div>
@@ -311,9 +324,9 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
         </button>
       </div>
       <div class="card field f-violet">
-        <div class="reveal"><span class="what">Drag the target</span><span class="tag">Live canvas, three joints, no libraries</span></div>
+        <span class="hinge"></span><div class="reveal"><span class="what">Drag the target</span><span class="tag">Live canvas, three joints, no libraries</span></div>
         <button class="door" aria-expanded="false">
-          <span class="hinge"></span><span class="pull">&#9656;</span>
+          <span class="pull">&#9656;</span>
           <div class="top"><span class="n">06</span><span class="t did"><i></i>Did</span></div>
           <div class="body"><h3>IK toy</h3>
             <div class="ph"><b>[1 sentence.]</b> The small thing that works.</div>

@@ -51,13 +51,19 @@ that the demo exists.
 
 ## Depth
 
-Strategic, physical, never atmospheric. One convention:
+Objects are **extruded, not shadowed**. The flat offset shadow is retired — it
+read as a generic sticker button.
 
-- **Hard offset shadow in ink, light from upper-left, offset down-right.**
-  Blur radius is always `0`. Interactive objects collapse their offset toward
-  zero on press, so the object physically sinks into the page.
-- No `box-shadow` with blur, no glassmorphism, no perspective transforms on
-  scroll.
+- **Mitred bevel.** Four facets meet at 45-degree mitres around the edge, lit
+  from the upper-left: top lightest, bottom darkest. The top facet is deeper
+  than the others, so the form reads as rising toward the viewer rather than
+  sitting flat. The middle sits proud.
+- **Contours must be visible.** Every extrusion carries an ink outline on its
+  outer edge and an inset ink ring around its raised top face, so the facets
+  read as folds rather than as blur.
+- Depth is a single custom property, `--bevel`. Pressing an object drops it
+  toward `4px`; hovering raises it. Nothing animates depth on scroll.
+- No blurred shadows, no glassmorphism, no atmospheric perspective.
 
 ## Copy
 
