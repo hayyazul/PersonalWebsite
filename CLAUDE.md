@@ -100,3 +100,17 @@ Derived from *A Philosophy of Software Design* (Ousterhout).
     - Do not commit without running tests.
     - Make sure to use .gitignore as needed.
  - Use a linter.
+
+# Visual language
+
+Locked design decisions live in **DESIGN.md**. Read it before touching anything
+visual. Highlights that are not negotiable:
+
+- Display face is **Bodoni Moda**, and it is for display only — masthead,
+  section titles, large numerals. Never body, never small, never UI chrome.
+- Ground is kraft `#E9DCC0`, not cream.
+- Every colour field gets an ink outline; flat fills only; no greys.
+- Depth is hard zero-blur offset shadows, never blurred or atmospheric.
+- **Claude does not write the site's prose.** Mockups use bracket placeholders
+  describing what each block of text must do. Ayyaz writes the words.
+- The site never names its own influences or states its philosophy.
