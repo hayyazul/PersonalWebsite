@@ -57,29 +57,13 @@ Two conventions, and they do different jobs.
 light from the upper-left so the offset falls down-right. Pressing collapses the
 offset to zero and the object sinks into the page. Nothing else uses this.
 
-**Surfaces fold.** The work grid is a single sheet creased at every seam, and
-the crease is *geometry*, not shading:
+**The work panels are the same control at panel scale.** Same ink rule, same
+offset, same press. They are objects you push, not tiles you read — a press that
+lands swings the panel open on its hinge and the offset collapses to zero.
 
-    __01__/\__02__
-    |     |     |
-    |     |     |
-    __01__/\__02__
-    |     |     |
-
-Every face carries half an upward peak at each vertical seam, and the identical
-peak is cut out of its underside. Rows overlap by exactly the peak height, so the
-row below plugs the void the row above leaves — one shared crease per join, never
-a doubled line. The silhouette is a `clip-path` polygon; the ink contour follows
-the diagonals via zero-blur drop shadows, because a border cannot turn a corner
-that isn't square.
-
-Cuts are hard 45-degree angles. The two facets of a peak are flat tints of the
-face's own pigment — the rising edge catches the upper-left light, the falling
-edge does not — with a hard boundary between them.
-
-Rejected: per-tile bevels and mitred extrusions, which read as separate blocks
-rather than one sheet. Rejected: gradient falloff along the crease. It reads
-smooth, and smooth is the wrong register for this ground — the pop must be blunt.
+Rejected: creased-sheet geometry, mitred extrusions, per-tile bevels, gradient
+falloff along a fold. Every one of them made the grid into a separate visual
+system from the buttons. There is one depth convention on this site.
 
 No blurred shadows, no glassmorphism, no depth animated on scroll.
 
