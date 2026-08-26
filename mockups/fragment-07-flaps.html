@@ -214,7 +214,7 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
    character is the duration, so that is the one number, and the slider in
    the cycler is the only thing that sets it - the reveal underneath keeps
    pace by deriving from it rather than carrying its own timing. */
-.grid.m3{--snap:100ms;--rv:var(--snap);--rd:calc(var(--snap) / 2)}
+.grid.m3{--snap:60ms;--rv:var(--snap);--rd:calc(var(--snap) / 2)}
 .grid.m3 .door{transition:--a var(--snap) linear}
 .grid.m3 .card.open .door{--a:var(--swing)}
 
@@ -374,8 +374,8 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
       <span class="nm" id="mname" aria-live="polite">Opening 1/5 &mdash; Slam</span>
       <span class="dial">
         <label for="snap">Travel</label>
-        <input type="range" id="snap" min="50" max="150" step="5" value="100">
-        <output for="snap" id="snapv">100ms</output>
+        <input type="range" id="snap" min="50" max="150" step="5" value="60">
+        <output for="snap" id="snapv">60ms</output>
       </span>
       <span class="bar"></span>
       <span>Click a panel</span>

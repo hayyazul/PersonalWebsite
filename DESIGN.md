@@ -85,6 +85,45 @@ If a panel needs to advertise that it opens, the panel does it: the hinge spine
 on its bound edge, the way it behaves under the cursor, its interior. Not a
 sticker in the corner.
 
+## How a panel opens
+
+**Outward, toward the viewer.** A lid swings out of the page, never back into
+it. Into the page is the motion every SaaS card accordion makes and it reads as
+one.
+
+**The bound edge is measured, never assigned.** Each panel counts the panels
+between it and each of the four grid edges and hinges on the nearest one, so it
+opens into the space outside the grid rather than over a neighbour. Ties go
+horizontal, because the grid is always wider than it is tall. No arrangement is
+enumerated anywhere: three-across, two-across, and anything a column auto-fit
+invents are all the same rule. A hinge spine sits on whichever edge that turned
+out to be, and the revealed panel pads that edge so the standing lid never
+crosses its text.
+
+**The cursor changes the shade, not the position.** Hovering a shut panel
+switches its field to a lighter pigment — a flat colour mixed before paint, not
+the pigment blended with what sits behind it — with **no transition**. It lands
+the instant the cursor arrives. Nothing moves, tilts, or goes ajar under the
+cursor; movement is what a click is for.
+
+**The swing is 60ms, linear, and has no tail.** A lid that spends its last few
+degrees drifting into the stop reads as soft, and softness here reads as
+corporate. At 60ms the swing is continuous but has almost no in-between: the
+panel is shut, and then it is open. The peak stays under 90° so a lid never
+shows the viewer its own back, and the focal length is long enough (2000px)
+that a lid never splays far enough to lay a sliver over a neighbouring row —
+that sliver gets read as a rendering artifact, the same failure as a corner tab.
+
+**What is underneath arrives.** The revealed panel's contents come in just
+behind the lid rather than sitting there pre-composed, on a delay derived from
+the swing rather than a timing of their own.
+
+Rejected: the eased tail; overswing that carries past and settles; a lift off
+the slab before pivoting; a pause between unlatching and swinging; stepped
+detents. All of them are legible as *technique*, which is the failure mode.
+
+Under `prefers-reduced-motion`, panels do not flap at all.
+
 ## Copy
 
 Body copy is written by Ayyaz, not by Claude. Mockups carry bracket
