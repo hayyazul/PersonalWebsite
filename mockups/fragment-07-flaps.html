@@ -177,42 +177,61 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
 /* a lid swinging at the viewer has to outrank the panels it swings over */
 .card.open,.card.closing{z-index:5}
 
-/* ── five ways of opening ──────────────────────────────────────────────
+/* ── five ways of opening ──────────────────────────────────
    Every one of these moves --a from 0 to --swing. None of them knows which
    edge it is turning about. Peaks stay under 90deg so a lid never shows the
-   viewer its own back. */
+   viewer its own back.
+
+   All five are sharp. What makes a swing read as soft is the tail - the last
+   few degrees taking half the time - so none of these has one: they either
+   arrive at speed and stop, or break the movement into segments with corners
+   between them. They differ in where that sharpness sits. */
 .grid{--swing:84deg}
 
-/* 1 · CLEAN SWING - one decisive movement and nothing else to read */
-.grid.m1 .door{transition:--a .4s cubic-bezier(.2,.86,.24,1)}
+/* what is underneath arrives rather than sitting there waiting. Shared by
+   every opening; each one only says how fast, and how far behind the lid. */
+.reveal{overflow:hidden}
+.reveal>*{transform:translateY(20px);
+  transition:transform var(--rv,.13s) cubic-bezier(.2,.75,.3,1)}
+.card.open .reveal .what{transform:none;transition-delay:var(--rd,.08s)}
+.card.open .reveal .tag{transform:none;
+  transition-delay:calc(var(--rd,.08s) + .045s)}
+
+/* 1 · SLAM - near full speed the whole way, then it is simply stopped.
+   The curve ends with velocity left in it, so the stop is an arrest. */
+.grid.m1{--rd:.1s}
+.grid.m1 .door{transition:--a .18s cubic-bezier(.3,.45,.72,.86)}
 .grid.m1 .card.open .door{--a:var(--swing)}
 
-/* 2 · UNLATCH - the catch lets go, then the lid goes */
-.grid.m2 .card.open .door{animation:unlatch .52s cubic-bezier(.32,.86,.22,1) forwards}
-@keyframes unlatch{0%{--a:0deg}13%{--a:9deg}31%{--a:10deg}100%{--a:var(--swing)}}
+/* 2 · DETENT - three fast segments with corners between them. The corners
+   are the point: a change of speed you can see is what makes it mechanical */
+.grid.m2{--rd:.14s}
+.grid.m2 .card.open .door{animation:detent .28s linear forwards}
+@keyframes detent{0%{--a:0deg}42%{--a:56deg}56%{--a:62deg}100%{--a:var(--swing)}}
 
-/* 3 · OVERSWING - carries past the stop and settles back, a lid with mass */
-.grid.m3 .card.open .door{animation:overswing .56s cubic-bezier(.16,.82,.3,1) forwards}
-@keyframes overswing{0%{--a:0deg}62%{--a:89deg}100%{--a:var(--swing)}}
+/* 3 · SNAP - six frames of travel. Continuous, but with no in-between to
+   read: the panel is shut, and then it is open */
+.grid.m3{--rv:.1s;--rd:.05s}
+.grid.m3 .door{transition:--a .1s linear}
+.grid.m3 .card.open .door{--a:var(--swing)}
 
-/* 4 · LIFT AND SWING - the lid comes off the slab before it pivots */
-.grid.m4 .card.open .door{animation:liftswing .58s cubic-bezier(.24,.8,.26,1) forwards}
-@keyframes liftswing{0%{--a:0deg;--z:0px}24%{--a:7deg;--z:38px}100%{--a:var(--swing);--z:0px}}
+/* 4 · KICK - thrown past the stop and pulled back onto it. Both moves are
+   hard and the reversal is instant, so it reads as a correction, not a settle */
+.grid.m4{--rd:.12s}
+.grid.m4 .card.open .door{animation:kick .26s linear forwards}
+@keyframes kick{0%{--a:0deg}60%{--a:89deg}72%{--a:89deg}100%{--a:var(--swing)}}
 
-/* 5 · PANEL ARRIVES - what is underneath is not just sitting there waiting */
-.grid.m5 .door{transition:--a .34s cubic-bezier(.3,.9,.25,1)}
-.grid.m5 .card.open .door{--a:var(--swing)}
-.grid.m5 .reveal{overflow:hidden}
-.grid.m5 .reveal>*{transform:translateY(26px);
-  transition:transform .32s cubic-bezier(.2,.86,.25,1)}
-.grid.m5 .card.open .reveal .what{transform:none;transition-delay:.15s}
-.grid.m5 .card.open .reveal .tag{transform:none;transition-delay:.21s}
+/* 5 · UNLATCH - the catch lets go, a beat of nothing, then the whole swing
+   in one movement */
+.grid.m5{--rd:.24s}
+.grid.m5 .card.open .door{animation:unlatch .36s linear forwards}
+@keyframes unlatch{0%{--a:0deg}14%{--a:11deg}42%{--a:12deg}100%{--a:var(--swing)}}
 
 /* the keyframed openings leave no base value to transition back from, so
-   closing gets its own short movement rather than snapping shut */
+   closing gets its own movement - as short and as flat as the openings */
 .grid.m2 .card.closing .door,
-.grid.m3 .card.closing .door,
-.grid.m4 .card.closing .door{animation:shut .26s cubic-bezier(.42,0,.7,.95) forwards}
+.grid.m4 .card.closing .door,
+.grid.m5 .card.closing .door{animation:shut .15s cubic-bezier(.4,.1,.8,.7) forwards}
 @keyframes shut{from{--a:var(--swing)}to{--a:0deg}}
 
 /* the cycler: a control, so it presses like one */
@@ -325,7 +344,7 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
     <div class="cyc">
       <button type="button" id="mprev" aria-label="Previous opening">&lsaquo;</button>
       <button type="button" id="mnext" aria-label="Next opening">&rsaquo;</button>
-      <span class="nm" id="mname" aria-live="polite">Opening 1/5 &mdash; Clean swing</span>
+      <span class="nm" id="mname" aria-live="polite">Opening 1/5 &mdash; Slam</span>
       <span class="bar"></span>
       <span>Click a panel</span>
     </div>
@@ -444,8 +463,8 @@ function bindLids(){
   }
 }
 
-const OPENINGS=[["m1","Clean swing"],["m2","Unlatch"],["m3","Overswing"],
-                ["m4","Lift and swing"],["m5","Panel arrives"]];
+const OPENINGS=[["m1","Slam"],["m2","Detent"],["m3","Snap"],
+                ["m4","Kick"],["m5","Unlatch"]];
 const mname=document.getElementById("mname");
 let mi=0;
 function showOpening(i){
