@@ -209,10 +209,13 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
 .grid.m2 .card.open .door{animation:detent .28s linear forwards}
 @keyframes detent{0%{--a:0deg}42%{--a:56deg}56%{--a:62deg}100%{--a:var(--swing)}}
 
-/* 3 · SNAP - six frames of travel. Continuous, but with no in-between to
-   read: the panel is shut, and then it is open */
-.grid.m3{--rv:.1s;--rd:.05s}
-.grid.m3 .door{transition:--a .1s linear}
+/* 3 · SNAP - a handful of frames of travel. Continuous, but with almost no
+   in-between to read: the panel is shut, and then it is open. Its whole
+   character is the duration, so that is the one number, and the slider in
+   the cycler is the only thing that sets it - the reveal underneath keeps
+   pace by deriving from it rather than carrying its own timing. */
+.grid.m3{--snap:100ms;--rv:var(--snap);--rd:calc(var(--snap) / 2)}
+.grid.m3 .door{transition:--a var(--snap) linear}
 .grid.m3 .card.open .door{--a:var(--swing)}
 
 /* 4 · KICK - thrown past the stop and pulled back onto it. Both moves are
@@ -245,6 +248,30 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
   box-shadow:4px 4px 0 var(--ink);transition:transform .09s ease,box-shadow .09s ease}
 .cyc button:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
 .cyc button:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
+
+/* the snap slider: only Snap has a number worth reaching for, so it is only
+   shown there rather than sitting inert through the other four */
+.cyc .dial{display:none;align-items:center;gap:9px}
+.cyc.has-dial .dial{display:flex}
+.cyc .dial label{color:var(--ink-60)}
+.cyc .dial output{color:var(--ink);font-weight:600;min-width:5.5ch}
+.cyc input[type=range]{-webkit-appearance:none;appearance:none;
+  width:132px;height:14px;background:none;cursor:pointer}
+.cyc input[type=range]::-webkit-slider-runnable-track{height:8px;
+  background:var(--kraft-hi);border:var(--rule);box-sizing:border-box}
+.cyc input[type=range]::-moz-range-track{height:8px;
+  background:var(--kraft-hi);border:var(--rule);box-sizing:border-box}
+.cyc input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;
+  width:14px;height:20px;margin-top:-9px;box-sizing:border-box;
+  background:var(--chrome);border:var(--rule);box-shadow:3px 3px 0 var(--ink)}
+.cyc input[type=range]::-moz-range-thumb{width:14px;height:20px;border-radius:0;
+  box-sizing:border-box;
+  background:var(--chrome);border:var(--rule);box-shadow:3px 3px 0 var(--ink)}
+.cyc input[type=range]:active::-webkit-slider-thumb{box-shadow:0 0 0 var(--ink);
+  transform:translate(3px,3px)}
+.cyc input[type=range]:active::-moz-range-thumb{box-shadow:0 0 0 var(--ink);
+  transform:translate(3px,3px)}
+.cyc input[type=range]:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 
 .card .top{display:flex;justify-content:space-between;align-items:center;gap:10px;
   padding:11px 13px;border-bottom:var(--rule)}
@@ -345,6 +372,11 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
       <button type="button" id="mprev" aria-label="Previous opening">&lsaquo;</button>
       <button type="button" id="mnext" aria-label="Next opening">&rsaquo;</button>
       <span class="nm" id="mname" aria-live="polite">Opening 1/5 &mdash; Slam</span>
+      <span class="dial">
+        <label for="snap">Travel</label>
+        <input type="range" id="snap" min="50" max="150" step="5" value="100">
+        <output for="snap" id="snapv">100ms</output>
+      </span>
       <span class="bar"></span>
       <span>Click a panel</span>
     </div>
@@ -475,7 +507,19 @@ function showOpening(i){
   });
   grid.className="grid "+OPENINGS[mi][0];
   mname.textContent="Opening "+(mi+1)+"/"+OPENINGS.length+" \u2014 "+OPENINGS[mi][1];
+  cyc.classList.toggle("has-dial",OPENINGS[mi][0]==="m3");
 }
+
+const cyc=document.querySelector(".cyc");
+const snap=document.getElementById("snap"),snapv=document.getElementById("snapv");
+function setSnap(){
+  snapv.textContent=snap.value+"ms";
+  /* an inline custom property, not a rule rewrite: showOpening reassigns the
+     grid's class list every time it runs and would drop anything held there */
+  grid.style.setProperty("--snap",snap.value+"ms");
+}
+snap.addEventListener("input",setSnap);
+setSnap();
 document.getElementById("mprev").addEventListener("click",()=>showOpening(mi-1));
 document.getElementById("mnext").addEventListener("click",()=>showOpening(mi+1));
 addEventListener("keydown",e=>{
