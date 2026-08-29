@@ -181,7 +181,10 @@ body.editing .cta{align-items:flex-start}
 .b-view{padding:0}
 .b-view::before{z-index:2}
 .b-view canvas{position:absolute;inset:0;width:100%;height:100%;display:block;
-  touch-action:none;cursor:crosshair}
+  touch-action:none;pointer-events:none}
+/* three layers, one picture: the ground under the arm, the arm, and the marker
+   over it. Only the top one takes the pointer. */
+.b-view #armfront{pointer-events:auto;cursor:crosshair}
 .b-view .note{position:absolute;left:12px;right:12px;bottom:9px;margin:0;z-index:2;
   pointer-events:none}
 .b-view .note{margin-top:auto}
@@ -406,9 +409,11 @@ body.editing .card .shelf{display:flex}
   <div class="wrap stage">
     <div class="slot">
       <div class="bx b-view" data-label="Viewport · robot arm">
+        <canvas id="armback"></canvas>
         <canvas id="armview"></canvas>
-        <div class="note" id="armnote">Move the cursor over this box. Drag to orbit,
-          shift+scroll for depth, hold space to grip.</div>
+        <canvas id="armfront"></canvas>
+        <div class="note" id="armnote">Move the cursor over this box · click grips ·
+          drag orbits · shift+scroll for depth</div>
       </div>
       <div class="bx res b-title" data-label="Title">
         <span class="ed inl" data-t="demo.name" data-ghost="[DEMO NAME — 2 to 4 words]"></span>
@@ -936,35 +941,38 @@ bindLids(); setEditing(false);
 addEventListener("resize",bindLids);
 </script>
 
+<script src="assets/so100-mesh.js"></script>
 <script>
 /* ══════════════════════════════════════════════════════════════════════
    DEMO 01 — THE ARM FOLLOWS THE CURSOR
 
    Ported from ../RobotProjects/so100-mediapipe-control (demo/follow_cursor.py).
-   That version runs a real solver against a meshcat viewer over a websocket;
-   this one has no server to talk to, so the chain, the solver and the drawing
-   all live here. The kinematics are not an approximation of that arm - the
-   frames below are the SO-100 URDF's own joint origins, and this forward
-   kinematics was checked against the Python Kinematics.tool_pose at five poses
-   spanning the workspace, agreeing to under a micrometre.
+   That version runs a solver against a meshcat viewer over a websocket; this
+   one has no server to talk to, so the chain, the solver and the drawing all
+   live here. Nothing is an approximation of that arm: the joint frames below
+   are the SO-100 URDF's own, this forward kinematics was checked against the
+   Python Kinematics.tool_pose at five poses spanning the workspace and agreed
+   to under a micrometre, and the geometry is the URDF's own visual meshes.
 
-   The camera half of the demo is deliberately absent. What is here is the same
-   control loop it will use: something outside produces a target, a fixed-rate
-   loop reads the most recent one, and the arm is told to go there. Swapping the
-   cursor for a tracked wrist changes nothing below `aimAt`.
+   The camera half is deliberately absent. What is here is the control loop it
+   will use: something outside produces a target, a fixed-rate loop reads the
+   most recent one, and the arm is told to go there. Swapping the cursor for a
+   tracked wrist changes nothing below `aimAt`.
    ══════════════════════════════════════════════════════════════════════ */
 (function(){
-const canvas=document.getElementById("armview");
-if(!canvas||!canvas.getContext) return;
-const ctx=canvas.getContext("2d");
+const back=document.getElementById("armback");
+const glCanvas=document.getElementById("armview");
+const front=document.getElementById("armfront");
 const note=document.getElementById("armnote");
+if(!back||!glCanvas||!front) return;
+const bg=back.getContext("2d"), fg=front.getContext("2d");
 const DEG=Math.PI/180;
 
 /* ── the chain ──
    Joint origins and axes straight out of models/so100.urdf, in URDF order.
-   Limits are the URDF's own, in radians. The tool frame hangs off the gripper
-   link through a fixed joint, which is why the jaw angle is not in this list:
-   opening the jaw does not move the tool. */
+   The tool frame hangs off the gripper link through a fixed joint, which is
+   why the jaw angle is not in this list: opening the jaw does not move the
+   tool, so it is never something the solver has to work around. */
 const CHAIN=[
  {n:"shoulder_pan", xyz:[0,-0.0452,0.0165],rpy:[1.57079,0,0],ax:[0,1,0],lo:-2,      hi:2},
  {n:"shoulder_lift",xyz:[0,0.1025,0.0306], rpy:[-1.8,0,0],   ax:[1,0,0],lo:0,       hi:3.5},
@@ -972,15 +980,16 @@ const CHAIN=[
  {n:"wrist_flex",   xyz:[0,0.0052,0.1349], rpy:[-1,0,0],     ax:[1,0,0],lo:-2.5,    hi:1.2},
  {n:"wrist_roll",   xyz:[0,-0.0601,0],     rpy:[0,1.57079,0],ax:[0,1,0],lo:-3.14158,hi:3.14158}
 ];
+/* which frame each visual link rides on, in the order fk produces them */
+const LINK_FRAME=["base","shoulder","upper_arm","lower_arm","wrist","gripper"];
 const TOOL=[0,-0.0244,0];
 const JAW={xyz:[-0.0202,-0.0244,0],rpy:[0,3.14158,0],ax:[0,0,1]};
 const LO=CHAIN.map(j=>j.lo/DEG), HI=CHAIN.map(j=>j.hi/DEG);
 
-/* Roughly the middle of what the arm can reach. Not a limit: it is only the
-   point the cursor's plane passes through. */
-const CENTRE=[0,-0.20,0.12];
+const CENTRE=[0,-0.20,0.12];      /* the point the cursor's plane passes through */
+const EYE_AT=[0,-0.10,0.155];     /* what the camera frames: the arm, not the plane */
 const START=[0,90,-90,0,0];
-const PAN_PIVOT_Y=-0.0452;   /* pan turns the tool about this point, not the origin */
+const PAN_PIVOT_Y=-0.0452;
 const TOL=0.004;
 
 function mul(a,b){const o=new Float64Array(16);
@@ -1003,15 +1012,17 @@ function frame(xyz,rpy,ax,q){
     M[r*4+3]=xyz[r];
   }
   return M}
-function fk(q){
+function fk(q,gripDeg){
   let T=new Float64Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
-  const pts=[[0,0,0]];
+  const frames={base:T}, pts=[[0,0,0]];
   for(let i=0;i<CHAIN.length;i++){
     T=mul(T,frame(CHAIN[i].xyz,CHAIN[i].rpy,CHAIN[i].ax,q[i]*DEG));
+    frames[LINK_FRAME[i+1]]=T;
     pts.push([T[3],T[7],T[11]]);
   }
+  frames.jaw=mul(T,frame(JAW.xyz,JAW.rpy,JAW.ax,(gripDeg||0)*DEG));
   const Tt=mul(T,frame(TOOL,[0,0,0],[0,0,1],0));
-  return {pts,wrist:T,tool:[Tt[3],Tt[7],Tt[11]],toolT:Tt};
+  return {frames,pts,tool:[Tt[3],Tt[7],Tt[11]]};
 }
 
 /* ── the solver ──
@@ -1020,9 +1031,9 @@ function fk(q){
    demanding an orientation makes it refuse places it can plainly reach: going
    where you pointed is the whole demo, where the jaw ends up is not.
 
-   A target it cannot reach is never clamped or nudged into range. The solver
-   returns the gap it could not close and the caller shows it, because during
-   teleoperation a hand leaving the workspace is the normal case, not a fault. */
+   A target it cannot reach is never clamped or nudged into range. The gap it
+   could not close is returned and shown, because during teleoperation a hand
+   leaving the workspace is the normal case rather than a fault. */
 function descend(q,target,iters){
   q=q.slice();
   for(let it=0;it<iters;it++){
@@ -1074,33 +1085,33 @@ function solve(q,target){
 /* ── the camera ──
    Orthographic, which is what makes pointing exact: a pixel maps to one point
    on the plane and back with no division, so the tool lands under the cursor
-   rather than near it. */
-const cam={az:-52*DEG,el:22*DEG,scale:1,depth:0};
+   rather than near it. It frames the arm rather than the cursor's plane, so
+   the machine sits in the middle of its own box. */
+const HOME={az:-56*DEG,el:20*DEG};
+const cam={az:HOME.az,el:HOME.el,scale:1,depth:0};
 function basis(){
   const f=[-Math.cos(cam.el)*Math.cos(cam.az),-Math.cos(cam.el)*Math.sin(cam.az),-Math.sin(cam.el)];
-  let r=[-f[1],f[0],0];
-  const rn=Math.hypot(r[0],r[1],r[2])||1; r=[r[0]/rn,r[1]/rn,0];
+  const rn=Math.hypot(f[1],f[0])||1;
+  const r=[-f[1]/rn,f[0]/rn,0];
   const u=[r[1]*f[2]-r[2]*f[1],r[2]*f[0]-r[0]*f[2],r[0]*f[1]-r[1]*f[0]];
   return {f,r,u:[-u[0],-u[1],-u[2]]};
 }
 let view={w:1,h:1,cx:0,cy:0};
 function project(p){
   const b=basis();
-  const d=[p[0]-CENTRE[0],p[1]-CENTRE[1],p[2]-CENTRE[2]];
-  const x=d[0]*b.r[0]+d[1]*b.r[1]+d[2]*b.r[2];
-  const y=d[0]*b.u[0]+d[1]*b.u[1]+d[2]*b.u[2];
-  return [view.cx+x*cam.scale, view.cy-y*cam.scale];
+  const d=[p[0]-EYE_AT[0],p[1]-EYE_AT[1],p[2]-EYE_AT[2]];
+  return [view.cx+(d[0]*b.r[0]+d[1]*b.r[1]+d[2]*b.r[2])*cam.scale,
+          view.cy-(d[0]*b.u[0]+d[1]*b.u[1]+d[2]*b.u[2])*cam.scale];
 }
-/* The inverse: two numbers on the screen and three in the world, so the missing
-   one comes from a plane through the workspace that always faces the camera.
-   Orbiting is what really changes depth; shift+scroll nudges the plane along
-   the view direction for fine adjustment. */
+/* The inverse. Two numbers on the screen and three in the world, so the
+   missing one comes from a plane through the workspace that always faces the
+   camera: orbiting is what really changes depth, shift+scroll nudges the plane
+   along the view direction for fine adjustment. */
 function unproject(px,py){
   const b=basis();
   const x=(px-view.cx)/cam.scale, y=-(py-view.cy)/cam.scale;
-  return [CENTRE[0]+b.r[0]*x+b.u[0]*y+b.f[0]*cam.depth,
-          CENTRE[1]+b.r[1]*x+b.u[1]*y+b.f[1]*cam.depth,
-          CENTRE[2]+b.r[2]*x+b.u[2]*y+b.f[2]*cam.depth];
+  const o=[EYE_AT[0]+b.f[0]*cam.depth,EYE_AT[1]+b.f[1]*cam.depth,EYE_AT[2]+b.f[2]*cam.depth];
+  return [o[0]+b.r[0]*x+b.u[0]*y, o[1]+b.r[1]*x+b.u[1]*y, o[2]+b.r[2]*x+b.u[2]*y];
 }
 
 /* ── state ── */
@@ -1109,65 +1120,202 @@ let target=CENTRE.slice();
 let gap=0, grip=0, gripWanted=0, running=false, last=0;
 function aimAt(point){ target=point; }
 
-/* ── drawing ──
-   Flat ink on the black field: strokes and hard-edged fills, no gradient and
-   no blur, and the pigments are the page's own. */
-const KRAFT="#E9DCC0",CHALK="#F8F4EC",EDGE="#4A3F34",CHROME="#F2C230",
-      VERM="#DC4A2C",INK="#17120F";
-function line(a,b,w,colour){
-  ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]);
-  ctx.lineWidth=w; ctx.strokeStyle=colour; ctx.stroke();
+/* ══════════════════════════════════════════════════════════════════════
+   THE ARM ITSELF
+   The URDF's visual meshes, drawn flat. No library: what this needs from a
+   3D pipeline is a depth buffer and one triangle call per part, and a
+   thousand lines of scene graph would not make either of those better.
+
+   Shading is quantised to three steps of one pigment rather than a gradient,
+   which is the same decision the rest of the page makes about colour, and it
+   keeps a machined part legible without pretending to be a photograph.
+   ══════════════════════════════════════════════════════════════════════ */
+const CHALK=[0.973,0.957,0.925], CHROME=[0.949,0.761,0.188], SHADOW=[0.141,0.118,0.094];
+let gl=null, prog=null, parts=[], meshFailed=null;
+
+function compile(src,kind){
+  const sh=gl.createShader(kind);
+  gl.shaderSource(sh,src); gl.compileShader(sh);
+  if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))
+    throw new Error(gl.getShaderInfoLog(sh));
+  return sh;
 }
-function square(p,r,fill,stroke){
-  ctx.beginPath(); ctx.rect(p[0]-r,p[1]-r,2*r,2*r);
-  if(fill){ctx.fillStyle=fill;ctx.fill()}
-  if(stroke){ctx.lineWidth=2;ctx.strokeStyle=stroke;ctx.stroke()}
+const VERT=`
+attribute vec3 aPos; attribute vec3 aNor;
+uniform mat4 uClip; uniform mat4 uModel;
+uniform vec3 uLow, uSpan;
+uniform float uSwell;          // metres pushed along the normal, for the outline
+varying vec3 vNor;
+void main(){
+  vec3 p = uLow + aPos * uSpan;
+  vec4 world = uModel * vec4(p,1.0);
+  vec3 n = mat3(uModel) * aNor;
+  world.xyz += n * uSwell;
+  vNor = n;
+  gl_Position = uClip * world;
+}`;
+const FRAG=`
+precision mediump float;
+varying vec3 vNor;
+uniform vec3 uColour;
+uniform float uFlat;           // 1.0 for the outline pass: one tone, no steps
+uniform vec3 uLight;
+void main(){
+  if(uFlat > 0.5){ gl_FragColor = vec4(uColour,1.0); return; }
+  float l = dot(normalize(vNor), uLight) * 0.5 + 0.5;
+  float step = l > 0.72 ? 1.0 : (l > 0.46 ? 0.82 : 0.63);
+  gl_FragColor = vec4(uColour * step, 1.0);
+}`;
+
+function buildMesh(){
+  const M=window.SO100_MESH;
+  if(!M){ meshFailed="assets/so100-mesh.js did not load"; return false; }
+  gl=glCanvas.getContext("webgl",{antialias:true,alpha:true,premultipliedAlpha:false});
+  if(!gl){ meshFailed="this browser has no WebGL"; return false; }
+  const bin=atob(M.data);
+  const bytes=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+  const posBase=0, norBase=M.positionBytes, idxBase=M.positionBytes+M.normalBytes;
+  let posAt=posBase, norAt=norBase, idxAt=idxBase;
+  for(const part of M.parts){
+    const pos=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,pos);
+    gl.bufferData(gl.ARRAY_BUFFER,bytes.subarray(posAt,posAt+part.verts*6),gl.STATIC_DRAW);
+    const nor=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,nor);
+    gl.bufferData(gl.ARRAY_BUFFER,bytes.subarray(norAt,norAt+part.verts*3),gl.STATIC_DRAW);
+    const idx=gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,idx);
+    const width=part.wide?4:2;
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,bytes.subarray(idxAt,idxAt+part.tris*3*width),gl.STATIC_DRAW);
+    if(part.wide && !gl.getExtension("OES_element_index_uint")){
+      meshFailed="this browser cannot index "+part.link+"'s mesh"; return false;
+    }
+    parts.push({link:part.link,role:part.role,pos,nor,idx,
+                count:part.tris*3,type:part.wide?gl.UNSIGNED_INT:gl.UNSIGNED_SHORT});
+    posAt+=part.verts*6; norAt+=part.verts*3; idxAt+=part.tris*3*width;
+  }
+  prog=gl.createProgram();
+  gl.attachShader(prog,compile(VERT,gl.VERTEX_SHADER));
+  gl.attachShader(prog,compile(FRAG,gl.FRAGMENT_SHADER));
+  gl.linkProgram(prog);
+  if(!gl.getProgramParameter(prog,gl.LINK_STATUS)){
+    meshFailed=gl.getProgramInfoLog(prog); return false;
+  }
+  gl.useProgram(prog);
+  prog.aPos=gl.getAttribLocation(prog,"aPos");
+  prog.aNor=gl.getAttribLocation(prog,"aNor");
+  for(const u of ["uClip","uModel","uLow","uSpan","uSwell","uColour","uFlat","uLight"])
+    prog[u]=gl.getUniformLocation(prog,u);
+  gl.uniform3fv(prog.uLow,M.low);
+  gl.uniform3fv(prog.uSpan,M.span);
+  gl.enable(gl.DEPTH_TEST);
+  gl.enable(gl.CULL_FACE);
+  /* The clip matrix below folds the view and the projection into one change of
+     basis, and that basis is mirrored against the one GL assumes, so the
+     triangles arrive wound the other way. Naming that here is cheaper than
+     unfolding the matrix into two just to keep a convention. */
+  gl.frontFace(gl.CW);
+  return true;
 }
-function drawGround(){
+
+function clipMatrix(){
+  const b=basis();
+  /* world -> clip directly: an orthographic camera is a change of basis and a
+     scale, and there is nothing a separate view and projection pair would add */
+  const sx=2*cam.scale/view.w, sy=2*cam.scale/view.h, sz=1/0.9;
+  const M=new Float32Array(16);
+  const rows=[[b.r[0]*sx,b.r[1]*sx,b.r[2]*sx],
+              [b.u[0]*sy,b.u[1]*sy,b.u[2]*sy],
+              [b.f[0]*sz,b.f[1]*sz,b.f[2]*sz]];
+  const o=[EYE_AT[0]+b.f[0]*0,EYE_AT[1],EYE_AT[2]];
+  for(let r=0;r<3;r++){
+    M[0*4+r]=rows[r][0]; M[1*4+r]=rows[r][1]; M[2*4+r]=rows[r][2];
+    M[3*4+r]=-(rows[r][0]*o[0]+rows[r][1]*o[1]+rows[r][2]*o[2]);
+  }
+  M[15]=1;
+  return M;
+}
+function drawArm(frames){
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  gl.viewport(0,0,glCanvas.width,glCanvas.height);
+  gl.clearColor(0,0,0,0);
+  gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  gl.uniformMatrix4fv(prog.uClip,false,clipMatrix());
+  gl.uniform3f(prog.uLight,-0.42,0.58,0.70);
+
+  const model=new Float32Array(16);
+  const pass=(swell,flat)=>{
+    gl.uniform1f(prog.uSwell,swell);
+    gl.uniform1f(prog.uFlat,flat?1:0);
+    gl.cullFace(flat?gl.FRONT:gl.BACK);
+    for(const part of parts){
+      const T=frames[part.link]||frames.base;
+      for(let r=0;r<4;r++)for(let c=0;c<4;c++) model[c*4+r]=T[r*4+c];
+      gl.uniformMatrix4fv(prog.uModel,false,model);
+      if(flat) gl.uniform3fv(prog.uColour,SHADOW);
+      else gl.uniform3fv(prog.uColour,part.role==="motor"?CHROME:CHALK);
+      gl.bindBuffer(gl.ARRAY_BUFFER,part.pos);
+      gl.enableVertexAttribArray(prog.aPos);
+      gl.vertexAttribPointer(prog.aPos,3,gl.UNSIGNED_SHORT,true,0,0);
+      gl.bindBuffer(gl.ARRAY_BUFFER,part.nor);
+      gl.enableVertexAttribArray(prog.aNor);
+      gl.vertexAttribPointer(prog.aNor,3,gl.BYTE,true,0,0);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,part.idx);
+      gl.drawElements(gl.TRIANGLES,part.count,part.type,0);
+    }
+  };
+  /* the outline is the same geometry pushed out along its normals and drawn
+     inside-out, which costs one extra pass and no edge extraction at all */
+  pass(1.6/cam.scale,true);
+  pass(0,false);
+}
+
+/* ── the ground and the marker ──
+   Flat ink either side of the arm: the plane and the drop line go under it so
+   the arm stands on them, the marker goes over it so it is never lost behind
+   the machine that is reaching for it. */
+const KRAFT="#E9DCC0",EDGE="#4A3F34",GOLD="#F2C230",VERM="#DC4A2C";
+function line(c,a,b,w,colour,dash){
+  c.setLineDash(dash||[]);
+  c.beginPath(); c.moveTo(a[0],a[1]); c.lineTo(b[0],b[1]);
+  c.lineWidth=w; c.strokeStyle=colour; c.stroke();
+  c.setLineDash([]);
+}
+function drawGround(tool){
+  bg.clearRect(0,0,view.w,view.h);
   const n=5,step=0.07,ext=n*step;
-  ctx.lineCap="butt";
+  bg.lineCap="butt";
   for(let i=-n;i<=n;i++){
-    line(project([i*step,-ext,0]),project([i*step,ext,0]),1,EDGE);
-    line(project([-ext,i*step,0]),project([ext,i*step,0]),1,EDGE);
+    line(bg,project([i*step,-ext,0]),project([i*step,ext,0]),1,EDGE);
+    line(bg,project([-ext,i*step,0]),project([ext,i*step,0]),1,EDGE);
+  }
+  const foot=[tool[0],tool[1],0];
+  line(bg,project(tool),project(foot),1.5,EDGE,[3,4]);
+  const f=project(foot);
+  bg.strokeStyle=EDGE; bg.lineWidth=2;
+  bg.strokeRect(f[0]-3,f[1]-3,6,6);
+}
+function drawMarker(){
+  fg.clearRect(0,0,view.w,view.h);
+  const reachable=gap<TOL, p=project(target);
+  fg.lineWidth=2.5; fg.strokeStyle=reachable?GOLD:VERM;
+  fg.strokeRect(p[0]-7,p[1]-7,14,14);
+  if(!reachable){
+    line(fg,[p[0]-12,p[1]],[p[0]+12,p[1]],2,VERM);
+    line(fg,[p[0],p[1]-12],[p[0],p[1]+12],2,VERM);
   }
 }
-function draw(){
-  const f=fk(q);
-  ctx.clearRect(0,0,view.w,view.h);
-  drawGround();
-
-  /* where the tool is standing, so height is readable in a flat drawing */
-  const foot=[f.tool[0],f.tool[1],0];
-  ctx.setLineDash([3,4]); line(project(f.tool),project(foot),1.5,EDGE); ctx.setLineDash([]);
-  square(project(foot),3,null,EDGE);
-
+/* If the meshes are missing the demo says so and draws the chain instead,
+   because a blank rectangle would look like the page is broken. */
+function drawSkeleton(f){
   const p=f.pts.map(project);
-  ctx.lineCap="square"; ctx.lineJoin="miter";
-  square(p[0],9,EDGE,KRAFT);                        /* the base it is bolted to */
-  for(let i=0;i<p.length-1;i++) line(p[i],p[i+1],8,CHALK);
-  line(p[p.length-1],project(f.tool),8,CHALK);
-  for(let i=1;i<p.length;i++) square(p[i],4,CHROME,INK);
-
-  /* the jaw: two fingers that open on the gripper joint, drawn from the tool
-     frame so they turn with the wrist */
-  const half=(6+grip*0.30)*DEG;
-  for(const s of [1,-1]){
-    const t=mul(f.wrist,frame(JAW.xyz,[0,0,s*half],[0,0,1],0));
-    const tip=mul(t,frame([-0.035,0,0],[0,0,0],[0,0,1],0));
-    line(project([t[3],t[7],t[11]]),project([tip[3],tip[7],tip[11]]),4,CHALK);
+  bg.lineCap="square";
+  for(let i=0;i<p.length-1;i++) line(bg,p[i],p[i+1],7,KRAFT);
+  line(bg,p[p.length-1],project(f.tool),7,KRAFT);
+  for(let i=1;i<p.length;i++){
+    bg.fillStyle=GOLD; bg.fillRect(p[i][0]-4,p[i][1]-4,8,8);
   }
-
-  const reachable=gap<TOL;
-  const tp=project(target);
-  ctx.beginPath(); ctx.rect(tp[0]-7,tp[1]-7,14,14);
-  ctx.lineWidth=2.5; ctx.strokeStyle=reachable?CHROME:VERM; ctx.stroke();
-  if(!reachable){ line([tp[0]-11,tp[1]],[tp[0]+11,tp[1]],2,VERM);
-                  line([tp[0],tp[1]-11],[tp[0],tp[1]+11],2,VERM); }
 }
 
-/* ── the readout ──
-   The chips were already on the page as reserved space; they now say what the
-   arm is actually doing. */
+/* ── the readout ── */
 const chips=document.querySelectorAll(".b-state .chip");
 let reportTick=0;
 function report(){
@@ -1194,67 +1342,75 @@ function tick(now){
   const wanted=solve(q,target);
   gap=wanted.gap;
   const step=MAX_DEG_PER_S*dt;
-  for(let i=0;i<5;i++){
-    const d=wanted.q[i]-q[i];
-    q[i]+=Math.max(-step,Math.min(step,d));
-  }
+  for(let i=0;i<5;i++) q[i]+=Math.max(-step,Math.min(step,wanted.q[i]-q[i]));
   grip+=Math.max(-step,Math.min(step,gripWanted-grip));
-  draw(); report();
+  const f=fk(q,grip);
+  drawGround(f.tool);
+  if(gl) drawArm(f.frames); else drawSkeleton(f);
+  drawMarker(); report();
   requestAnimationFrame(tick);
 }
 
 /* ── input ── */
 function resize(){
-  const box=canvas.getBoundingClientRect();
+  const box=front.getBoundingClientRect();
+  if(!box.width||!box.height) return;
   const dpr=Math.min(2,window.devicePixelRatio||1);
-  canvas.width=Math.max(1,Math.round(box.width*dpr));
-  canvas.height=Math.max(1,Math.round(box.height*dpr));
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-  view={w:box.width,h:box.height,cx:box.width/2,cy:box.height*0.54};
-  /* the whole reach is about 0.35 m, and it should sit inside the box whichever
-     way round the box is */
-  cam.scale=Math.min(box.width,box.height*1.35)/0.62;
-  if(!running) draw();
+  for(const c of [back,front]){
+    c.width=Math.round(box.width*dpr); c.height=Math.round(box.height*dpr);
+  }
+  glCanvas.width=Math.round(box.width*dpr); glCanvas.height=Math.round(box.height*dpr);
+  bg.setTransform(dpr,0,0,dpr,0,0); fg.setTransform(dpr,0,0,dpr,0,0);
+  view={w:box.width,h:box.height,cx:box.width/2,cy:box.height*0.56};
+  /* the arm is about 0.44 m corner to corner in its tallest pose, and it should
+     sit inside the box whichever way round the box is */
+  cam.scale=Math.min(box.width,box.height*1.25)/0.52;
 }
-new ResizeObserver(resize).observe(canvas);
+new ResizeObserver(resize).observe(front);
 
-let dragging=null;
-canvas.addEventListener("pointermove",e=>{
-  const box=canvas.getBoundingClientRect();
-  if(dragging){
-    cam.az-=(e.clientX-dragging.x)*0.008;
-    cam.el=Math.max(-10*DEG,Math.min(78*DEG,cam.el+(e.clientY-dragging.y)*0.006));
-    dragging={x:e.clientX,y:e.clientY};
+let drag=null;
+front.addEventListener("pointermove",e=>{
+  const box=front.getBoundingClientRect();
+  if(drag){
+    drag.moved+=Math.abs(e.clientX-drag.x)+Math.abs(e.clientY-drag.y);
+    cam.az-=(e.clientX-drag.x)*0.008;
+    cam.el=Math.max(-8*DEG,Math.min(78*DEG,cam.el+(e.clientY-drag.y)*0.006));
+    drag.x=e.clientX; drag.y=e.clientY;
     return;
   }
-  /* a held button means the camera is being moved, not aimed */
-  if(e.buttons!==0) return;
   aimAt(unproject(e.clientX-box.left,e.clientY-box.top));
 });
-canvas.addEventListener("pointerdown",e=>{
-  canvas.setPointerCapture(e.pointerId);
-  if(e.shiftKey||e.button===1||e.button===2){dragging={x:e.clientX,y:e.clientY};return}
-  gripWanted=40;
+front.addEventListener("pointerdown",e=>{
+  front.setPointerCapture(e.pointerId);
+  drag={x:e.clientX,y:e.clientY,moved:0};
 });
-addEventListener("pointerup",e=>{dragging=null;gripWanted=0});
-canvas.addEventListener("contextmenu",e=>e.preventDefault());
-canvas.addEventListener("wheel",e=>{
-  if(!e.shiftKey) return;          /* a plain scroll still scrolls the page */
+front.addEventListener("pointerup",e=>{
+  /* a press that went nowhere was a click, and a click is the grip. Anything
+     that travelled was the camera being moved and must not also grab. */
+  if(drag && drag.moved<6) gripWanted=gripWanted>20?0:40;
+  drag=null;
+});
+front.addEventListener("dblclick",()=>{cam.az=HOME.az;cam.el=HOME.el;cam.depth=0});
+front.addEventListener("contextmenu",e=>e.preventDefault());
+front.addEventListener("wheel",e=>{
+  if(!e.shiftKey) return;            /* a plain scroll still scrolls the page */
   e.preventDefault();
   cam.depth+=e.deltaY*0.0002;
 },{passive:false});
-addEventListener("keydown",e=>{
-  if(e.code==="Space"&&document.activeElement===document.body){e.preventDefault();gripWanted=40}
-});
-addEventListener("keyup",e=>{if(e.code==="Space")gripWanted=0});
 
 /* nothing is gained by solving inverse kinematics for a box nobody is looking at */
 new IntersectionObserver(entries=>{
   const visible=entries[0].isIntersecting;
   if(visible&&!running){running=true;last=performance.now();requestAnimationFrame(tick)}
   else if(!visible) running=false;
-},{threshold:0.05}).observe(canvas);
+},{threshold:0.05}).observe(front);
 
+try{ buildMesh(); }catch(err){ meshFailed=err.message; }
+if(meshFailed){
+  gl=null;
+  note.textContent="Showing the chain only — "+meshFailed+
+    ". Click grips · drag orbits · shift+scroll for depth";
+}
 resize();
 })();
 </script>

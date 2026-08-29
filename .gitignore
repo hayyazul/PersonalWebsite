@@ -10,3 +10,6 @@ build/
 # Kept local, not redistributed — this repo may end up public on GitHub Pages.
 # Remove this line if you decide otherwise.
 Cool Pics/
+
+# scratch copies made while probing the page in a headless browser
+_*.html
