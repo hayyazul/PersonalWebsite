@@ -1464,5 +1464,79 @@ if(meshFailed){
 resize();
 })();
 </script>
+
+<!-- ═══ TEMPORARY scroll diagnostic. Delete this whole block once the cause is
+     found; nothing else in the page refers to it. ═══ -->
+<script>
+(function(){
+  const box=document.createElement("div");
+  box.style.cssText="position:fixed;right:6px;top:6px;z-index:99999;background:#0b0b0b;"+
+    "color:#5f5;font:11px/1.35 ui-monospace,monospace;padding:7px;width:46ch;"+
+    "white-space:pre-wrap;border:1px solid #5f5;max-height:86vh;overflow:auto";
+  const bar=document.createElement("div");
+  const live=document.createElement("div"), log=document.createElement("div");
+  box.append(bar,live,log); document.body.appendChild(box);
+  const mk=(t,f)=>{const b=document.createElement("button");b.textContent=t;
+    b.style.cssText="font:11px monospace;margin:0 4px 6px 0";b.onclick=f;bar.appendChild(b);return b};
+
+  const cs=e=>getComputedStyle(e);
+  const d=document.documentElement, b=document.body;
+  const facts=[
+    "UA "+navigator.userAgent.replace(/^Mozilla\/5\.0 \(|\) .*$/g,"|").slice(0,60),
+    "win "+innerWidth+"x"+innerHeight+"  dpr "+devicePixelRatio+
+      (window.visualViewport?"  vv scale "+visualViewport.scale.toFixed(2):""),
+    "html ov "+cs(d).overflowX+"/"+cs(d).overflowY+"  scrollH "+d.scrollHeight+" clientH "+d.clientHeight,
+    "body ov "+cs(b).overflowX+"/"+cs(b).overflowY+"  scrollH "+b.scrollHeight+" clientH "+b.clientHeight,
+    "scrollingElement = "+(document.scrollingElement&&document.scrollingElement.tagName),
+  ];
+
+  let wheels=0, scrolls=0, lines=[], chained=false;
+  const name=e=>!e?"-":(e.nodeName+(e.id?"#"+e.id:"")+(e.className&&e.className.baseVal===undefined?"."+String(e.className).trim().split(/\s+/).join("."):"")).slice(0,30);
+
+  addEventListener("wheel",e=>{
+    wheels++;
+    if(!chained){
+      chained=true;
+      lines.push("chain from "+name(e.target)+":");
+      let n=e.target;
+      while(n&&n!==document){
+        const st=cs(n), over=n.scrollHeight-n.clientHeight;
+        if(st.overflowY!=="visible"||over>1)
+          lines.push("  "+name(n).padEnd(26)+" ov "+st.overflowX+"/"+st.overflowY+" spare "+over);
+        n=n.parentElement;
+      }
+    }
+    if(lines.length<40){
+      const y0=scrollY;
+      lines.push("wheel#"+wheels+" dy "+e.deltaY.toFixed(0)+" mode "+e.deltaMode+
+        " ctrl "+(e.ctrlKey?1:0)+" shift "+(e.shiftKey?1:0)+" tgt "+name(e.target));
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        lines.push("   -> prevented "+e.defaultPrevented+"   scrollY "+y0+" -> "+Math.round(scrollY));
+        paint();
+      }));
+    }
+    paint();
+  },{capture:true,passive:true});
+  addEventListener("scroll",()=>{scrolls++},{passive:true});
+
+  mk("scrollBy(0,300)",()=>{const y=scrollY;scrollBy(0,300);
+    setTimeout(()=>{lines.push("scrollBy: "+y+" -> "+Math.round(scrollY));paint()},400)});
+  mk("copy",()=>{const t=box.innerText.replace(/^copy|^scrollBy\(0,300\)/gm,"");
+    navigator.clipboard&&navigator.clipboard.writeText(t)});
+  mk("hide",()=>box.remove());
+
+  const mast=document.querySelector(".mast");
+  function paint(){
+    live.textContent=facts.join("\n")+"\n"+
+      "scrollY "+Math.round(scrollY)+"  docTop "+Math.round(d.scrollTop)+
+      "  bodyTop "+Math.round(b.scrollTop)+"\n"+
+      "mast rect.top "+Math.round(mast?mast.getBoundingClientRect().top:0)+
+      "   wheels "+wheels+"  scroll events "+scrolls+"\n"+
+      "──────────────────────────────\n";
+    log.textContent=lines.join("\n");
+  }
+  (function loop(){paint();requestAnimationFrame(loop)})();
+})();
+</script>
 </body>
 </html>
