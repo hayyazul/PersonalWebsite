@@ -61,6 +61,14 @@ over it.
 
 Inverse kinematics is damped least squares on position only, warm-started from
 the previous pose, with a restart that aims the pan joint at the target when a
-descent stalls. Unreachable targets
+descent stalls. What it aims is `GRASP`, the empty air between the two fingers
+rather than the URDF's tool frame at the root of the fixed one, so the cursor
+sits where a held block would sit. Unreachable targets
 are never clamped: the marker turns red and the arm holds, because a hand leaving
 the workspace is the normal case during teleoperation rather than a fault.
+
+The gestures are: the cursor aims, holding the left button closes the hand,
+shift-drag orbits, alt-drag slides the cursor plane along the view direction, and
+a double-click returns the camera home. Nothing is bound to the wheel, on purpose
+- the box fills the first screen, so a non-passive wheel listener there made
+every page scroll wait behind a frame of inverse kinematics.

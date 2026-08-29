@@ -181,7 +181,10 @@ body.editing .cta{align-items:flex-start}
 .b-view{padding:0}
 .b-view::before{z-index:2}
 .b-view canvas{position:absolute;inset:0;width:100%;height:100%;display:block;
-  touch-action:none;pointer-events:none}
+  pointer-events:none}
+/* pan-y, not none: the page must still scroll under a gesture that is
+   travelling down the page rather than across the arm */
+.b-view #armfront{touch-action:pan-y}
 /* three layers, one picture: the ground under the arm, the arm, and the marker
    over it. Only the top one takes the pointer. */
 .b-view #armfront{pointer-events:auto;cursor:crosshair}
@@ -412,8 +415,8 @@ body.editing .card .shelf{display:flex}
         <canvas id="armback"></canvas>
         <canvas id="armview"></canvas>
         <canvas id="armfront"></canvas>
-        <div class="note" id="armnote">Move the cursor over this box · click grips ·
-          drag orbits · shift+scroll for depth</div>
+        <div class="note" id="armnote">Cursor aims · hold to grip · shift-drag orbits ·
+          alt-drag for depth · double-click resets the view</div>
       </div>
       <div class="bx res b-title" data-label="Title">
         <span class="ed inl" data-t="demo.name" data-ghost="[DEMO NAME — 2 to 4 words]"></span>
@@ -982,7 +985,15 @@ const CHAIN=[
 ];
 /* which frame each visual link rides on, in the order fk produces them */
 const LINK_FRAME=["base","shoulder","upper_arm","lower_arm","wrist","gripper"];
-const TOOL=[0,-0.0244,0];
+/* Where a held block would sit, in the gripper's frame. Measured off the two
+   jaw meshes: the fingers face each other across x = -0.010 .. +0.010 and run
+   from y = -0.05 out to y = -0.107, so this is the empty air between them,
+   about two thirds of the way out and leaning towards the fixed one. The URDF's
+   own tool frame - [0,-0.0244,0], the frame the forward kinematics was checked
+   against - is the root of the fixed finger, 58mm short of anything the hand
+   can actually hold, so aiming that put the cursor beside the grip rather than
+   in it. Independent of the jaw angle, so closing the hand never moves it. */
+const GRASP=[0.004,-0.082,0];
 const JAW={xyz:[-0.0202,-0.0244,0],rpy:[0,3.14158,0],ax:[0,0,1]};
 const LO=CHAIN.map(j=>j.lo/DEG), HI=CHAIN.map(j=>j.hi/DEG);
 
@@ -1021,8 +1032,8 @@ function fk(q,gripDeg){
     pts.push([T[3],T[7],T[11]]);
   }
   frames.jaw=mul(T,frame(JAW.xyz,JAW.rpy,JAW.ax,(gripDeg||0)*DEG));
-  const Tt=mul(T,frame(TOOL,[0,0,0],[0,0,1],0));
-  return {frames,pts,tool:[Tt[3],Tt[7],Tt[11]]};
+  const Tt=mul(T,frame(GRASP,[0,0,0],[0,0,1],0));
+  return {frames,pts,grasp:[Tt[3],Tt[7],Tt[11]]};
 }
 
 /* ── the solver ──
@@ -1037,13 +1048,13 @@ function fk(q,gripDeg){
 function descend(q,target,iters){
   q=q.slice();
   for(let it=0;it<iters;it++){
-    const p=fk(q).tool;
+    const p=fk(q).grasp;
     const e=[target[0]-p[0],target[1]-p[1],target[2]-p[2]];
     if(Math.hypot(e[0],e[1],e[2])<TOL*0.2) break;
     const J=[],h=1e-4;
     for(let j=0;j<5;j++){
       const qh=q.slice(); qh[j]+=h/DEG;
-      const ph=fk(qh).tool;
+      const ph=fk(qh).grasp;
       J.push([(ph[0]-p[0])/h,(ph[1]-p[1])/h,(ph[2]-p[2])/h]);
     }
     const lam=0.06,A=[[0,0,0],[0,0,0],[0,0,0]];
@@ -1068,7 +1079,7 @@ function descend(q,target,iters){
       q[j]=Math.max(LO[j],Math.min(HI[j],q[j]+dq));
     }
   }
-  const p=fk(q).tool;
+  const p=fk(q).grasp;
   return {q,gap:Math.hypot(target[0]-p[0],target[1]-p[1],target[2]-p[2])};
 }
 function solve(q,target){
@@ -1105,7 +1116,7 @@ function project(p){
 }
 /* The inverse. Two numbers on the screen and three in the world, so the
    missing one comes from a plane through the workspace that always faces the
-   camera: orbiting is what really changes depth, shift+scroll nudges the plane
+   camera: orbiting is what really changes depth, and alt-drag slides the plane
    along the view direction for fine adjustment. */
 function unproject(px,py){
   const b=basis();
@@ -1145,12 +1156,13 @@ attribute vec3 aPos; attribute vec3 aNor;
 uniform mat4 uClip; uniform mat4 uModel;
 uniform vec3 uLow, uSpan;
 uniform float uSwell;          // metres pushed along the normal, for the outline
+uniform vec3 uPush;            // metres pushed away from the eye, ditto
 varying vec3 vNor;
 void main(){
   vec3 p = uLow + aPos * uSpan;
   vec4 world = uModel * vec4(p,1.0);
   vec3 n = mat3(uModel) * aNor;
-  world.xyz += n * uSwell;
+  world.xyz += n * uSwell + uPush;
   vNor = n;
   gl_Position = uClip * world;
 }`;
@@ -1202,7 +1214,7 @@ function buildMesh(){
   gl.useProgram(prog);
   prog.aPos=gl.getAttribLocation(prog,"aPos");
   prog.aNor=gl.getAttribLocation(prog,"aNor");
-  for(const u of ["uClip","uModel","uLow","uSpan","uSwell","uColour","uFlat","uLight"])
+  for(const u of ["uClip","uModel","uLow","uSpan","uSwell","uPush","uColour","uFlat","uLight"])
     prog[u]=gl.getUniformLocation(prog,u);
   gl.uniform3fv(prog.uLow,M.low);
   gl.uniform3fv(prog.uSpan,M.span);
@@ -1242,8 +1254,12 @@ function drawArm(frames){
   gl.uniform3f(prog.uLight,-0.42,0.58,0.70);
 
   const model=new Float32Array(16);
+  const eye=basis().f;
   const pass=(swell,flat)=>{
     gl.uniform1f(prog.uSwell,swell);
+    /* the outline shell also retreats by one swell, so it can only ever lose a
+       depth argument it should not have been in - see below */
+    gl.uniform3f(prog.uPush,eye[0]*swell,eye[1]*swell,eye[2]*swell);
     gl.uniform1f(prog.uFlat,flat?1:0);
     gl.cullFace(flat?gl.FRONT:gl.BACK);
     for(const part of parts){
@@ -1262,9 +1278,17 @@ function drawArm(frames){
       gl.drawElements(gl.TRIANGLES,part.count,part.type,0);
     }
   };
-  /* the outline is the same geometry pushed out along its normals and drawn
-     inside-out, which costs one extra pass and no edge extraction at all */
-  pass(1.6/cam.scale,true);
+  /* The outline is the same geometry pushed out along its normals and drawn
+     inside-out, which costs one extra pass and no edge extraction at all. Where
+     a part is thinner than twice the swell - the ribs on the upper arm - its far
+     wall swells past its near wall and paints a dark seam across the middle of
+     the part. Retreating the whole shell by one swell puts the far wall back
+     behind where it started, so it cannot win, while a real outline against a
+     neighbouring part only loses if that neighbour is within a swell of it.
+     glPolygonOffset is the usual instrument here and is the wrong one: its
+     slope term explodes on exactly the near-silhouette triangles the outline is
+     made of, and it rubs out the outlines around the servos. */
+  pass(1.5/cam.scale,true);
   pass(0,false);
 }
 
@@ -1309,7 +1333,7 @@ function drawSkeleton(f){
   const p=f.pts.map(project);
   bg.lineCap="square";
   for(let i=0;i<p.length-1;i++) line(bg,p[i],p[i+1],7,KRAFT);
-  line(bg,p[p.length-1],project(f.tool),7,KRAFT);
+  line(bg,p[p.length-1],project(f.grasp),7,KRAFT);
   for(let i=1;i<p.length;i++){
     bg.fillStyle=GOLD; bg.fillRect(p[i][0]-4,p[i][1]-4,8,8);
   }
@@ -1345,7 +1369,7 @@ function tick(now){
   for(let i=0;i<5;i++) q[i]+=Math.max(-step,Math.min(step,wanted.q[i]-q[i]));
   grip+=Math.max(-step,Math.min(step,gripWanted-grip));
   const f=fk(q,grip);
-  drawGround(f.tool);
+  drawGround(f.grasp);
   if(gl) drawArm(f.frames); else drawSkeleton(f);
   drawMarker(); report();
   requestAnimationFrame(tick);
@@ -1368,35 +1392,41 @@ function resize(){
 }
 new ResizeObserver(resize).observe(front);
 
-let drag=null;
+/* Holding the button is the hand closing, which is the gesture the camera
+   version will inherit, so orbiting cannot also be the plain left drag: it
+   takes a modifier or one of the other buttons. Aiming continues throughout,
+   so the arm can be carried somewhere while it is holding something. */
+let orbit=null;
+const isOrbit=e=>e.shiftKey||e.altKey||e.button===1||e.button===2;
 front.addEventListener("pointermove",e=>{
-  const box=front.getBoundingClientRect();
-  if(drag){
-    drag.moved+=Math.abs(e.clientX-drag.x)+Math.abs(e.clientY-drag.y);
-    cam.az-=(e.clientX-drag.x)*0.008;
-    cam.el=Math.max(-8*DEG,Math.min(78*DEG,cam.el+(e.clientY-drag.y)*0.006));
-    drag.x=e.clientX; drag.y=e.clientY;
+  if(orbit){
+    if(orbit.depth) cam.depth+=(e.clientY-orbit.y)*0.0006;
+    else{
+      cam.az-=(e.clientX-orbit.x)*0.008;
+      cam.el=Math.max(-8*DEG,Math.min(78*DEG,cam.el+(e.clientY-orbit.y)*0.006));
+    }
+    orbit.x=e.clientX; orbit.y=e.clientY;
     return;
   }
+  const box=front.getBoundingClientRect();
   aimAt(unproject(e.clientX-box.left,e.clientY-box.top));
 });
 front.addEventListener("pointerdown",e=>{
   front.setPointerCapture(e.pointerId);
-  drag={x:e.clientX,y:e.clientY,moved:0};
+  if(isOrbit(e)){orbit={x:e.clientX,y:e.clientY,depth:e.altKey};return}
+  gripWanted=40;
 });
-front.addEventListener("pointerup",e=>{
-  /* a press that went nowhere was a click, and a click is the grip. Anything
-     that travelled was the camera being moved and must not also grab. */
-  if(drag && drag.moved<6) gripWanted=gripWanted>20?0:40;
-  drag=null;
-});
+front.addEventListener("pointerup",()=>{orbit=null;gripWanted=0});
+front.addEventListener("pointercancel",()=>{orbit=null;gripWanted=0});
+/* a button released outside the box must not leave the hand clenched */
+addEventListener("blur",()=>{orbit=null;gripWanted=0});
 front.addEventListener("dblclick",()=>{cam.az=HOME.az;cam.el=HOME.el;cam.depth=0});
 front.addEventListener("contextmenu",e=>e.preventDefault());
-front.addEventListener("wheel",e=>{
-  if(!e.shiftKey) return;            /* a plain scroll still scrolls the page */
-  e.preventDefault();
-  cam.depth+=e.deltaY*0.0002;
-},{passive:false});
+/* No wheel handler, deliberately. Depth used to hang off shift+scroll, which
+   needs a non-passive listener, which makes every wheel event over this box wait
+   on the main thread - and this box fills the first screen while that same main
+   thread is solving inverse kinematics sixty times a second. The page stopped
+   scrolling. The wheel belongs to the document; depth moved to alt-drag. */
 
 /* nothing is gained by solving inverse kinematics for a box nobody is looking at */
 new IntersectionObserver(entries=>{
@@ -1409,7 +1439,7 @@ try{ buildMesh(); }catch(err){ meshFailed=err.message; }
 if(meshFailed){
   gl=null;
   note.textContent="Showing the chain only — "+meshFailed+
-    ". Click grips · drag orbits · shift+scroll for depth";
+    ". Cursor aims · hold to grip · shift-drag orbits";
 }
 resize();
 })();

@@ -106,9 +106,9 @@ the pigment blended with what sits behind it — with **no transition**. It land
 the instant the cursor arrives. Nothing moves, tilts, or goes ajar under the
 cursor; movement is what a click is for.
 
-**The swing is 60ms, linear, and has no tail.** A lid that spends its last few
+**The swing is 65ms, linear, and has no tail.** A lid that spends its last few
 degrees drifting into the stop reads as soft, and softness here reads as
-corporate. At 60ms the swing is continuous but has almost no in-between: the
+corporate. At 65ms the swing is continuous but has almost no in-between: the
 panel is shut, and then it is open. The peak stays under 90° so a lid never
 shows the viewer its own back, and the focal length is long enough (2000px)
 that a lid never splays far enough to lay a sliver over a neighbouring row —
