@@ -20,13 +20,15 @@
   --edge:#4A3F34;                   /* the only rule colour that reads on black */
   --lift:6px;                       /* letterpress offset */
   --rule:3px solid var(--ink);
+  --face-body:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --face-display:"Bodoni Moda",Didot,"Times New Roman",serif;
   --bg:var(--kraft);--on:var(--ink);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
   background:var(--kraft);color:var(--ink);
-  font-family:"Archivo","Helvetica Neue",Arial,sans-serif;font-size:15.5px;line-height:1.45;
+  font-family:var(--face-body);font-size:15.5px;line-height:1.45;
   -webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
 body::before{
@@ -85,6 +87,7 @@ button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inheri
 .field .ed.blk:empty,.slot .ed.blk:empty{
   background:repeating-linear-gradient(45deg,transparent 0 7px,rgba(0,0,0,.16) 7px 14px)}
 .ed.inl:empty{border-bottom:2px dotted currentColor;opacity:.45}
+body.norule .ed.inl:empty{border-bottom:none}
 .ed.inl:empty::before{display:inline}
 /* while editing, everything you may touch says so - a dashed rule, not a
    colour, so it never competes with a panel's own field */
@@ -117,6 +120,20 @@ body.editing .ed:focus{outline:3px solid var(--chrome);outline-offset:4px}
   letter-spacing:.02em;padding:6px 8px;border:2px solid var(--ink);background:var(--chalk);
   color:var(--ink);min-width:0}
 .desk .drawer hr{border:none;border-top:var(--rule);margin:13px 0}
+.desk .drawer select{font:inherit;text-transform:none;letter-spacing:.02em;padding:6px 8px;
+  border:2px solid var(--ink);background:var(--chalk);color:var(--ink);width:100%}
+.desk .drawer .chk{display:flex;gap:9px;align-items:center;cursor:pointer;
+  text-transform:none;letter-spacing:.04em;color:var(--ink-60)}
+
+/* an address belongs beside the thing it is the address of. While editing, every
+   link grows its own field; they share a key, so filling one fills the rest. */
+.linkslot{display:inline-flex;flex-direction:column;gap:4px;align-items:flex-start;
+  vertical-align:top;max-width:100%}
+.linkslot>input{display:none;font-family:"IBM Plex Mono",monospace;font-size:10px;
+  letter-spacing:.02em;padding:4px 6px;border:2px solid currentColor;
+  background:var(--chalk);color:var(--ink);width:min(30ch,100%)}
+body.editing .linkslot>input{display:block}
+body.editing .cta{align-items:flex-start}
 @media print{.desk{display:none}}
 
 /* ══════════════ FOLD ══════════════ */
@@ -135,7 +152,7 @@ body.editing .ed:focus{outline:3px solid var(--chrome);outline-offset:4px}
 
 .mast{padding:clamp(9px,1.5vh,18px) 0 0}
 .mast .line{display:flex;justify-content:space-between;align-items:baseline;
-  font-family:"Bodoni Moda",Didot,"Times New Roman",serif;font-weight:500;
+  font-family:var(--face-display);font-weight:500;
   font-size:clamp(1.7rem,6.2vw,4.7rem);line-height:.96;font-optical-sizing:auto}
 .mast .kicker{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
   font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.15em;
@@ -161,6 +178,12 @@ body.editing .ed:focus{outline:3px solid var(--chrome);outline-offset:4px}
   text-transform:uppercase;white-space:nowrap}
 .bx.res{background:var(--black) repeating-linear-gradient(45deg,
   transparent 0 8px,rgba(233,220,192,.05) 8px 16px)}
+.b-view{padding:0}
+.b-view::before{z-index:2}
+.b-view canvas{position:absolute;inset:0;width:100%;height:100%;display:block;
+  touch-action:none;cursor:crosshair}
+.b-view .note{position:absolute;left:12px;right:12px;bottom:9px;margin:0;z-index:2;
+  pointer-events:none}
 .b-view .note{margin-top:auto}
 .slot .note{font-family:"IBM Plex Mono",monospace;font-size:11.5px;line-height:1.5;
   color:var(--kraft);opacity:.44}
@@ -174,6 +197,7 @@ body.editing .ed:focus{outline:3px solid var(--chrome);outline-offset:4px}
 .chip.off{opacity:.34}
 .chip b{font-weight:600;opacity:.55}
 .cam{padding:9px 15px;font-size:13px;box-shadow:4px 4px 0 var(--ink);align-self:flex-start}
+.cam[disabled]{cursor:not-allowed;opacity:.45;box-shadow:none;transform:none}
 .b-view{grid-area:view}.b-title{grid-area:title}.b-caveat{grid-area:caveat}
 .b-source{grid-area:source}.b-feed{grid-area:feed}.b-state{grid-area:state}
 
@@ -186,7 +210,7 @@ body.editing .ed:focus{outline:3px solid var(--chrome);outline-offset:4px}
 .slab{padding:clamp(34px,5.5vw,64px) 0;border-bottom:var(--rule)}
 .sh{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;
   margin-bottom:24px}
-.sh h2{font-family:"Bodoni Moda",Didot,serif;font-weight:500;
+.sh h2{font-family:var(--face-display);font-weight:500;
   font-size:clamp(2rem,5.2vw,3.7rem);line-height:1}
 .sh .idx{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.15em;
   text-transform:uppercase;opacity:.7;text-align:right;line-height:1.7}
@@ -210,7 +234,7 @@ body.editing .ed:focus{outline:3px solid var(--chrome);outline-offset:4px}
 .reveal .shot{position:absolute;inset:0;background-size:cover;background-position:center}
 .reveal .cap{position:relative;background:var(--black);border-top:2px solid var(--edge);
   padding:11px 13px;display:flex;flex-direction:column;gap:5px}
-.reveal .what{font-family:"Bodoni Moda",serif;font-size:1.2rem;color:var(--chalk);opacity:.9}
+.reveal .what{font-family:var(--face-display);font-size:1.2rem;color:var(--chalk);opacity:.9}
 .reveal .tag{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;
   text-transform:uppercase;color:var(--kraft);opacity:.45}
 .reveal .shut{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.16em;
@@ -254,9 +278,9 @@ body.editing .ed:focus{outline:3px solid var(--chrome);outline-offset:4px}
 
 .card .top{display:flex;justify-content:space-between;align-items:center;gap:10px;
   padding:11px 13px;border-bottom:var(--rule)}
-.card .top .n{font-family:"Bodoni Moda",serif;font-size:1.45rem;line-height:1;font-weight:500}
+.card .top .n{font-family:var(--face-display);font-size:1.45rem;line-height:1;font-weight:500}
 .card .body{padding:14px 13px 13px;display:flex;flex-direction:column;gap:10px;flex:1}
-.card h3{font-family:"Bodoni Moda",Didot,serif;font-weight:500;font-size:1.45rem;line-height:1.05}
+.card h3{font-family:var(--face-display);font-weight:500;font-size:1.45rem;line-height:1.05}
 .card .foot{margin-top:auto;padding-top:10px;border-top:2px solid currentColor;
   font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.11em;
   text-transform:uppercase;opacity:.8}
@@ -324,8 +348,11 @@ body.editing .card .shelf{display:flex}
 <!-- ═══════════════ THE DESK ═══════════════ -->
 <div class="desk">
   <div class="drawer" id="drawer">
-    <h4>Links</h4>
-    <div id="linkfields"></div>
+    <h4>Type</h4>
+    <label class="fld"><span>Body</span><select id="facebody"></select></label>
+    <label class="fld"><span>Display</span><select id="facedisplay"></select></label>
+    <label class="chk"><input type="checkbox" id="ruletoggle" checked>
+      Dotted rule under unwritten subtitles</label>
     <hr>
     <h4>Résumé</h4>
     <div class="row">
@@ -346,7 +373,7 @@ body.editing .card .shelf{display:flex}
   </div>
   <div class="row">
     <button type="button" id="editbtn" aria-pressed="false">Edit: off</button>
-    <button type="button" id="drawerbtn" aria-expanded="false">Links &amp; files</button>
+    <button type="button" id="drawerbtn" aria-expanded="false">Type &amp; files</button>
   </div>
   <div class="said" id="says"></div>
 </div>
@@ -379,7 +406,9 @@ body.editing .card .shelf{display:flex}
   <div class="wrap stage">
     <div class="slot">
       <div class="bx b-view" data-label="Viewport · robot arm">
-        <div class="note">[live 3D arm fills this box]</div>
+        <canvas id="armview"></canvas>
+        <div class="note" id="armnote">Move the cursor over this box. Drag to orbit,
+          shift+scroll for depth, hold space to grip.</div>
       </div>
       <div class="bx res b-title" data-label="Title">
         <span class="ed inl" data-t="demo.name" data-ghost="[DEMO NAME — 2 to 4 words]"></span>
@@ -389,7 +418,7 @@ body.editing .card .shelf{display:flex}
         <div class="ed blk" data-t="demo.caveat" data-ghost="[ONE LINE — what it does, and what it does not.]"></div>
       </div>
       <div class="bx res b-source" data-label="Source">
-        <button class="btn btn-2 cam" type="button">Use camera</button>
+        <button class="btn btn-2 cam" type="button" disabled>Use camera</button>
         <span class="mono">Cursor · live now</span>
         <span class="mono">Nothing leaves your device</span>
       </div>
@@ -616,15 +645,85 @@ function applyLinks(){
     else if(!S.l.resume) a.removeAttribute("download");
   });
 }
-const linkfields=document.getElementById("linkfields");
-linkfields.innerHTML=LINKS.filter(l=>l[2]!=="file").map(([k,label])=>
-  `<label class="fld"><span>${label}</span><input type="url" data-lk="${k}"
-    placeholder="${k==="email"?"you@example.com":"https://…"}"></label>`).join("");
-linkfields.querySelectorAll("input").forEach(inp=>{
-  const k=inp.dataset.lk;
-  if(inp.type==="url"&&k==="email") inp.type="text";
-  inp.value=S.l[k]||"";
-  inp.addEventListener("input",()=>{S.l[k]=inp.value.trim();applyLinks();save()});
+/* every link is wrapped where it stands and given its own field, so an address
+   is typed next to the word it belongs to rather than looked up in a list */
+function fieldsForLinks(){
+  document.querySelectorAll("[data-l]").forEach(a=>{
+    if(a.parentElement.classList.contains("linkslot")) return;
+    const k=a.dataset.l;
+    const slot=document.createElement("span");
+    slot.className="linkslot";
+    a.replaceWith(slot); slot.appendChild(a);
+    const inp=document.createElement("input");
+    inp.type="text"; inp.dataset.lk=k; inp.value=S.l[k]||"";
+    inp.placeholder=k==="email"?"you@example.com":"https://…";
+    inp.setAttribute("aria-label",k+" address");
+    inp.addEventListener("input",()=>{
+      S.l[k]=inp.value.trim(); syncLinkFields(k,inp); applyLinks(); save();
+    });
+    inp.addEventListener("click",e=>e.stopPropagation());
+    slot.appendChild(inp);
+  });
+}
+function syncLinkFields(k,except){
+  document.querySelectorAll('input[data-lk="'+k+'"]').forEach(i=>{
+    if(i!==except) i.value=S.l[k]||"";
+  });
+}
+/* ── type ──
+   Two tokens carry every face on the page, so choosing one is one custom
+   property, and a family that is not already loaded gets its stylesheet
+   appended the first time it is asked for rather than on every page load. */
+const BODY_FACES=[
+  ["Archivo",'"Archivo","Helvetica Neue",Arial,sans-serif',true],
+  ["Inter",'"Inter",system-ui,sans-serif',false],
+  ["Work Sans",'"Work Sans",system-ui,sans-serif',false],
+  ["IBM Plex Sans",'"IBM Plex Sans",system-ui,sans-serif',false],
+  ["Space Grotesk",'"Space Grotesk",system-ui,sans-serif',false],
+  ["Söhne-ish (system)",'system-ui,-apple-system,"Segoe UI",sans-serif',true]
+];
+const DISPLAY_FACES=[
+  ["Bodoni Moda",'"Bodoni Moda",Didot,"Times New Roman",serif',true],
+  ["Playfair Display",'"Playfair Display",Didot,serif',false],
+  ["DM Serif Display",'"DM Serif Display",Didot,serif',false],
+  ["Libre Baskerville",'"Libre Baskerville",Georgia,serif',false],
+  ["Archivo Black",'"Archivo Black","Archivo",sans-serif',false]
+];
+const loaded=new Set();
+function ensureFace(name,preloaded){
+  if(preloaded||loaded.has(name)) return;
+  loaded.add(name);
+  const link=document.createElement("link");
+  link.rel="stylesheet";
+  link.href="https://fonts.googleapis.com/css2?family="+
+    name.replace(/ /g,"+")+"&display=swap";
+  link.onerror=()=>say("Could not load "+name+" — it needs a connection.",true);
+  document.head.appendChild(link);
+}
+function buildFacePicker(sel,faces,tokenName,stateKey){
+  sel.innerHTML=faces.map(([label],i)=>`<option value="${i}">${label}</option>`).join("");
+  function apply(i){
+    const[name,stack,pre]=faces[i];
+    ensureFace(name,pre);
+    document.documentElement.style.setProperty(tokenName,stack);
+    S.t[stateKey]=String(i);
+  }
+  const start=faces.findIndex((f,i)=>String(i)===S.t[stateKey]);
+  sel.value=String(start<0?0:start);
+  apply(start<0?0:start);
+  sel.addEventListener("change",()=>{apply(+sel.value);save()});
+}
+buildFacePicker(document.getElementById("facebody"),BODY_FACES,"--face-body","face.body");
+buildFacePicker(document.getElementById("facedisplay"),DISPLAY_FACES,"--face-display","face.display");
+
+const ruletoggle=document.getElementById("ruletoggle");
+function applyRule(){
+  const on=S.t["face.rule"]!=="off";
+  ruletoggle.checked=on;
+  document.body.classList.toggle("norule",!on);
+}
+ruletoggle.addEventListener("change",()=>{
+  S.t["face.rule"]=ruletoggle.checked?"on":"off"; applyRule(); save();
 });
 
 /* ── files ──
@@ -713,8 +812,8 @@ document.getElementById("importfile").addEventListener("change",e=>{
         throw new Error("this file has no site content in it");
       S={t:next.t||{},l:next.l||{},f:next.f||{}};
       for(const el of eds){el.textContent=S.t[el.dataset.t]||"";normalise(el)}
-      linkfields.querySelectorAll("input").forEach(i=>i.value=S.l[i.dataset.lk]||"");
-      applyLinks(); paintImages(); paintResume(); save(); say("Imported");
+      document.querySelectorAll("input[data-lk]").forEach(i=>i.value=S.l[i.dataset.lk]||"");
+      applyLinks(); paintImages(); paintResume(); applyRule(); save(); say("Imported");
     }catch(err){say("Import failed — "+err.message,true)}
   };
   fr.readAsText(file);
@@ -724,8 +823,8 @@ document.getElementById("wipe").addEventListener("click",()=>{
   if(!confirm("Erase every word, link and image stored in this browser?")) return;
   S={t:{},l:{},f:{}};
   for(const el of eds){el.textContent="";normalise(el)}
-  linkfields.querySelectorAll("input").forEach(i=>i.value="");
-  applyLinks(); paintImages(); paintResume();
+  document.querySelectorAll("input[data-lk]").forEach(i=>i.value="");
+  applyLinks(); paintImages(); paintResume(); applyRule();
   try{localStorage.removeItem(KEY)}catch(e){}
   say("Erased");
 });
@@ -832,8 +931,332 @@ pick.addEventListener("click",e=>{
   frame.innerHTML='<iframe src="'+src+'" title="'+label+'" loading="lazy"></iframe>';
 });
 
-applyLinks(); paintImages(); paintResume(); bindLids(); setEditing(false);
+fieldsForLinks(); applyLinks(); paintImages(); paintResume(); applyRule();
+bindLids(); setEditing(false);
 addEventListener("resize",bindLids);
+</script>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   DEMO 01 — THE ARM FOLLOWS THE CURSOR
+
+   Ported from ../RobotProjects/so100-mediapipe-control (demo/follow_cursor.py).
+   That version runs a real solver against a meshcat viewer over a websocket;
+   this one has no server to talk to, so the chain, the solver and the drawing
+   all live here. The kinematics are not an approximation of that arm - the
+   frames below are the SO-100 URDF's own joint origins, and this forward
+   kinematics was checked against the Python Kinematics.tool_pose at five poses
+   spanning the workspace, agreeing to under a micrometre.
+
+   The camera half of the demo is deliberately absent. What is here is the same
+   control loop it will use: something outside produces a target, a fixed-rate
+   loop reads the most recent one, and the arm is told to go there. Swapping the
+   cursor for a tracked wrist changes nothing below `aimAt`.
+   ══════════════════════════════════════════════════════════════════════ */
+(function(){
+const canvas=document.getElementById("armview");
+if(!canvas||!canvas.getContext) return;
+const ctx=canvas.getContext("2d");
+const note=document.getElementById("armnote");
+const DEG=Math.PI/180;
+
+/* ── the chain ──
+   Joint origins and axes straight out of models/so100.urdf, in URDF order.
+   Limits are the URDF's own, in radians. The tool frame hangs off the gripper
+   link through a fixed joint, which is why the jaw angle is not in this list:
+   opening the jaw does not move the tool. */
+const CHAIN=[
+ {n:"shoulder_pan", xyz:[0,-0.0452,0.0165],rpy:[1.57079,0,0],ax:[0,1,0],lo:-2,      hi:2},
+ {n:"shoulder_lift",xyz:[0,0.1025,0.0306], rpy:[-1.8,0,0],   ax:[1,0,0],lo:0,       hi:3.5},
+ {n:"elbow_flex",   xyz:[0,0.11257,0.028], rpy:[1.57079,0,0],ax:[1,0,0],lo:-3.14158,hi:0},
+ {n:"wrist_flex",   xyz:[0,0.0052,0.1349], rpy:[-1,0,0],     ax:[1,0,0],lo:-2.5,    hi:1.2},
+ {n:"wrist_roll",   xyz:[0,-0.0601,0],     rpy:[0,1.57079,0],ax:[0,1,0],lo:-3.14158,hi:3.14158}
+];
+const TOOL=[0,-0.0244,0];
+const JAW={xyz:[-0.0202,-0.0244,0],rpy:[0,3.14158,0],ax:[0,0,1]};
+const LO=CHAIN.map(j=>j.lo/DEG), HI=CHAIN.map(j=>j.hi/DEG);
+
+/* Roughly the middle of what the arm can reach. Not a limit: it is only the
+   point the cursor's plane passes through. */
+const CENTRE=[0,-0.20,0.12];
+const START=[0,90,-90,0,0];
+const PAN_PIVOT_Y=-0.0452;   /* pan turns the tool about this point, not the origin */
+const TOL=0.004;
+
+function mul(a,b){const o=new Float64Array(16);
+  for(let r=0;r<4;r++)for(let c=0;c<4;c++){let v=0;for(let k=0;k<4;k++)v+=a[r*4+k]*b[k*4+c];o[r*4+c]=v}
+  return o}
+function frame(xyz,rpy,ax,q){
+  const cr=Math.cos(rpy[0]),sr=Math.sin(rpy[0]);
+  const cp=Math.cos(rpy[1]),sp=Math.sin(rpy[1]);
+  const cy=Math.cos(rpy[2]),sy=Math.sin(rpy[2]);
+  const R=[cy*cp,cy*sp*sr-sy*cr,cy*sp*cr+sy*sr,
+           sy*cp,sy*sp*sr+cy*cr,sy*sp*cr-cy*sr,
+           -sp,  cp*sr,         cp*cr];
+  const c=Math.cos(q),s=Math.sin(q),t=1-c,x=ax[0],y=ax[1],z=ax[2];
+  const A=[t*x*x+c,t*x*y-s*z,t*x*z+s*y,
+           t*x*y+s*z,t*y*y+c,t*y*z-s*x,
+           t*x*z-s*y,t*y*z+s*x,t*z*z+c];
+  const M=new Float64Array(16); M[15]=1;
+  for(let r=0;r<3;r++){
+    for(let k=0;k<3;k++){let v=0;for(let i=0;i<3;i++)v+=R[r*3+i]*A[i*3+k];M[r*4+k]=v}
+    M[r*4+3]=xyz[r];
+  }
+  return M}
+function fk(q){
+  let T=new Float64Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
+  const pts=[[0,0,0]];
+  for(let i=0;i<CHAIN.length;i++){
+    T=mul(T,frame(CHAIN[i].xyz,CHAIN[i].rpy,CHAIN[i].ax,q[i]*DEG));
+    pts.push([T[3],T[7],T[11]]);
+  }
+  const Tt=mul(T,frame(TOOL,[0,0,0],[0,0,1],0));
+  return {pts,wrist:T,tool:[Tt[3],Tt[7],Tt[11]],toolT:Tt};
+}
+
+/* ── the solver ──
+   Damped least squares on position alone. Position alone because this arm
+   cannot hold most points with the jaw pointing anywhere in particular, and
+   demanding an orientation makes it refuse places it can plainly reach: going
+   where you pointed is the whole demo, where the jaw ends up is not.
+
+   A target it cannot reach is never clamped or nudged into range. The solver
+   returns the gap it could not close and the caller shows it, because during
+   teleoperation a hand leaving the workspace is the normal case, not a fault. */
+function descend(q,target,iters){
+  q=q.slice();
+  for(let it=0;it<iters;it++){
+    const p=fk(q).tool;
+    const e=[target[0]-p[0],target[1]-p[1],target[2]-p[2]];
+    if(Math.hypot(e[0],e[1],e[2])<TOL*0.2) break;
+    const J=[],h=1e-4;
+    for(let j=0;j<5;j++){
+      const qh=q.slice(); qh[j]+=h/DEG;
+      const ph=fk(qh).tool;
+      J.push([(ph[0]-p[0])/h,(ph[1]-p[1])/h,(ph[2]-p[2])/h]);
+    }
+    const lam=0.06,A=[[0,0,0],[0,0,0],[0,0,0]];
+    for(let r=0;r<3;r++)for(let c=0;c<3;c++){
+      let v=0; for(let j=0;j<5;j++) v+=J[j][r]*J[j][c];
+      A[r][c]=v+(r===c?lam*lam:0);
+    }
+    const d=A[0][0]*(A[1][1]*A[2][2]-A[1][2]*A[2][1])
+           -A[0][1]*(A[1][0]*A[2][2]-A[1][2]*A[2][0])
+           +A[0][2]*(A[1][0]*A[2][1]-A[1][1]*A[2][0]);
+    if(!isFinite(d)||Math.abs(d)<1e-12) break;
+    const inv=(r,c)=>{
+      const rs=[0,1,2].filter(i=>i!==c),cs=[0,1,2].filter(i=>i!==r);
+      const co=A[rs[0]][cs[0]]*A[rs[1]][cs[1]]-A[rs[0]][cs[1]]*A[rs[1]][cs[0]];
+      return ((r+c)%2?-co:co)/d;
+    };
+    const y=[0,0,0];
+    for(let r=0;r<3;r++){let v=0;for(let c=0;c<3;c++)v+=inv(r,c)*e[c];y[r]=v}
+    for(let j=0;j<5;j++){
+      let dq=0; for(let r=0;r<3;r++) dq+=J[j][r]*y[r];
+      dq=Math.max(-8,Math.min(8,dq/DEG));
+      q[j]=Math.max(LO[j],Math.min(HI[j],q[j]+dq));
+    }
+  }
+  const p=fk(q).tool;
+  return {q,gap:Math.hypot(target[0]-p[0],target[1]-p[1],target[2]-p[2])};
+}
+function solve(q,target){
+  const warm=descend(q,target,6);
+  if(warm.gap<TOL) return warm;
+  /* A descent that stalls has usually found a limit wall rather than the edge
+     of the workspace. Turning the arm to face the target first tells the two
+     apart, and it is only paid for on the frames where the warm start failed. */
+  const a=Math.atan2(target[0],-(target[1]-PAN_PIVOT_Y))/DEG;
+  const cold=descend([Math.max(LO[0],Math.min(HI[0],a)),90,-90,0,0],target,26);
+  return cold.gap<warm.gap?cold:warm;
+}
+
+/* ── the camera ──
+   Orthographic, which is what makes pointing exact: a pixel maps to one point
+   on the plane and back with no division, so the tool lands under the cursor
+   rather than near it. */
+const cam={az:-52*DEG,el:22*DEG,scale:1,depth:0};
+function basis(){
+  const f=[-Math.cos(cam.el)*Math.cos(cam.az),-Math.cos(cam.el)*Math.sin(cam.az),-Math.sin(cam.el)];
+  let r=[-f[1],f[0],0];
+  const rn=Math.hypot(r[0],r[1],r[2])||1; r=[r[0]/rn,r[1]/rn,0];
+  const u=[r[1]*f[2]-r[2]*f[1],r[2]*f[0]-r[0]*f[2],r[0]*f[1]-r[1]*f[0]];
+  return {f,r,u:[-u[0],-u[1],-u[2]]};
+}
+let view={w:1,h:1,cx:0,cy:0};
+function project(p){
+  const b=basis();
+  const d=[p[0]-CENTRE[0],p[1]-CENTRE[1],p[2]-CENTRE[2]];
+  const x=d[0]*b.r[0]+d[1]*b.r[1]+d[2]*b.r[2];
+  const y=d[0]*b.u[0]+d[1]*b.u[1]+d[2]*b.u[2];
+  return [view.cx+x*cam.scale, view.cy-y*cam.scale];
+}
+/* The inverse: two numbers on the screen and three in the world, so the missing
+   one comes from a plane through the workspace that always faces the camera.
+   Orbiting is what really changes depth; shift+scroll nudges the plane along
+   the view direction for fine adjustment. */
+function unproject(px,py){
+  const b=basis();
+  const x=(px-view.cx)/cam.scale, y=-(py-view.cy)/cam.scale;
+  return [CENTRE[0]+b.r[0]*x+b.u[0]*y+b.f[0]*cam.depth,
+          CENTRE[1]+b.r[1]*x+b.u[1]*y+b.f[1]*cam.depth,
+          CENTRE[2]+b.r[2]*x+b.u[2]*y+b.f[2]*cam.depth];
+}
+
+/* ── state ── */
+let q=START.slice();
+let target=CENTRE.slice();
+let gap=0, grip=0, gripWanted=0, running=false, last=0;
+function aimAt(point){ target=point; }
+
+/* ── drawing ──
+   Flat ink on the black field: strokes and hard-edged fills, no gradient and
+   no blur, and the pigments are the page's own. */
+const KRAFT="#E9DCC0",CHALK="#F8F4EC",EDGE="#4A3F34",CHROME="#F2C230",
+      VERM="#DC4A2C",INK="#17120F";
+function line(a,b,w,colour){
+  ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]);
+  ctx.lineWidth=w; ctx.strokeStyle=colour; ctx.stroke();
+}
+function square(p,r,fill,stroke){
+  ctx.beginPath(); ctx.rect(p[0]-r,p[1]-r,2*r,2*r);
+  if(fill){ctx.fillStyle=fill;ctx.fill()}
+  if(stroke){ctx.lineWidth=2;ctx.strokeStyle=stroke;ctx.stroke()}
+}
+function drawGround(){
+  const n=5,step=0.07,ext=n*step;
+  ctx.lineCap="butt";
+  for(let i=-n;i<=n;i++){
+    line(project([i*step,-ext,0]),project([i*step,ext,0]),1,EDGE);
+    line(project([-ext,i*step,0]),project([ext,i*step,0]),1,EDGE);
+  }
+}
+function draw(){
+  const f=fk(q);
+  ctx.clearRect(0,0,view.w,view.h);
+  drawGround();
+
+  /* where the tool is standing, so height is readable in a flat drawing */
+  const foot=[f.tool[0],f.tool[1],0];
+  ctx.setLineDash([3,4]); line(project(f.tool),project(foot),1.5,EDGE); ctx.setLineDash([]);
+  square(project(foot),3,null,EDGE);
+
+  const p=f.pts.map(project);
+  ctx.lineCap="square"; ctx.lineJoin="miter";
+  square(p[0],9,EDGE,KRAFT);                        /* the base it is bolted to */
+  for(let i=0;i<p.length-1;i++) line(p[i],p[i+1],8,CHALK);
+  line(p[p.length-1],project(f.tool),8,CHALK);
+  for(let i=1;i<p.length;i++) square(p[i],4,CHROME,INK);
+
+  /* the jaw: two fingers that open on the gripper joint, drawn from the tool
+     frame so they turn with the wrist */
+  const half=(6+grip*0.30)*DEG;
+  for(const s of [1,-1]){
+    const t=mul(f.wrist,frame(JAW.xyz,[0,0,s*half],[0,0,1],0));
+    const tip=mul(t,frame([-0.035,0,0],[0,0,0],[0,0,1],0));
+    line(project([t[3],t[7],t[11]]),project([tip[3],tip[7],tip[11]]),4,CHALK);
+  }
+
+  const reachable=gap<TOL;
+  const tp=project(target);
+  ctx.beginPath(); ctx.rect(tp[0]-7,tp[1]-7,14,14);
+  ctx.lineWidth=2.5; ctx.strokeStyle=reachable?CHROME:VERM; ctx.stroke();
+  if(!reachable){ line([tp[0]-11,tp[1]],[tp[0]+11,tp[1]],2,VERM);
+                  line([tp[0],tp[1]-11],[tp[0],tp[1]+11],2,VERM); }
+}
+
+/* ── the readout ──
+   The chips were already on the page as reserved space; they now say what the
+   arm is actually doing. */
+const chips=document.querySelectorAll(".b-state .chip");
+let reportTick=0;
+function report(){
+  if(++reportTick%4 || chips.length<5) return;
+  const set=(i,label,value,dim)=>{
+    chips[i].innerHTML="<b>"+label+"</b>"+value;
+    chips[i].classList.toggle("off",!!dim);
+  };
+  set(0,"J1",q[0].toFixed(0)+"°");
+  set(1,"J2",q[1].toFixed(0)+"°");
+  set(2,"J3",q[2].toFixed(0)+"°");
+  set(3,"Gap",(gap*1000).toFixed(0)+" mm",gap>=TOL);
+  set(4,"Grip",grip>20?"closed":"open",grip<=20);
+}
+
+/* ── the loop ──
+   Fixed rate and it never waits on the pointer: with no new cursor position it
+   re-commands the same target, exactly as the camera version will re-use the
+   last wrist pose when a frame is dropped. */
+const MAX_DEG_PER_S=260;
+function tick(now){
+  if(!running) return;
+  const dt=Math.min(0.05,(now-last)/1000||0.016); last=now;
+  const wanted=solve(q,target);
+  gap=wanted.gap;
+  const step=MAX_DEG_PER_S*dt;
+  for(let i=0;i<5;i++){
+    const d=wanted.q[i]-q[i];
+    q[i]+=Math.max(-step,Math.min(step,d));
+  }
+  grip+=Math.max(-step,Math.min(step,gripWanted-grip));
+  draw(); report();
+  requestAnimationFrame(tick);
+}
+
+/* ── input ── */
+function resize(){
+  const box=canvas.getBoundingClientRect();
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  canvas.width=Math.max(1,Math.round(box.width*dpr));
+  canvas.height=Math.max(1,Math.round(box.height*dpr));
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  view={w:box.width,h:box.height,cx:box.width/2,cy:box.height*0.54};
+  /* the whole reach is about 0.35 m, and it should sit inside the box whichever
+     way round the box is */
+  cam.scale=Math.min(box.width,box.height*1.35)/0.62;
+  if(!running) draw();
+}
+new ResizeObserver(resize).observe(canvas);
+
+let dragging=null;
+canvas.addEventListener("pointermove",e=>{
+  const box=canvas.getBoundingClientRect();
+  if(dragging){
+    cam.az-=(e.clientX-dragging.x)*0.008;
+    cam.el=Math.max(-10*DEG,Math.min(78*DEG,cam.el+(e.clientY-dragging.y)*0.006));
+    dragging={x:e.clientX,y:e.clientY};
+    return;
+  }
+  /* a held button means the camera is being moved, not aimed */
+  if(e.buttons!==0) return;
+  aimAt(unproject(e.clientX-box.left,e.clientY-box.top));
+});
+canvas.addEventListener("pointerdown",e=>{
+  canvas.setPointerCapture(e.pointerId);
+  if(e.shiftKey||e.button===1||e.button===2){dragging={x:e.clientX,y:e.clientY};return}
+  gripWanted=40;
+});
+addEventListener("pointerup",e=>{dragging=null;gripWanted=0});
+canvas.addEventListener("contextmenu",e=>e.preventDefault());
+canvas.addEventListener("wheel",e=>{
+  if(!e.shiftKey) return;          /* a plain scroll still scrolls the page */
+  e.preventDefault();
+  cam.depth+=e.deltaY*0.0002;
+},{passive:false});
+addEventListener("keydown",e=>{
+  if(e.code==="Space"&&document.activeElement===document.body){e.preventDefault();gripWanted=40}
+});
+addEventListener("keyup",e=>{if(e.code==="Space")gripWanted=0});
+
+/* nothing is gained by solving inverse kinematics for a box nobody is looking at */
+new IntersectionObserver(entries=>{
+  const visible=entries[0].isIntersecting;
+  if(visible&&!running){running=true;last=performance.now();requestAnimationFrame(tick)}
+  else if(!visible) running=false;
+},{threshold:0.05}).observe(canvas);
+
+resize();
+})();
 </script>
 </body>
 </html>

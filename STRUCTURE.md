@@ -21,7 +21,7 @@ tool was rejected wholesale and is retained only as a counter-example.
 | `DESIGN.md` | The locked visual system — ground, type roles, colour rules, depth convention, copy policy, honesty grammar. Authoritative for anything visual. |
 | `FEATURES.md` | Ayyaz's own brief: background, hiring thesis, required features, style references. The source of intent; not edited by Claude. |
 | `STRUCTURE.md` | This file. Architecture summary and filemap. |
-| `index.html` | **The site.** One file: fold with the left-rail demo slot, pitch, work grid (lids open at 65ms toward the viewer), calm pocket, contact, and a reference archive. Also the content editor - every prose block is an `.ed` element that wears placeholder grammar while empty, and text/links/resume/panel images persist to localStorage with JSON export and import. |
+| `index.html` | **The site.** One file: fold with the left-rail demo slot, pitch, work grid (lids open at 65ms toward the viewer), calm pocket, contact, and a reference archive. Also the content editor - every prose block is an `.ed` element that wears placeholder grammar while empty, and text/links/resume/panel images persist to localStorage with JSON export and import; addresses are typed beside the link they belong to, and the two type faces are custom-property tokens chosen from the desk. Demo 01 runs here: the SO-100 chain, a damped-least-squares solver and a flat-ink canvas renderer, driven by the cursor. |
 | `mockups/fragment-06-demo01.html` | Five placements of the six Demo 01 boxes behind a cycler. Layout 2 (left rail) was chosen and is what `index.html` uses. |
 | `mockups/fragment-05-poster.html` | Superseded by `index.html`. The mockup the layout came from. The arm demo as the fold, kraft ground, Bodoni masthead in ink, shared-contour work slab. This is the live direction. |
 | `mockups/fragment-07-flaps.html` | Opening probe for the work panels. Lids swing out of the page toward the viewer, bound to whichever grid edge is nearest free (measured at runtime, so no arrangement is hardcoded); hover is an instant shade change rather than a movement. Five ways of opening behind a cycler, all of them sharp - no eased tail, since the tail is what reads as soft. Snap at 60ms is the chosen one and is now the file's default; its travel time stays on a slider (50-150ms) for re-judging. See DESIGN.md, *How a panel opens*. |
@@ -35,6 +35,19 @@ tool was rejected wholesale and is retained only as a counter-example.
 
 ## Not yet present
 
-No `src/`, no build tooling, no tests, no linter config, and no demo: the fold's
-viewport is still a reserved black box. Sound and mobile are deliberately
-deferred. These arrive once the words are in.
+No `src/`, no build tooling, no tests, no linter config. Sound and mobile are
+deliberately deferred, as is the camera half of Demo 01 (the "Use camera" control
+is disabled rather than pretending).
+
+## Demo 01
+
+Ported from `../RobotProjects/so100-mediapipe-control`, chiefly
+`demo/follow_cursor.py`. That version drives a meshcat viewer from Python over a
+websocket; the site has no backend, so the chain, the solver and the drawing all
+live in `index.html`. The joint frames are the SO-100 URDF's own, and the forward
+kinematics was checked against `Kinematics.tool_pose` at five poses spanning the
+workspace (agreement under a micrometre). Inverse kinematics is damped least
+squares on position only, warm-started from the previous pose, with a restart
+that aims the pan joint at the target when a descent stalls. Unreachable targets
+are never clamped: the marker turns red and the arm holds, because a hand leaving
+the workspace is the normal case during teleoperation rather than a fault.
