@@ -67,8 +67,13 @@ sits where a held block would sit. Unreachable targets
 are never clamped: the marker turns red and the arm holds, because a hand leaving
 the workspace is the normal case during teleoperation rather than a fault.
 
+The three layers all frame the picture from `view.cx/cy`, the WebGL clip matrix
+included. They did not always: the matrix used the middle of the canvas while
+`project` frames a little low, so the arm was drawn about thirty pixels above the
+marker, the drop line and the ground, and the arm appeared to aim past the cursor.
+
 The gestures are: the cursor aims, holding the left button closes the hand,
 shift-drag orbits, alt-drag slides the cursor plane along the view direction, and
 a double-click returns the camera home. Nothing is bound to the wheel, on purpose
-- the box fills the first screen, so a non-passive wheel listener there made
-every page scroll wait behind a frame of inverse kinematics.
+- the box fills the first screen, and a non-passive wheel listener there puts
+every page scroll behind a frame of inverse kinematics.

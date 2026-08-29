@@ -29,10 +29,17 @@ html{scroll-behavior:smooth}
 body{
   background:var(--kraft);color:var(--ink);
   font-family:var(--face-body);font-size:15.5px;line-height:1.45;
-  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;position:relative;
 }
+/* The grain belongs to the paper, so it scrolls with the paper. It used to be
+   position:fixed, which pins a blending layer over the whole viewport and takes
+   scrolling off the compositor - the page then only scrolls as fast as the main
+   thread can repaint a full-screen multiply, which with a live WebGL canvas in
+   the same stacking context is not fast at all. Absolute over the body box
+   covers the same ground and costs the scroll nothing. */
 body::before{
-  content:"";position:fixed;inset:0;z-index:99;pointer-events:none;opacity:.5;mix-blend-mode:multiply;
+  content:"";position:absolute;top:0;left:0;width:100%;height:100%;
+  z-index:99;pointer-events:none;opacity:.5;mix-blend-mode:multiply;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.075'/%3E%3C/svg%3E");
 }
 .wrap{max-width:1240px;margin:0 auto;padding:0 26px;width:100%}
@@ -162,7 +169,7 @@ body.editing .cta{align-items:flex-start}
 .stage{min-height:0;padding-bottom:clamp(10px,1.8vh,18px)}
 .slot{height:100%;background:var(--edge);border:var(--rule);position:relative;
   display:grid;gap:2px;overflow:hidden;
-  grid-template-columns:minmax(186px,.26fr) minmax(0,1fr);
+  grid-template-columns:minmax(158px,.26fr) minmax(0,1fr);
   grid-template-rows:auto auto auto minmax(0,1fr) auto;
   grid-template-areas:
     "title  view"
@@ -336,6 +343,11 @@ body.editing .card .shelf{display:flex}
   .two{grid-template-columns:1fr}
   :root{--lift:5px}
   .rail .place{display:none}
+}
+/* The demo keeps its two columns - notes down the left, viewport filling the
+   rest, state under it - for as long as the viewport can hold them. Stacking is
+   a last resort, not the layout for a merely narrow window. */
+@media (max-width:620px){
   .slot{grid-template-columns:1fr;
     grid-template-rows:auto minmax(240px,1fr) auto auto auto;
     grid-template-areas:"title" "view" "source" "feed" "caveat"}
@@ -987,13 +999,16 @@ const CHAIN=[
 const LINK_FRAME=["base","shoulder","upper_arm","lower_arm","wrist","gripper"];
 /* Where a held block would sit, in the gripper's frame. Measured off the two
    jaw meshes: the fingers face each other across x = -0.010 .. +0.010 and run
-   from y = -0.05 out to y = -0.107, so this is the empty air between them,
-   about two thirds of the way out and leaning towards the fixed one. The URDF's
+   from y = -0.05 out to y = -0.107. The free air is the whole of x = -0.010 to
+   +0.010, so this sits on its centre line, a hair towards the fixed finger and
+   nowhere near either one's wall - +0.004 was already inside the fixed jaw's
+   material, which is why the marker looked stuck to that finger. The URDF's
    own tool frame - [0,-0.0244,0], the frame the forward kinematics was checked
    against - is the root of the fixed finger, 58mm short of anything the hand
    can actually hold, so aiming that put the cursor beside the grip rather than
    in it. Independent of the jaw angle, so closing the hand never moves it. */
-const GRASP=[0.004,-0.082,0];
+const GRASP=[0.002,-0.085,0];
+const JAW_SHUT=0, JAW_OPEN=40;   // degrees; the joint is shut at its zero
 const JAW={xyz:[-0.0202,-0.0244,0],rpy:[0,3.14158,0],ax:[0,0,1]};
 const LO=CHAIN.map(j=>j.lo/DEG), HI=CHAIN.map(j=>j.hi/DEG);
 
@@ -1128,7 +1143,7 @@ function unproject(px,py){
 /* ── state ── */
 let q=START.slice();
 let target=CENTRE.slice();
-let gap=0, grip=0, gripWanted=0, running=false, last=0;
+let gap=0, grip=JAW_OPEN, gripWanted=JAW_OPEN, running=false, last=0;
 function aimAt(point){ target=point; }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -1231,16 +1246,21 @@ function buildMesh(){
 function clipMatrix(){
   const b=basis();
   /* world -> clip directly: an orthographic camera is a change of basis and a
-     scale, and there is nothing a separate view and projection pair would add */
+     scale, and there is nothing a separate view and projection pair would add.
+     The centre has to be project()'s centre and not the middle of the canvas:
+     project() frames the picture a little low on purpose, and while this matrix
+     did not, the arm was drawn one place and the marker, the drop line and the
+     ground another - the gap read as the arm aiming past the cursor. */
   const sx=2*cam.scale/view.w, sy=2*cam.scale/view.h, sz=1/0.9;
   const M=new Float32Array(16);
   const rows=[[b.r[0]*sx,b.r[1]*sx,b.r[2]*sx],
               [b.u[0]*sy,b.u[1]*sy,b.u[2]*sy],
               [b.f[0]*sz,b.f[1]*sz,b.f[2]*sz]];
-  const o=[EYE_AT[0]+b.f[0]*0,EYE_AT[1],EYE_AT[2]];
+  const centre=[2*view.cx/view.w-1, 1-2*view.cy/view.h, 0];
+  const o=[EYE_AT[0],EYE_AT[1],EYE_AT[2]];
   for(let r=0;r<3;r++){
     M[0*4+r]=rows[r][0]; M[1*4+r]=rows[r][1]; M[2*4+r]=rows[r][2];
-    M[3*4+r]=-(rows[r][0]*o[0]+rows[r][1]*o[1]+rows[r][2]*o[2]);
+    M[3*4+r]=centre[r]-(rows[r][0]*o[0]+rows[r][1]*o[1]+rows[r][2]*o[2]);
   }
   M[15]=1;
   return M;
@@ -1352,7 +1372,7 @@ function report(){
   set(1,"J2",q[1].toFixed(0)+"°");
   set(2,"J3",q[2].toFixed(0)+"°");
   set(3,"Gap",(gap*1000).toFixed(0)+" mm",gap>=TOL);
-  set(4,"Grip",grip>20?"closed":"open",grip<=20);
+  set(4,"Grip",grip>20?"open":"closed",grip>20);
 }
 
 /* ── the loop ──
@@ -1414,12 +1434,12 @@ front.addEventListener("pointermove",e=>{
 front.addEventListener("pointerdown",e=>{
   front.setPointerCapture(e.pointerId);
   if(isOrbit(e)){orbit={x:e.clientX,y:e.clientY,depth:e.altKey};return}
-  gripWanted=40;
+  gripWanted=JAW_SHUT;
 });
-front.addEventListener("pointerup",()=>{orbit=null;gripWanted=0});
-front.addEventListener("pointercancel",()=>{orbit=null;gripWanted=0});
+front.addEventListener("pointerup",()=>{orbit=null;gripWanted=JAW_OPEN});
+front.addEventListener("pointercancel",()=>{orbit=null;gripWanted=JAW_OPEN});
 /* a button released outside the box must not leave the hand clenched */
-addEventListener("blur",()=>{orbit=null;gripWanted=0});
+addEventListener("blur",()=>{orbit=null;gripWanted=JAW_OPEN});
 front.addEventListener("dblclick",()=>{cam.az=HOME.az;cam.el=HOME.el;cam.depth=0});
 front.addEventListener("contextmenu",e=>e.preventDefault());
 /* No wheel handler, deliberately. Depth used to hang off shift+scroll, which
