@@ -168,6 +168,7 @@ body.editing .cta{align-items:flex-start}
 /* the demo: left rail, viewport takes the rest */
 .stage{min-height:0;padding-bottom:clamp(10px,1.8vh,18px)}
 .slot{height:100%;background:var(--edge);border:var(--rule);position:relative;
+  overflow-anchor:none;
   display:grid;gap:2px;overflow:hidden;
   grid-template-columns:minmax(158px,.26fr) minmax(0,1fr);
   grid-template-rows:auto auto auto minmax(0,1fr) auto;
@@ -428,7 +429,7 @@ body.editing .card .shelf{display:flex}
         <canvas id="armview"></canvas>
         <canvas id="armfront"></canvas>
         <div class="note" id="armnote">Cursor aims · hold to grip · wheel turns the wrist ·
-          shift-drag orbits · alt-drag for depth · double-click resets the view</div>
+          shift+wheel zooms · shift-drag orbits · double-click resets the view</div>
       </div>
       <div class="bx res b-title" data-label="Title">
         <span class="ed inl" data-t="demo.name" data-ghost="[DEMO NAME — 2 to 4 words]"></span>
@@ -1114,7 +1115,14 @@ function solve(q,target){
    rather than near it. It frames the arm rather than the cursor's plane, so
    the machine sits in the middle of its own box. */
 const HOME={az:-56*DEG,el:20*DEG};
-const cam={az:HOME.az,el:HOME.el,scale:1,depth:0};
+/* fit is what the box can hold, zoom is what the viewer asked for, and scale is
+   the two multiplied - kept as one number because everything that draws wants
+   the product and nothing wants the halves. */
+const cam={az:HOME.az,el:HOME.el,fit:1,zoom:1,scale:1,depth:0};
+function setZoom(z){
+  cam.zoom=Math.max(0.55,Math.min(3.2,z));
+  cam.scale=cam.fit*cam.zoom;
+}
 function basis(){
   const f=[-Math.cos(cam.el)*Math.cos(cam.az),-Math.cos(cam.el)*Math.sin(cam.az),-Math.sin(cam.el)];
   const rn=Math.hypot(f[1],f[0])||1;
@@ -1369,8 +1377,13 @@ const chips=document.querySelectorAll(".b-state .chip");
 let reportTick=0;
 function report(){
   if(++reportTick%4 || chips.length<5) return;
+  /* Only when it has actually changed. Rewriting these every frame relaid out a
+     piece of the fold sixty times a second for nothing. */
   const set=(i,label,value,dim)=>{
-    chips[i].innerHTML="<b>"+label+"</b>"+value;
+    if(chips[i].dataset.v!==value){
+      chips[i].dataset.v=value;
+      chips[i].innerHTML="<b>"+label+"</b>"+value;
+    }
     chips[i].classList.toggle("off",!!dim);
   };
   set(0,"J1",q[0].toFixed(0)+"°");
@@ -1414,7 +1427,8 @@ function resize(){
   view={w:box.width,h:box.height,cx:box.width/2,cy:box.height*0.56};
   /* the arm is about 0.44 m corner to corner in its tallest pose, and it should
      sit inside the box whichever way round the box is */
-  cam.scale=Math.min(box.width,box.height*1.25)/0.52;
+  cam.fit=Math.min(box.width,box.height*1.25)/0.52;
+  setZoom(cam.zoom);
 }
 new ResizeObserver(resize).observe(front);
 
@@ -1446,16 +1460,16 @@ front.addEventListener("pointerup",()=>{orbit=null;gripWanted=JAW_OPEN});
 front.addEventListener("pointercancel",()=>{orbit=null;gripWanted=JAW_OPEN});
 /* a button released outside the box must not leave the hand clenched */
 addEventListener("blur",()=>{orbit=null;gripWanted=JAW_OPEN});
-front.addEventListener("dblclick",()=>{cam.az=HOME.az;cam.el=HOME.el;cam.depth=0;rollWanted=START[4]});
+front.addEventListener("dblclick",()=>{cam.az=HOME.az;cam.el=HOME.el;cam.depth=0;rollWanted=START[4];setZoom(1)});
 front.addEventListener("contextmenu",e=>e.preventDefault());
-/* The wheel turns the wrist, which means this box keeps the wheel to itself.
-   Everywhere else on the page it still belongs to the document. Shift and ctrl
-   pass through untouched so the browser's own horizontal scroll and zoom keep
-   working over the viewport. */
+/* The wheel turns the wrist and shift+wheel zooms, which means this box keeps
+   the wheel to itself. Everywhere else on the page it still belongs to the
+   document. Ctrl passes through so the browser's own zoom keeps working. */
 front.addEventListener("wheel",e=>{
-  if(e.shiftKey||e.ctrlKey) return;
+  if(e.ctrlKey) return;              /* the browser's own zoom */
   e.preventDefault();
-  rollWanted=Math.max(LO[4],Math.min(HI[4],rollWanted+e.deltaY*0.18));
+  if(e.shiftKey) setZoom(cam.zoom*Math.exp(-e.deltaY*0.0012));
+  else rollWanted=Math.max(LO[4],Math.min(HI[4],rollWanted+e.deltaY*0.18));
 },{passive:false});
 
 /* nothing is gained by solving inverse kinematics for a box nobody is looking at */
@@ -1475,85 +1489,5 @@ resize();
 })();
 </script>
 
-<!-- ═══ TEMPORARY scroll diagnostic. Delete this whole block once the cause is
-     found; nothing else in the page refers to it. ═══ -->
-<script>
-(function(){
-  const box=document.createElement("div");
-  box.style.cssText="position:fixed;right:6px;top:6px;z-index:99999;background:#0b0b0b;"+
-    "color:#5f5;font:11px/1.35 ui-monospace,monospace;padding:7px;width:46ch;"+
-    "white-space:pre-wrap;border:1px solid #5f5;max-height:86vh;overflow:auto";
-  const bar=document.createElement("div"), live=document.createElement("div"),
-        log=document.createElement("div");
-  box.append(bar,live,log); document.body.appendChild(box);
-  const mk=(t,f)=>{const b=document.createElement("button");b.textContent=t;
-    b.style.cssText="font:11px monospace;margin:0 4px 6px 0";b.onclick=f;bar.appendChild(b);};
-
-  const d=document.documentElement, body=document.body, cs=getComputedStyle;
-  const name=e=>!e?"-":(e.nodeName+(e.id?"#"+e.id:"")+
-    (e.className&&typeof e.className==="string"&&e.className.trim()?"."+e.className.trim().split(/\s+/).join("."):"")).slice(0,28);
-
-  let down=0, up=0, peak=0, chain="", lines=[], lastWheelAt=0, lastDir=0, lastUpAt=0;
-  const say=t=>{lines.push(t); if(lines.length>16) lines.shift();};
-
-  addEventListener("wheel",e=>{
-    if(e.deltaY>0){down++; lastDir=1} else if(e.deltaY<0){up++; lastDir=-1; lastUpAt=performance.now()}
-    lastWheelAt=performance.now();
-    if(!chain){
-      const bits=["chain from "+name(e.target)+":"];
-      let n=e.target;
-      while(n&&n!==document){
-        const st=cs(n), spare=n.scrollHeight-n.clientHeight;
-        if(st.overflowY!=="visible"||spare>1)
-          bits.push("  "+name(n).padEnd(24)+" "+st.overflowX+"/"+st.overflowY+" spare "+spare);
-        n=n.parentElement;
-      }
-      chain=bits.join("\n");
-    }
-  },{capture:true,passive:true});
-
-  /* The question is not whether it scrolls - it does - but what pulls it back.
-     So: watch every frame for the page losing ground with no upward wheel
-     behind it, and for the document changing height, which clamps the scroll. */
-  let prevY=scrollY, prevH=d.scrollHeight, snaps=0, shrinks=0;
-  function watch(){
-    const y=scrollY, h=d.scrollHeight, now=performance.now();
-    if(h!==prevH){
-      shrinks++;
-      say("docH "+prevH+" -> "+h+"  (scrollY "+Math.round(y)+")");
-      prevH=h;
-    }
-    if(y>peak) peak=y;
-    if(prevY-y>6 && now-lastUpAt>350){
-      snaps++;
-      say("SNAPBACK "+Math.round(prevY)+" -> "+Math.round(y)+
-          "   "+Math.round(now-lastWheelAt)+"ms after the last wheel"+
-          (document.activeElement&&document.activeElement!==body?
-            "  focus="+name(document.activeElement):""));
-    }
-    prevY=y;
-    live.textContent=
-      "win "+innerWidth+"x"+innerHeight+" dpr "+devicePixelRatio+
-        "  docH "+h+"  spare "+(h-d.clientHeight)+"\n"+
-      "scrollY "+Math.round(y)+"   peak reached "+Math.round(peak)+"\n"+
-      "wheels down "+down+"  up "+up+"   snapbacks "+snaps+"  docH changes "+shrinks+"\n"+
-      "focus "+name(document.activeElement)+"   anchor "+cs(body).overflowAnchor+"\n"+
-      "────────────────────────────\n"+chain+(chain?"\n":"");
-    log.textContent=lines.join("\n");
-    requestAnimationFrame(watch);
-  }
-  requestAnimationFrame(watch);
-
-  mk("scrollBy(0,600)",()=>{const y=scrollY;scrollBy(0,600);
-    setTimeout(()=>say("scrollBy: "+Math.round(y)+" -> "+Math.round(scrollY)),600)});
-  mk("anchor off",()=>{d.style.overflowAnchor="none";body.style.overflowAnchor="none";
-    document.querySelectorAll("*").forEach(n=>n.style.overflowAnchor="none");
-    say("overflow-anchor forced to none everywhere")});
-  mk("stop demo",()=>{const c=document.getElementById("armfront");
-    if(c) c.style.display="none"; say("armfront hidden")});
-  mk("copy",()=>navigator.clipboard&&navigator.clipboard.writeText(box.innerText));
-  mk("hide",()=>box.remove());
-})();
-</script>
 </body>
 </html>

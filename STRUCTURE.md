@@ -72,8 +72,11 @@ included. They did not always: the matrix used the middle of the canvas while
 `project` frames a little low, so the arm was drawn about thirty pixels above the
 marker, the drop line and the ground, and the arm appeared to aim past the cursor.
 
-The gestures are: the cursor aims, holding the left button closes the hand,
-shift-drag orbits, alt-drag slides the cursor plane along the view direction, and
-a double-click returns the camera home. Nothing is bound to the wheel, on purpose
-- the box fills the first screen, and a non-passive wheel listener there puts
-every page scroll behind a frame of inverse kinematics.
+The gestures are: the cursor aims, holding the left button closes the hand, the
+wheel turns the wrist, shift+wheel zooms, shift-drag orbits, alt-drag slides the
+cursor plane along the view direction, and a double-click returns all of it home.
+The viewport therefore keeps the wheel to itself; ctrl passes through so the
+browser's own zoom still works over it. The wrist roll is commanded rather than
+solved, which is free rather than a compromise: the grasp point sits almost on
+the roll axis, so that joint's column in the Jacobian is near zero and the solver
+was not using it.
