@@ -170,12 +170,10 @@ body.editing .cta{align-items:flex-start}
 .slot{height:100%;background:var(--edge);border:var(--rule);position:relative;
   overflow-anchor:none;
   display:grid;gap:2px;overflow:hidden;
-  grid-template-columns:minmax(158px,.26fr) minmax(0,1fr);
-  grid-template-rows:auto auto auto minmax(0,1fr) auto;
+  grid-template-columns:minmax(152px,.21fr) minmax(0,1fr);
+  grid-template-rows:auto minmax(0,1fr) auto;
   grid-template-areas:
     "title  view"
-    "source view"
-    "feed   view"
     "caveat view"
     "caveat state"}
 .bx{position:relative;min-width:0;min-height:0;overflow:hidden;background:var(--black);
@@ -196,15 +194,18 @@ body.editing .cta{align-items:flex-start}
 /* three layers, one picture: the ground under the arm, the arm, and the marker
    over it. Only the top one takes the pointer. */
 .b-view #armfront{pointer-events:auto;cursor:crosshair}
-.b-view .note{position:absolute;left:12px;right:12px;bottom:9px;margin:0;z-index:2;
-  pointer-events:none}
-.b-view .note{margin-top:auto}
 .slot .note{font-family:"IBM Plex Mono",monospace;font-size:11.5px;line-height:1.5;
   color:var(--kraft);opacity:.44}
 .slot .mono{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;
   text-transform:uppercase;color:var(--kraft);opacity:.5}
 .slot .t{color:var(--chalk);opacity:.85;align-self:flex-start}
 .chips{display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start}
+/* the controls read as a second, quieter row of the same vocabulary as the
+   state above them: a word for the thing, then the gesture that does it */
+.keys{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--kraft);opacity:.4;margin-top:auto;
+  display:flex;flex-wrap:wrap;gap:2px 17px;line-height:1.8}
+.keys b{color:var(--chalk);opacity:.85;font-weight:600}
 .chip{display:inline-flex;gap:7px;border:2px solid rgba(233,220,192,.3);padding:4px 8px;
   font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.13em;
   text-transform:uppercase;color:var(--kraft);opacity:.82;white-space:nowrap}
@@ -213,7 +214,7 @@ body.editing .cta{align-items:flex-start}
 .cam{padding:9px 15px;font-size:13px;box-shadow:4px 4px 0 var(--ink);align-self:flex-start}
 .cam[disabled]{cursor:not-allowed;opacity:.45;box-shadow:none;transform:none}
 .b-view{grid-area:view}.b-title{grid-area:title}.b-caveat{grid-area:caveat}
-.b-source{grid-area:source}.b-feed{grid-area:feed}.b-state{grid-area:state}
+.b-state{grid-area:state}
 
 .cue{display:flex;align-items:center;gap:14px;padding:10px 0;
   font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;
@@ -235,8 +236,13 @@ body.editing .cta{align-items:flex-start}
 /* ══════════════ THE WORK GRID ══════════════
    One flat slab with collapsed borders: the grid owns top and left, each panel
    owns right and bottom, so no panel owns its own edges. */
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));
+/* One, two or three across and never four: six panels divide by all three, so
+   the slab is always a full rectangle. auto-fit gave four on a wide screen and
+   left two holes at the end, and a hole in a slab reads as a missing panel. */
+.grid{display:grid;grid-template-columns:1fr;
   border-top:var(--rule);border-left:var(--rule)}
+@media (min-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (min-width:1000px){.grid{grid-template-columns:repeat(3,1fr)}}
 .card{border-right:var(--rule);border-bottom:var(--rule);
   position:relative;min-height:262px;background:var(--black);perspective:2000px}
 
@@ -350,8 +356,8 @@ body.editing .card .shelf{display:flex}
    a last resort, not the layout for a merely narrow window. */
 @media (max-width:620px){
   .slot{grid-template-columns:1fr;
-    grid-template-rows:auto minmax(240px,1fr) auto auto auto;
-    grid-template-areas:"title" "view" "source" "feed" "caveat"}
+    grid-template-rows:auto minmax(240px,1fr) auto;
+    grid-template-areas:"title" "view" "caveat"}
   .b-state{display:none}
 }
 @media (prefers-reduced-motion:reduce){
@@ -428,8 +434,6 @@ body.editing .card .shelf{display:flex}
         <canvas id="armback"></canvas>
         <canvas id="armview"></canvas>
         <canvas id="armfront"></canvas>
-        <div class="note" id="armnote">Cursor aims · hold to grip · wheel turns the wrist ·
-          shift+wheel zooms · shift-drag orbits · double-click resets the view</div>
       </div>
       <div class="bx res b-title" data-label="Title">
         <span class="ed inl" data-t="demo.name" data-ghost="[DEMO NAME — 2 to 4 words]"></span>
@@ -438,21 +442,13 @@ body.editing .card .shelf{display:flex}
       <div class="bx res b-caveat" data-label="Caveat">
         <div class="ed blk" data-t="demo.caveat" data-ghost="[ONE LINE — what it does, and what it does not.]"></div>
       </div>
-      <div class="bx res b-source" data-label="Source">
-        <button class="btn btn-2 cam" type="button" disabled>Use camera</button>
-        <span class="mono">Cursor · live now</span>
-        <span class="mono">Nothing leaves your device</span>
-      </div>
-      <div class="bx res b-feed" data-label="Camera feed">
-        <div class="note">[preview + tracked-hand overlay]</div>
-        <span class="chip off">Inert · cursor mode</span>
-      </div>
       <div class="bx res b-state" data-label="State">
         <div class="chips">
           <span class="chip"><b>J1</b>—</span><span class="chip"><b>J2</b>—</span>
           <span class="chip"><b>J3</b>—</span><span class="chip"><b>Target</b>—,—</span>
-          <span class="chip off"><b>Grip</b>camera only</span>
+          <span class="chip off"><b>Grip</b>—</span>
         </div>
+        <div class="keys" id="armnote"><span>Aim <b>move</b></span><span>Grip <b>hold</b></span><span>Wrist <b>wheel</b></span><span>Zoom <b>shift+wheel</b></span><span>Orbit <b>shift+drag</b></span></div>
       </div>
     </div>
   </div>
@@ -631,13 +627,51 @@ function save(){
 
 /* ── words ── */
 const eds=[...document.querySelectorAll(".ed")];
+/* An empty box has to be genuinely empty for :empty to show the ghost text, and
+   a browser will happily leave <b></b> or a stray <br> behind after a backspace.
+   Emptiness is decided on the words, not the markup. */
 function normalise(el){ if(!el.textContent.trim()) el.innerHTML=""; }
+
+/* What may survive a round trip through storage. Emphasis is the whole of it:
+   the page decides every other thing about how a word looks, and a stored style
+   would be a second, invisible opinion about type that nothing on the page could
+   see or correct. Anything else is unwrapped rather than dropped, so the words
+   inside it are never lost. */
+const KEEP=new Set(["B","STRONG","I","EM","U","BR"]);
+function clean(html){
+  const src=document.createElement("div"); src.innerHTML=html;
+  const out=document.createElement("div");
+  (function walk(from,to){
+    for(const n of [...from.childNodes]){
+      if(n.nodeType===3){ to.appendChild(document.createTextNode(n.nodeValue)); continue; }
+      if(n.nodeType!==1) continue;
+      if(KEEP.has(n.nodeName)){
+        const t=document.createElement(n.nodeName);   /* a fresh one: no attributes come across */
+        to.appendChild(t); walk(n,t);
+      } else walk(n,to);
+    }
+  })(src,out);
+  return out.innerHTML;
+}
+
+/* Tags rather than inline styles, so what gets stored is the same small
+   vocabulary clean() knows about. */
+try{ document.execCommand("styleWithCSS",false,false); }catch(err){}
+const MARKS={b:"bold",i:"italic",u:"underline"};
+
 for(const el of eds){
   const k=el.dataset.t;
-  if(S.t[k]!==undefined) el.textContent=S.t[k];
+  if(S.t[k]!==undefined) el.innerHTML=clean(S.t[k]);
   normalise(el);
-  el.addEventListener("input",()=>{normalise(el);S.t[k]=el.textContent;save()});
+  el.addEventListener("input",()=>{normalise(el);S.t[k]=clean(el.innerHTML);save()});
   el.addEventListener("blur",()=>normalise(el));
+  el.addEventListener("keydown",e=>{
+    const m=(e.ctrlKey||e.metaKey)&&MARKS[e.key.toLowerCase()];
+    if(!m) return;
+    e.preventDefault();
+    document.execCommand(m);
+    normalise(el); S.t[k]=clean(el.innerHTML); save();
+  });
   /* paste arrives as plain text: pasted markup would carry another site's
      type into this one */
   el.addEventListener("paste",e=>{
@@ -864,6 +898,7 @@ function setEditing(on){
   editbtn.setAttribute("aria-pressed",on?"true":"false");
   editbtn.classList.toggle("on",on);
   for(const el of eds) el.contentEditable=on?"true":"false";
+  says.textContent=on?"Ctrl+B bold · Ctrl+I italic · Ctrl+U underline. Everything saves as you type.":"";
   if(on) closeAll();
 }
 editbtn.addEventListener("click",()=>setEditing(!editing));
@@ -1460,7 +1495,6 @@ front.addEventListener("pointerup",()=>{orbit=null;gripWanted=JAW_OPEN});
 front.addEventListener("pointercancel",()=>{orbit=null;gripWanted=JAW_OPEN});
 /* a button released outside the box must not leave the hand clenched */
 addEventListener("blur",()=>{orbit=null;gripWanted=JAW_OPEN});
-front.addEventListener("dblclick",()=>{cam.az=HOME.az;cam.el=HOME.el;cam.depth=0;rollWanted=START[4];setZoom(1)});
 front.addEventListener("contextmenu",e=>e.preventDefault());
 /* The wheel turns the wrist and shift+wheel zooms, which means this box keeps
    the wheel to itself. Everywhere else on the page it still belongs to the

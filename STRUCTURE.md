@@ -21,7 +21,7 @@ tool was rejected wholesale and is retained only as a counter-example.
 | `DESIGN.md` | The locked visual system — ground, type roles, colour rules, depth convention, copy policy, honesty grammar. Authoritative for anything visual. |
 | `FEATURES.md` | Ayyaz's own brief: background, hiring thesis, required features, style references. The source of intent; not edited by Claude. |
 | `STRUCTURE.md` | This file. Architecture summary and filemap. |
-| `index.html` | **The site.** One file: fold with the left-rail demo slot, pitch, work grid (lids open at 65ms toward the viewer), calm pocket, contact, and a reference archive. Also the content editor - every prose block is an `.ed` element that wears placeholder grammar while empty, and text/links/resume/panel images persist to localStorage with JSON export and import; addresses are typed beside the link they belong to, and the two type faces are custom-property tokens chosen from the desk. Demo 01 runs here: the SO-100 chain, a damped-least-squares solver and a flat WebGL renderer of the URDF's own meshes, driven by the cursor. |
+| `index.html` | **The site.** One file: fold with the left-rail demo slot, pitch, work grid (six panels, one two or three across so the slab is never gap-toothed; lids open at 65ms toward the viewer), calm pocket, contact, and a reference archive. Also the content editor - every prose block is an `.ed` element that wears placeholder grammar while empty, carries bold/italic/underline through storage behind a five-tag whitelist, and persists with links, resume and panel images to localStorage with JSON export and import; addresses are typed beside the link they belong to, and the two type faces are custom-property tokens chosen from the desk. Demo 01 runs here: the SO-100 chain, a damped-least-squares solver and a flat WebGL renderer of the URDF's own meshes, driven by the cursor. |
 | `assets/so100-mesh.js` | Generated. The SO-100's thirteen visual meshes, welded and quantised, as one base64 payload on `window.SO100_MESH`. A script file rather than a binary because a page opened from the filesystem cannot `fetch()` a sibling. |
 | `tools/export_so100_mesh.py` | Builds the above from the robot repo's URDF and STLs. Run it again if the arm's geometry changes. |
 | `mockups/fragment-06-demo01.html` | Five placements of the six Demo 01 boxes behind a cycler. Layout 2 (left rail) was chosen and is what `index.html` uses. |
@@ -38,8 +38,9 @@ tool was rejected wholesale and is retained only as a counter-example.
 ## Not yet present
 
 No `src/`, no build tooling, no tests, no linter config. Sound and mobile are
-deliberately deferred, as is the camera half of Demo 01 (the "Use camera" control
-is disabled rather than pretending).
+deliberately deferred, as is the camera half of Demo 01 - its controls are out of
+the page entirely rather than sitting there disabled, and go back when there is
+something behind them.
 
 ## Demo 01
 
@@ -73,8 +74,9 @@ included. They did not always: the matrix used the middle of the canvas while
 marker, the drop line and the ground, and the arm appeared to aim past the cursor.
 
 The gestures are: the cursor aims, holding the left button closes the hand, the
-wheel turns the wrist, shift+wheel zooms, shift-drag orbits, alt-drag slides the
-cursor plane along the view direction, and a double-click returns all of it home.
+wheel turns the wrist, shift+wheel zooms, shift-drag orbits, and alt-drag slides
+the cursor plane along the view direction. They are listed under the viewport in
+the state panel rather than over the picture.
 The viewport therefore keeps the wheel to itself; ctrl passes through so the
 browser's own zoom still works over it. The wrist roll is commanded rather than
 solved, which is free rather than a compromise: the grasp point sits almost on
