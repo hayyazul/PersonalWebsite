@@ -6,8 +6,12 @@ docs and throwaway HTML mockups.
 
 ## State
 
-Branch `design/visual-language`. Nothing is implemented. The v0 output from an
-earlier tool was rejected wholesale and is retained only as a counter-example.
+Branch `build/editable-site`. The site is one file, `index.html`, which carries
+its own content editor: Ayyaz writes into the page and it persists to the
+browser, with export/import to move the writing off one machine. The design
+fragments are frozen and kept only for reference (and are viewable from the
+archive section at the bottom of `index.html`). The v0 output from an earlier
+tool was rejected wholesale and is retained only as a counter-example.
 
 ## Filemap
 
@@ -17,7 +21,9 @@ earlier tool was rejected wholesale and is retained only as a counter-example.
 | `DESIGN.md` | The locked visual system — ground, type roles, colour rules, depth convention, copy policy, honesty grammar. Authoritative for anything visual. |
 | `FEATURES.md` | Ayyaz's own brief: background, hiring thesis, required features, style references. The source of intent; not edited by Claude. |
 | `STRUCTURE.md` | This file. Architecture summary and filemap. |
-| `mockups/fragment-05-poster.html` | Current working mockup. The arm demo as the fold, kraft ground, Bodoni masthead in ink, shared-contour work slab. This is the live direction. |
+| `index.html` | **The site.** One file: fold with the left-rail demo slot, pitch, work grid (lids open at 65ms toward the viewer), calm pocket, contact, and a reference archive. Also the content editor - every prose block is an `.ed` element that wears placeholder grammar while empty, and text/links/resume/panel images persist to localStorage with JSON export and import. |
+| `mockups/fragment-06-demo01.html` | Five placements of the six Demo 01 boxes behind a cycler. Layout 2 (left rail) was chosen and is what `index.html` uses. |
+| `mockups/fragment-05-poster.html` | Superseded by `index.html`. The mockup the layout came from. The arm demo as the fold, kraft ground, Bodoni masthead in ink, shared-contour work slab. This is the live direction. |
 | `mockups/fragment-07-flaps.html` | Opening probe for the work panels. Lids swing out of the page toward the viewer, bound to whichever grid edge is nearest free (measured at runtime, so no arrangement is hardcoded); hover is an instant shade change rather than a movement. Five ways of opening behind a cycler, all of them sharp - no eased tail, since the tail is what reads as soft. Snap at 60ms is the chosen one and is now the file's default; its travel time stays on a slider (50-150ms) for re-judging. See DESIGN.md, *How a panel opens*. |
 | `mockups/fragment-01-specimens.html` | Specimen sheet: ground candidates, pigments sampled from the gouache, masthead typeface comparison, button behaviours. How the palette and display face were chosen. |
 | `mockups/fragment-04-devices.html` | Six spatial probes. Devices 04 (self-drawing load) and 06 (ambiguous depth) survived review; the rest were rejected for repainting the reference images. Kept as a record of what was ruled out. |
@@ -29,6 +35,6 @@ earlier tool was rejected wholesale and is retained only as a counter-example.
 
 ## Not yet present
 
-No `src/`, no build tooling, no tests, no linter config. These arrive once the
-visual language is settled and the first real module (the robot-arm demo) is
-specified.
+No `src/`, no build tooling, no tests, no linter config, and no demo: the fold's
+viewport is still a reserved black box. Sound and mobile are deliberately
+deferred. These arrive once the words are in.
