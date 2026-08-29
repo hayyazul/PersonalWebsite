@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ayyazul Hassan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --kraft:#E9DCC0;--kraft-hi:#F3EAD6;--ink:#17120F;
+  --ink-60:rgba(23,18,15,.62);--ink-38:rgba(23,18,15,.38);
+  --vermillion:#DC4A2C;--oxblood:#A2322A;--orange:#DE8126;--chrome:#F2C230;
+  --ochre:#D7BC51;--sap:#7E9B3C;--olive:#5C5D29;--bottle:#2C5F47;
+  --cerulean:#2E7B99;--ultramarine:#344984;--periwinkle:#646098;
+  --violet:#4A3465;--plum:#5C3148;--rose:#C8456F;
+  --chalk:#F8F4EC;--black:#100E0C;
+  --edge:#4A3F34;                   /* the only rule colour that reads on black */
+  --lift:6px;                       /* letterpress offset */
+  --rule:3px solid var(--ink);
+  --bg:var(--kraft);--on:var(--ink);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--kraft);color:var(--ink);
+  font-family:"Archivo","Helvetica Neue",Arial,sans-serif;font-size:15.5px;line-height:1.45;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:99;pointer-events:none;opacity:.5;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.075'/%3E%3C/svg%3E");
+}
+.wrap{max-width:1240px;margin:0 auto;padding:0 26px;width:100%}
+
+/* colour fields */
+.f-vermillion{--bg:var(--vermillion);--on:var(--chalk)}
+.f-oxblood{--bg:var(--oxblood);--on:var(--chalk)}
+.f-orange{--bg:var(--orange);--on:var(--ink)}
+.f-chrome{--bg:var(--chrome);--on:var(--ink)}
+.f-sap{--bg:var(--sap);--on:var(--ink)}
+.f-olive{--bg:var(--olive);--on:var(--chalk)}
+.f-bottle{--bg:var(--bottle);--on:var(--chalk)}
+.f-cerulean{--bg:var(--cerulean);--on:var(--chalk)}
+.f-ultra{--bg:var(--ultramarine);--on:var(--chalk)}
+.f-violet{--bg:var(--violet);--on:var(--chalk)}
+.f-plum{--bg:var(--plum);--on:var(--chalk)}
+.f-rose{--bg:var(--rose);--on:var(--chalk)}
+.field{background:var(--bg);color:var(--on)}
+
+/* buttons */
+button,.btn{font:inherit;cursor:pointer;border:none;background:none;color:inherit;
+  display:inline-flex;align-items:center;gap:9px;text-decoration:none}
+:is(button,.btn):focus-visible{outline:3px solid currentColor;outline-offset:4px}
+.btn-1,.btn-2{border:var(--rule);padding:13px 24px;font-weight:700;font-size:15px;letter-spacing:.03em;
+  box-shadow:var(--lift) var(--lift) 0 var(--ink);transition:transform .09s ease,box-shadow .09s ease}
+.btn-1{background:var(--vermillion);color:var(--chalk)}
+.btn-2{background:var(--kraft-hi);color:var(--ink)}
+:is(.btn-1,.btn-2):hover{transform:translate(3px,3px);box-shadow:3px 3px 0 var(--ink)}
+:is(.btn-1,.btn-2):active{transform:translate(6px,6px);box-shadow:0 0 0 var(--ink)}
+.btn-3{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;border-bottom:2px solid currentColor;opacity:.6;padding-bottom:3px;
+  transition:opacity .14s,border-bottom-width .14s}
+.btn-3:hover{opacity:1;border-bottom-width:4px}
+
+.t{display:inline-flex;align-items:center;gap:7px;border:2.5px solid currentColor;padding:5px 11px;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.14em;
+  text-transform:uppercase;font-weight:600}
+.t i{width:8px;height:8px;display:block;border:1.5px solid currentColor;flex:none}
+.t.did i,.t.bld i{background:currentColor}
+
+/* ══════════════ THE EDITABLE LAYER ══════════════
+   One class does the whole job. An .ed block holds Ayyaz's words; while it
+   holds none it wears the placeholder grammar instead - dashed rule, hatch,
+   mono - and says what belongs there. Filled, the placeholder dress comes
+   off entirely and it is simply prose. Nothing has to be switched by hand:
+   :empty is the switch. */
+.ed{outline:none;min-width:1ch}
+.ed:empty::before{content:attr(data-ghost);display:block}
+.ed.blk:empty{font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.6;
+  border:2px dashed currentColor;padding:10px 12px;
+  background:repeating-linear-gradient(45deg,transparent 0 7px,rgba(23,18,15,.07) 7px 14px)}
+.field .ed.blk:empty,.slot .ed.blk:empty{
+  background:repeating-linear-gradient(45deg,transparent 0 7px,rgba(0,0,0,.16) 7px 14px)}
+.ed.inl:empty{border-bottom:2px dotted currentColor;opacity:.45}
+.ed.inl:empty::before{display:inline}
+/* while editing, everything you may touch says so - a dashed rule, not a
+   colour, so it never competes with a panel's own field */
+body.editing .ed{outline:2px dashed currentColor;outline-offset:4px}
+body.editing .ed:focus{outline:3px solid var(--chrome);outline-offset:4px}
+
+/* ══════════════ THE DESK ══════════════
+   The only chrome that is not part of the site. It presses like every other
+   control and it does not print. */
+.desk{position:fixed;left:18px;bottom:18px;z-index:120;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase}
+.desk .row{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+.desk button,.desk label.fbtn{border:var(--rule);background:var(--kraft-hi);color:var(--ink);
+  padding:7px 13px;font:inherit;font-weight:600;box-shadow:4px 4px 0 var(--ink);
+  transition:transform .09s ease,box-shadow .09s ease;cursor:pointer;display:inline-flex}
+.desk button:hover,.desk label.fbtn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+.desk button:active,.desk label.fbtn:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
+.desk button.on{background:var(--chrome)}
+.desk .said{padding:7px 0;color:var(--ink-60);max-width:44ch;text-transform:none;letter-spacing:.04em}
+.desk .drawer{display:none;margin-bottom:11px;background:var(--kraft-hi);border:var(--rule);
+  box-shadow:6px 6px 0 var(--ink);padding:15px;max-height:62vh;overflow:auto;
+  max-width:min(480px,calc(100vw - 44px))}
+.desk .drawer.open{display:block}
+.desk .drawer h4{font-size:11px;letter-spacing:.16em;margin-bottom:11px}
+.desk .drawer .fld{display:grid;grid-template-columns:9ch 1fr;gap:8px;align-items:center;
+  margin-bottom:7px}
+.desk .drawer .fld span{color:var(--ink-60);overflow:hidden;text-overflow:ellipsis}
+.desk .drawer input[type=url],.desk .drawer input[type=text]{font:inherit;text-transform:none;
+  letter-spacing:.02em;padding:6px 8px;border:2px solid var(--ink);background:var(--chalk);
+  color:var(--ink);min-width:0}
+.desk .drawer hr{border:none;border-top:var(--rule);margin:13px 0}
+@media print{.desk{display:none}}
+
+/* ══════════════ FOLD ══════════════ */
+.fold{min-height:100svh;display:grid;grid-template-rows:auto auto minmax(320px,1fr) auto}
+
+.rail{display:flex;flex-wrap:wrap;gap:6px 20px;align-items:center;
+  border-bottom:var(--rule);padding:11px 0 10px;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-60)}
+.rail .live{display:inline-flex;align-items:center;gap:7px;color:var(--ink)}
+.rail .live i{width:9px;height:9px;background:var(--vermillion);border:2px solid var(--ink);
+  display:block;flex:none}
+.rail .spacer{margin-left:auto}
+.rail a{color:var(--ink);text-decoration:none;border-bottom:2px solid var(--ink-38)}
+.rail a:hover{border-bottom-color:var(--vermillion)}
+
+.mast{padding:clamp(9px,1.5vh,18px) 0 0}
+.mast .line{display:flex;justify-content:space-between;align-items:baseline;
+  font-family:"Bodoni Moda",Didot,"Times New Roman",serif;font-weight:500;
+  font-size:clamp(1.7rem,6.2vw,4.7rem);line-height:.96;font-optical-sizing:auto}
+.mast .kicker{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--ink-60);padding-top:clamp(6px,1.2vh,12px)}
+
+/* the demo: left rail, viewport takes the rest */
+.stage{min-height:0;padding-bottom:clamp(10px,1.8vh,18px)}
+.slot{height:100%;background:var(--edge);border:var(--rule);position:relative;
+  display:grid;gap:2px;overflow:hidden;
+  grid-template-columns:minmax(186px,.26fr) minmax(0,1fr);
+  grid-template-rows:auto auto auto minmax(0,1fr) auto;
+  grid-template-areas:
+    "title  view"
+    "source view"
+    "feed   view"
+    "caveat view"
+    "caveat state"}
+.bx{position:relative;min-width:0;min-height:0;overflow:hidden;background:var(--black);
+  padding:25px 12px 11px;display:flex;flex-direction:column;gap:9px;color:var(--kraft)}
+.bx::before{content:attr(data-label);position:absolute;left:11px;top:9px;
+  color:var(--kraft);opacity:.42;
+  font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.16em;
+  text-transform:uppercase;white-space:nowrap}
+.bx.res{background:var(--black) repeating-linear-gradient(45deg,
+  transparent 0 8px,rgba(233,220,192,.05) 8px 16px)}
+.b-view .note{margin-top:auto}
+.slot .note{font-family:"IBM Plex Mono",monospace;font-size:11.5px;line-height:1.5;
+  color:var(--kraft);opacity:.44}
+.slot .mono{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--kraft);opacity:.5}
+.slot .t{color:var(--chalk);opacity:.85;align-self:flex-start}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start}
+.chip{display:inline-flex;gap:7px;border:2px solid rgba(233,220,192,.3);padding:4px 8px;
+  font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--kraft);opacity:.82;white-space:nowrap}
+.chip.off{opacity:.34}
+.chip b{font-weight:600;opacity:.55}
+.cam{padding:9px 15px;font-size:13px;box-shadow:4px 4px 0 var(--ink);align-self:flex-start}
+.b-view{grid-area:view}.b-title{grid-area:title}.b-caveat{grid-area:caveat}
+.b-source{grid-area:source}.b-feed{grid-area:feed}.b-state{grid-area:state}
+
+.cue{display:flex;align-items:center;gap:14px;padding:10px 0;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-60)}
+.cue .bar{flex:1;height:3px;background:var(--ink)}
+
+/* ══════════════ SLABS ══════════════ */
+.slab{padding:clamp(34px,5.5vw,64px) 0;border-bottom:var(--rule)}
+.sh{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  margin-bottom:24px}
+.sh h2{font-family:"Bodoni Moda",Didot,serif;font-weight:500;
+  font-size:clamp(2rem,5.2vw,3.7rem);line-height:1}
+.sh .idx{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.15em;
+  text-transform:uppercase;opacity:.7;text-align:right;line-height:1.7}
+.two{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(18px,2.6vw,40px);align-items:start}
+.col{display:flex;flex-direction:column;gap:15px}
+.cta{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+
+/* ══════════════ THE WORK GRID ══════════════
+   One flat slab with collapsed borders: the grid owns top and left, each panel
+   owns right and bottom, so no panel owns its own edges. */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));
+  border-top:var(--rule);border-left:var(--rule)}
+.card{border-right:var(--rule);border-bottom:var(--rule);
+  position:relative;min-height:262px;background:var(--black);perspective:2000px}
+
+@property --a{syntax:"<angle>";inherits:false;initial-value:0deg}
+
+/* what is behind the lid */
+.reveal{position:absolute;inset:0;background:var(--black);overflow:hidden;
+  display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer}
+.reveal .shot{position:absolute;inset:0;background-size:cover;background-position:center}
+.reveal .cap{position:relative;background:var(--black);border-top:2px solid var(--edge);
+  padding:11px 13px;display:flex;flex-direction:column;gap:5px}
+.reveal .what{font-family:"Bodoni Moda",serif;font-size:1.2rem;color:var(--chalk);opacity:.9}
+.reveal .tag{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--kraft);opacity:.45}
+.reveal .shut{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--kraft);opacity:0;transition:opacity .1s}
+.card.open .reveal:hover .shut{opacity:.62}
+
+/* the lid */
+.door{position:absolute;inset:0;width:100%;height:100%;padding:0;
+  display:flex;flex-direction:column;align-items:stretch;gap:0;text-align:left;
+  background:var(--bg);color:var(--on);cursor:pointer;backface-visibility:hidden;
+  transition:--a 65ms linear}
+.door:focus-visible{outline:3px solid var(--chrome);outline-offset:-6px}
+
+/* the four rules that know a direction. Everything else drives --a and does
+   not care which edge it turns about. */
+.card[data-open="left"]  .door{transform-origin:left center;transform:rotateY(calc(-1 * var(--a)))}
+.card[data-open="right"] .door{transform-origin:right center;transform:rotateY(var(--a))}
+.card[data-open="up"]    .door{transform-origin:center top;transform:rotateX(var(--a))}
+.card[data-open="down"]  .door{transform-origin:center bottom;transform:rotateX(calc(-1 * var(--a)))}
+.card.open .door{--a:84deg}
+/* an open lid is edge-on and nearly impossible to hit: it stops taking the
+   pointer entirely so every click inside the panel reaches the reveal and
+   closes it. Enter on the focused lid still works, since that is not a click */
+.card.open .door{pointer-events:none}
+
+/* the open lid still stands on its bound edge, so the reveal keeps clear of it */
+.card[data-open="left"]  .reveal .cap{padding-left:36px}
+.card[data-open="right"] .reveal .cap{padding-right:36px}
+.card[data-open="up"]    .reveal{padding-top:34px}
+.card[data-open="down"]  .reveal .cap{padding-bottom:30px}
+
+.hinge{position:absolute;background:var(--ink);opacity:.55;z-index:2}
+.card[data-open="left"]  .hinge{left:0;top:0;bottom:0;width:5px}
+.card[data-open="right"] .hinge{right:0;top:0;bottom:0;width:5px}
+.card[data-open="up"]    .hinge{top:0;left:0;right:0;height:5px}
+.card[data-open="down"]  .hinge{bottom:0;left:0;right:0;height:5px}
+
+/* the affordance is a shade, not a movement, and it has no transition */
+.card:not(.open) .door:hover{background:color-mix(in srgb,var(--bg) 87%,var(--chalk))}
+.card.open{z-index:5}
+
+.card .top{display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:11px 13px;border-bottom:var(--rule)}
+.card .top .n{font-family:"Bodoni Moda",serif;font-size:1.45rem;line-height:1;font-weight:500}
+.card .body{padding:14px 13px 13px;display:flex;flex-direction:column;gap:10px;flex:1}
+.card h3{font-family:"Bodoni Moda",Didot,serif;font-weight:500;font-size:1.45rem;line-height:1.05}
+.card .foot{margin-top:auto;padding-top:10px;border-top:2px solid currentColor;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.11em;
+  text-transform:uppercase;opacity:.8}
+/* editing lays a panel flat. Both faces carry words, and the back of a shut
+   lid cannot be reached by clicking, so while editing the card stops being a
+   lid over a panel and becomes the two of them stacked. */
+body.editing .card{perspective:none;min-height:0;display:flex;flex-direction:column}
+body.editing .card .door{position:static;height:auto;flex:1;order:1}
+body.editing .card .hinge{display:none}
+body.editing .card .reveal{position:static;height:auto;cursor:default;
+  border-top:var(--rule);padding:0;order:2}
+body.editing .card .reveal .cap{padding:11px 13px}
+/* an empty image slot is reserved space, and says so in the same hatch every
+   other reserved box on the page uses */
+body.editing .card .reveal .shot{position:static;display:block;height:0;
+  padding-bottom:38%;background-color:var(--black);
+  background-image:repeating-linear-gradient(45deg,
+    transparent 0 8px,rgba(233,220,192,.07) 8px 16px)}
+body.editing .card .reveal .shut{display:none}
+
+.card .shelf{display:none;gap:8px;padding:0 13px 12px;flex-wrap:wrap}
+body.editing .card .shelf{display:flex}
+.card .shelf label,.card .shelf button{border:2px solid currentColor;padding:5px 9px;
+  font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.13em;
+  text-transform:uppercase;cursor:pointer;background:none;color:inherit}
+
+/* the calm pocket: one section that is allowed to be empty */
+.quiet{padding:clamp(60px,11vw,140px) 0;border-bottom:var(--rule);text-align:center}
+.quiet .ed{display:inline-block;text-align:left;max-width:52ch}
+
+/* ══════════════ THE ARCHIVE ══════════════
+   Not part of the site. It is here so the fragments can be looked at without
+   opening five files, and it comes out before this ever ships. */
+.arch{background:var(--kraft-hi)}
+.arch .pick{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-bottom:18px;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.13em;text-transform:uppercase}
+.arch .pick button{border:var(--rule);background:var(--kraft);color:var(--ink);padding:7px 13px;
+  font:inherit;font-weight:600;box-shadow:4px 4px 0 var(--ink);
+  transition:transform .09s ease,box-shadow .09s ease}
+.arch .pick button:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+.arch .pick button.on{background:var(--chrome)}
+.arch .frame{border:var(--rule);background:var(--kraft);height:74vh;min-height:460px;width:100%}
+.arch .frame iframe{width:100%;height:100%;border:none;display:block}
+.arch .miss{padding:22px;font-family:"IBM Plex Mono",monospace;font-size:12px;line-height:1.6}
+
+@media (max-width:860px){
+  .two{grid-template-columns:1fr}
+  :root{--lift:5px}
+  .rail .place{display:none}
+  .slot{grid-template-columns:1fr;
+    grid-template-rows:auto minmax(240px,1fr) auto auto auto;
+    grid-template-areas:"title" "view" "source" "feed" "caveat"}
+  .b-state{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+  .card .door{transform:none!important}
+  .card.open .door{visibility:hidden}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ THE DESK ═══════════════ -->
+<div class="desk">
+  <div class="drawer" id="drawer">
+    <h4>Links</h4>
+    <div id="linkfields"></div>
+    <hr>
+    <h4>Résumé</h4>
+    <div class="row">
+      <label class="fbtn">Upload PDF<input type="file" id="resumefile" accept="application/pdf" hidden></label>
+      <button type="button" id="resumeclear">Clear</button>
+    </div>
+    <div class="said" id="resumestate">No résumé uploaded.</div>
+    <hr>
+    <h4>Everything you have written</h4>
+    <div class="row">
+      <button type="button" id="export">Export</button>
+      <label class="fbtn">Import<input type="file" id="importfile" accept="application/json" hidden></label>
+      <button type="button" id="wipe">Erase all</button>
+    </div>
+    <div class="said">Export writes one file with every word, link, and image in
+      it. Storage lives in this browser only — export before you clear your
+      browser data, and to move to another machine.</div>
+  </div>
+  <div class="row">
+    <button type="button" id="editbtn" aria-pressed="false">Edit: off</button>
+    <button type="button" id="drawerbtn" aria-expanded="false">Links &amp; files</button>
+  </div>
+  <div class="said" id="says"></div>
+</div>
+
+<!-- ═══════════════ FOLD ═══════════════ -->
+<div class="fold">
+  <div class="wrap">
+    <div class="rail">
+      <span class="live"><i></i><span class="ed inl" data-t="rail.live" data-ghost="[status — 3 words]"></span></span>
+      <span class="place ed inl" data-t="rail.place" data-ghost="[where you are]"></span>
+      <span class="spacer"></span>
+      <span><a href="#" data-l="email">Email</a></span>
+      <span><a href="#" data-l="github">GitHub</a></span>
+      <span><a href="#" data-l="linkedin">LinkedIn</a></span>
+      <span><a href="#" data-l="resume">Résumé</a></span>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="mast">
+      <div class="line"><span>A</span><span>Y</span><span>Y</span><span>A</span><span>Z</span><span>U</span><span>L</span></div>
+      <div class="line"><span>H</span><span>A</span><span>S</span><span>S</span><span>A</span><span>N</span></div>
+      <div class="kicker">
+        <span class="ed inl" data-t="mast.role" data-ghost="[ROLE LINE — 3 to 6 words]"></span>
+        <span class="ed inl" data-t="mast.right" data-ghost="[right-hand line]"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap stage">
+    <div class="slot">
+      <div class="bx b-view" data-label="Viewport · robot arm">
+        <div class="note">[live 3D arm fills this box]</div>
+      </div>
+      <div class="bx res b-title" data-label="Title">
+        <span class="ed inl" data-t="demo.name" data-ghost="[DEMO NAME — 2 to 4 words]"></span>
+        <span class="t bld"><i></i><span class="ed inl" data-t="demo.tense" data-ghost="Building"></span></span>
+      </div>
+      <div class="bx res b-caveat" data-label="Caveat">
+        <div class="ed blk" data-t="demo.caveat" data-ghost="[ONE LINE — what it does, and what it does not.]"></div>
+      </div>
+      <div class="bx res b-source" data-label="Source">
+        <button class="btn btn-2 cam" type="button">Use camera</button>
+        <span class="mono">Cursor · live now</span>
+        <span class="mono">Nothing leaves your device</span>
+      </div>
+      <div class="bx res b-feed" data-label="Camera feed">
+        <div class="note">[preview + tracked-hand overlay]</div>
+        <span class="chip off">Inert · cursor mode</span>
+      </div>
+      <div class="bx res b-state" data-label="State">
+        <div class="chips">
+          <span class="chip"><b>J1</b>—</span><span class="chip"><b>J2</b>—</span>
+          <span class="chip"><b>J3</b>—</span><span class="chip"><b>Target</b>—,—</span>
+          <span class="chip off"><b>Grip</b>camera only</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="cue"><span>↓</span><span class="bar"></span><span>Everything else</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════ PITCH ═══════════════ -->
+<div class="slab field f-ultra">
+  <div class="wrap">
+    <div class="sh">
+      <h2 class="ed inl" data-t="pitch.claim" data-ghost="[The one-line claim]"></h2>
+      <div class="idx">00</div>
+    </div>
+    <div class="two">
+      <div class="col">
+        <div class="ed blk" data-t="pitch.headline" data-ghost="[HEADLINE — 6 to 12 words.] What you do and who for. Survives a three-second scan. Concrete nouns, no adjectives."></div>
+        <div class="ed blk" data-t="pitch.position" data-ghost="[POSITION — 2 to 3 sentences.] What you want and what you'll take. Reads as range, not as hedging. Name what you're building right now."></div>
+        <div class="cta">
+          <a class="btn btn-1" href="#" data-l="email">Email me</a>
+          <a class="btn btn-2" href="#" data-l="resume">Résumé</a>
+          <a class="btn btn-2" href="#" data-l="github">GitHub</a>
+        </div>
+      </div>
+      <div class="col">
+        <div class="ed blk" data-t="pitch.proof" data-ghost="[PROOF — 3 lines, numbers only.] Countable things a stranger can check in a minute."></div>
+        <div class="ed blk" data-t="pitch.forwhom" data-ghost="[FOR WHOM — 2 lines.] Name the reader so the right one recognises themselves."></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ WORK ═══════════════ -->
+<div class="slab">
+  <div class="wrap">
+    <div class="sh">
+      <h2 class="ed inl" data-t="work.head" data-ghost="Everything else"></h2>
+      <div class="idx ed inl" data-t="work.idx" data-ghost="[index line]"></div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</div>
+
+<!-- the calm pocket -->
+<div class="quiet field f-chrome">
+  <div class="wrap">
+    <div class="ed blk" data-t="quiet.line" data-ghost="[ONE LINE. Nothing else on this screen.] Whatever you want a reader to carry away after they close the tab. Not a slogan."></div>
+  </div>
+</div>
+
+<!-- ═══════════════ CONTACT ═══════════════ -->
+<div class="slab field f-oxblood">
+  <div class="wrap">
+    <div class="sh">
+      <h2 class="ed inl" data-t="contact.head" data-ghost="Say something"></h2>
+      <div class="idx ed inl" data-t="contact.idx" data-ghost="[reply time]"></div>
+    </div>
+    <div class="two">
+      <div class="col">
+        <div class="ed blk" data-t="contact.closer" data-ghost="[CLOSER — 2 sentences.] What you want to hear and what happens next. No &quot;feel free to reach out&quot;."></div>
+        <div class="cta">
+          <a class="btn btn-1" style="background:var(--chrome);color:var(--ink)" href="#" data-l="email">Email me</a>
+          <a class="btn btn-2" href="#" data-l="linkedin">LinkedIn</a>
+          <a class="btn btn-2" href="#" data-l="twitter">Twitter</a>
+        </div>
+      </div>
+      <div class="col">
+        <div class="ed blk" data-t="contact.avail" data-ghost="[AVAILABILITY — 1 line.] Dates, format, what you are looking for."></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ ARCHIVE ═══════════════ -->
+<div class="slab arch" style="border-bottom:none">
+  <div class="wrap">
+    <div class="sh">
+      <h2>Earlier</h2>
+      <div class="idx">Working files · not part of the site</div>
+    </div>
+    <div class="pick" id="pick"></div>
+    <div class="frame" id="frame"></div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   THE PANELS
+   Written out from data rather than markup: six panels differing only in
+   pigment, number, tense and key is six rows, not six blocks of HTML that
+   have to be kept in step by hand.
+   ══════════════════════════════════════════════════════════════════════ */
+const PANELS=[
+  {k:"01",f:"f-oxblood",tense:"bld",
+   h:"[PROJECT — 2 to 4 words]",b:"[2 sentences.] What it is, and why by hand.",
+   foot:"[tags] · [date]",what:"[what opening this shows]",tag:"[one line under it]"},
+  {k:"02",f:"f-ultra",tense:"bld",
+   h:"[PROJECT — 2 to 4 words]",b:"[2 sentences.] What it plays. Whether it is playable yet.",
+   foot:"[tags] · [playable?]",what:"[what opening this shows]",tag:"[one line under it]"},
+  {k:"03",f:"f-bottle",tense:"did",
+   h:"[PROJECT — 2 to 4 words]",b:"[3 sentences.] What the team built, which part was yours. Lead with the hardest thing you solved.",
+   foot:"[team] · [term]",what:"[what opening this shows]",tag:"[one line under it]"},
+  {k:"04",f:"f-plum",tense:"want",
+   h:"[PROJECT — 2 to 4 words]",b:"[2 sentences.] The hardware, and the intent. An invitation, not a to-do.",
+   foot:"[hardware] · [starting]",what:"[what opening this shows]",tag:"[one line under it]"},
+  {k:"05",f:"f-olive",tense:"want",
+   h:"[PROJECT — 2 to 4 words]",b:"[2 sentences.] The direction, and why it grips you.",
+   foot:"[research] · [seeking advisor]",what:"[what opening this shows]",tag:"[one line under it]"},
+  {k:"06",f:"f-violet",tense:"did",
+   h:"[PROJECT — 2 to 4 words]",b:"[1 sentence.] The small thing that works.",
+   foot:"[canvas] · [live]",what:"[what opening this shows]",tag:"[one line under it]"}
+];
+const grid=document.getElementById("grid");
+grid.innerHTML=PANELS.map(p=>`
+  <div class="card field ${p.f}" data-k="${p.k}">
+    <span class="hinge"></span>
+    <div class="reveal">
+      <span class="shot" data-img="work.${p.k}.img"></span>
+      <span class="cap">
+        <span class="what ed inl" data-t="work.${p.k}.what" data-ghost="${p.what}"></span>
+        <span class="tag ed inl" data-t="work.${p.k}.tag" data-ghost="${p.tag}"></span>
+        <span class="shut">Click anywhere to close</span>
+      </span>
+    </div>
+    <div class="door" role="button" tabindex="0" aria-expanded="false">
+      <div class="top">
+        <span class="n">${p.k}</span>
+        <span class="t ${p.tense}"><i></i><span class="ed inl" data-t="work.${p.k}.tense" data-ghost="${({bld:'Building',did:'Did',want:'Want to'})[p.tense]}"></span></span>
+      </div>
+      <div class="body">
+        <h3 class="ed inl" data-t="work.${p.k}.h" data-ghost="${p.h}"></h3>
+        <div class="ed blk" data-t="work.${p.k}.b" data-ghost="${p.b}"></div>
+        <div class="foot ed inl" data-t="work.${p.k}.foot" data-ghost="${p.foot}"></div>
+      </div>
+      <div class="shelf">
+        <label>Image<input type="file" accept="image/*" data-imgfor="work.${p.k}.img" hidden></label>
+        <button type="button" data-imgclear="work.${p.k}.img">Clear image</button>
+      </div>
+    </div>
+  </div>`).join("");
+
+/* ══════════════════════════════════════════════════════════════════════
+   THE STORE
+   One object, one localStorage key, one save path. Everything the site can
+   be told - words, addresses, uploaded files - goes in here and comes back
+   out of here, so exporting is a stringify and importing is a parse.
+   ══════════════════════════════════════════════════════════════════════ */
+const KEY="ayyaz.site.v1";
+let S={t:{},l:{},f:{}};
+const says=document.getElementById("says");
+let sayTimer=0;
+function say(msg,sticky){
+  says.textContent=msg;
+  clearTimeout(sayTimer);
+  if(!sticky) sayTimer=setTimeout(()=>{says.textContent=""},3200);
+}
+try{const raw=localStorage.getItem(KEY); if(raw) S=Object.assign(S,JSON.parse(raw));}
+catch(e){say("Saved content could not be read: "+e.message,true);}
+
+let saveTimer=0;
+function save(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{
+    try{localStorage.setItem(KEY,JSON.stringify(S));say("Saved");}
+    catch(e){
+      /* the quota is the one failure that loses work silently if it is
+         swallowed, so it is named in full and the write is not retried */
+      const kb=Math.round(JSON.stringify(S).length/1024);
+      say("NOT SAVED — this browser's storage is full at about "+kb+
+          "KB. Clear an uploaded image or the résumé, then export.",true);
+    }
+  },350);
+}
+
+/* ── words ── */
+const eds=[...document.querySelectorAll(".ed")];
+function normalise(el){ if(!el.textContent.trim()) el.innerHTML=""; }
+for(const el of eds){
+  const k=el.dataset.t;
+  if(S.t[k]!==undefined) el.textContent=S.t[k];
+  normalise(el);
+  el.addEventListener("input",()=>{normalise(el);S.t[k]=el.textContent;save()});
+  el.addEventListener("blur",()=>normalise(el));
+  /* paste arrives as plain text: pasted markup would carry another site's
+     type into this one */
+  el.addEventListener("paste",e=>{
+    e.preventDefault();
+    document.execCommand("insertText",false,(e.clipboardData||window.clipboardData).getData("text"));
+  });
+}
+
+/* ── addresses ── */
+const LINKS=[
+  ["email","Email","mailto:"],["github","GitHub",""],["linkedin","LinkedIn",""],
+  ["twitter","Twitter",""],["resume","Résumé","file"]
+].concat(PANELS.map(p=>["work."+p.k,"Panel "+p.k,""]));
+function applyLinks(){
+  for(const[k,,pre] of LINKS){
+    const v=S.l[k]||"";
+    const href = !v ? "#" : (pre==="mailto:" && !/^[a-z]+:/i.test(v) ? "mailto:"+v : v);
+    document.querySelectorAll('[data-l="'+k+'"]').forEach(a=>{
+      a.href=href;
+      if(v && /^https?:/i.test(href)){a.target="_blank";a.rel="noopener"}
+    });
+  }
+  const r=S.f.resume;
+  document.querySelectorAll('[data-l="resume"]').forEach(a=>{
+    if(r){a.href=r.data;a.download=r.name;a.removeAttribute("target")}
+    else if(!S.l.resume) a.removeAttribute("download");
+  });
+}
+const linkfields=document.getElementById("linkfields");
+linkfields.innerHTML=LINKS.filter(l=>l[2]!=="file").map(([k,label])=>
+  `<label class="fld"><span>${label}</span><input type="url" data-lk="${k}"
+    placeholder="${k==="email"?"you@example.com":"https://…"}"></label>`).join("");
+linkfields.querySelectorAll("input").forEach(inp=>{
+  const k=inp.dataset.lk;
+  if(inp.type==="url"&&k==="email") inp.type="text";
+  inp.value=S.l[k]||"";
+  inp.addEventListener("input",()=>{S.l[k]=inp.value.trim();applyLinks();save()});
+});
+
+/* ── files ──
+   Images are re-encoded down to something a page can carry before they are
+   stored: a phone photo would otherwise fill the whole storage budget on its
+   own. The résumé cannot be re-encoded, so its size is checked and reported. */
+function shrink(file,maxEdge,cb){
+  const fr=new FileReader();
+  fr.onload=()=>{
+    const img=new Image();
+    img.onload=()=>{
+      const s=Math.min(1,maxEdge/Math.max(img.width,img.height));
+      const c=document.createElement("canvas");
+      c.width=Math.round(img.width*s); c.height=Math.round(img.height*s);
+      c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+      cb(c.toDataURL("image/jpeg",.82));
+    };
+    img.onerror=()=>say("That image could not be read.",true);
+    img.src=fr.result;
+  };
+  fr.readAsDataURL(file);
+}
+function paintImages(){
+  document.querySelectorAll("[data-img]").forEach(el=>{
+    const d=S.f[el.dataset.img];
+    el.style.backgroundImage=d?'url("'+d.data+'")':"";
+  });
+}
+document.querySelectorAll("[data-imgfor]").forEach(inp=>{
+  inp.addEventListener("change",()=>{
+    const file=inp.files[0]; if(!file) return;
+    shrink(file,1400,dataUrl=>{
+      S.f[inp.dataset.imgfor]={name:file.name,data:dataUrl};
+      paintImages(); save(); say("Image set on panel "+inp.dataset.imgfor.split(".")[1]);
+    });
+    inp.value="";
+  });
+});
+document.querySelectorAll("[data-imgclear]").forEach(b=>{
+  b.addEventListener("click",e=>{
+    e.stopPropagation();
+    delete S.f[b.dataset.imgclear]; paintImages(); save(); say("Image cleared");
+  });
+});
+
+const resumestate=document.getElementById("resumestate");
+function paintResume(){
+  const r=S.f.resume;
+  resumestate.textContent=r
+    ? r.name+" — "+Math.round(r.data.length/1365)+"KB. The Résumé links point at it."
+    : "No résumé uploaded. The Résumé links use the address above, if you set one.";
+}
+document.getElementById("resumefile").addEventListener("change",e=>{
+  const file=e.target.files[0]; if(!file) return;
+  const fr=new FileReader();
+  fr.onload=()=>{
+    const kb=Math.round(fr.result.length/1365);
+    if(kb>3000){say("That PDF is about "+kb+"KB, past what this browser will "+
+      "store. Compress it, or set a Résumé link instead.",true);return;}
+    S.f.resume={name:file.name,data:fr.result};
+    paintResume(); applyLinks(); save(); say("Résumé stored");
+  };
+  fr.readAsDataURL(file);
+  e.target.value="";
+});
+document.getElementById("resumeclear").addEventListener("click",()=>{
+  delete S.f.resume; paintResume(); applyLinks(); save(); say("Résumé cleared");
+});
+
+/* ── carrying it off this machine ── */
+document.getElementById("export").addEventListener("click",()=>{
+  const blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="site-content.json"; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  say("Exported");
+});
+document.getElementById("importfile").addEventListener("change",e=>{
+  const file=e.target.files[0]; if(!file) return;
+  const fr=new FileReader();
+  fr.onload=()=>{
+    try{
+      const next=JSON.parse(fr.result);
+      if(!next||typeof next!=="object"||!("t" in next))
+        throw new Error("this file has no site content in it");
+      S={t:next.t||{},l:next.l||{},f:next.f||{}};
+      for(const el of eds){el.textContent=S.t[el.dataset.t]||"";normalise(el)}
+      linkfields.querySelectorAll("input").forEach(i=>i.value=S.l[i.dataset.lk]||"");
+      applyLinks(); paintImages(); paintResume(); save(); say("Imported");
+    }catch(err){say("Import failed — "+err.message,true)}
+  };
+  fr.readAsText(file);
+  e.target.value="";
+});
+document.getElementById("wipe").addEventListener("click",()=>{
+  if(!confirm("Erase every word, link and image stored in this browser?")) return;
+  S={t:{},l:{},f:{}};
+  for(const el of eds){el.textContent="";normalise(el)}
+  linkfields.querySelectorAll("input").forEach(i=>i.value="");
+  applyLinks(); paintImages(); paintResume();
+  try{localStorage.removeItem(KEY)}catch(e){}
+  say("Erased");
+});
+
+/* ── the two modes ──
+   Editing and reading are the same page with one flag between them: while
+   editing, the words take the pointer and the panels do not move, because a
+   panel that flapped every time you clicked into a sentence would be
+   unusable. */
+let editing=false;
+const editbtn=document.getElementById("editbtn");
+function setEditing(on){
+  editing=on;
+  document.body.classList.toggle("editing",on);
+  editbtn.textContent="Edit: "+(on?"on":"off");
+  editbtn.setAttribute("aria-pressed",on?"true":"false");
+  editbtn.classList.toggle("on",on);
+  for(const el of eds) el.contentEditable=on?"true":"false";
+  if(on) closeAll();
+}
+editbtn.addEventListener("click",()=>setEditing(!editing));
+const drawer=document.getElementById("drawer"),drawerbtn=document.getElementById("drawerbtn");
+drawerbtn.addEventListener("click",()=>{
+  const open=drawer.classList.toggle("open");
+  drawerbtn.setAttribute("aria-expanded",open?"true":"false");
+  drawerbtn.classList.toggle("on",open);
+});
+
+/* ── which edge a lid is bound to ──
+   Measured, never assigned: each panel counts the panels between it and each
+   of the four grid edges and hinges on the nearest, so it opens into the space
+   outside the grid rather than over a neighbour. Ties go horizontal, because
+   the grid is always wider than it is tall. */
+function bindLids(){
+  const cards=[...grid.querySelectorAll(".card")];
+  const cols=[...new Set(cards.map(c=>c.offsetLeft))].sort((a,b)=>a-b);
+  const rows=[...new Set(cards.map(c=>c.offsetTop))].sort((a,b)=>a-b);
+  for(const c of cards){
+    const x=cols.indexOf(c.offsetLeft),y=rows.indexOf(c.offsetTop);
+    const free={left:x,right:cols.length-1-x,up:y,down:rows.length-1-y};
+    let edge="left";
+    for(const k of ["left","right","up","down"]) if(free[k]<free[edge]) edge=k;
+    c.dataset.open=edge;
+  }
+}
+
+/* ── opening and shutting ──
+   One panel at a time, and every way out of an open one leads to the same
+   place: the panel underneath takes the click, Escape takes the keyboard, and
+   opening another shuts the first. */
+function closeAll(except){
+  grid.querySelectorAll(".card.open").forEach(c=>{
+    if(c===except) return;
+    c.classList.remove("open");
+    c.querySelector(".door").setAttribute("aria-expanded","false");
+  });
+}
+function setOpen(card,open){
+  if(editing) return;
+  if(open) closeAll(card);
+  card.classList.toggle("open",open);
+  card.querySelector(".door").setAttribute("aria-expanded",open?"true":"false");
+}
+grid.querySelectorAll(".card").forEach(card=>{
+  const door=card.querySelector(".door");
+  door.addEventListener("click",e=>{
+    if(editing||e.target.closest(".shelf")) return;
+    setOpen(card,!card.classList.contains("open"));
+  });
+  door.addEventListener("keydown",e=>{
+    if(editing) return;
+    if(e.key==="Enter"||e.key===" "){e.preventDefault();setOpen(card,!card.classList.contains("open"))}
+  });
+  card.querySelector(".reveal").addEventListener("click",()=>{
+    if(editing) return;
+    setOpen(card,false);
+    door.focus();
+  });
+});
+addEventListener("keydown",e=>{
+  if(e.key==="Escape"&&!editing&&grid.querySelector(".card.open")){closeAll();}
+});
+
+/* ══════════════════════════════════════════════════════════════════════
+   THE ARCHIVE — the fragments, in a frame, on demand
+   ══════════════════════════════════════════════════════════════════════ */
+const FRAGMENTS=[
+  ["mockups/fragment-01-specimens.html","01 Specimens"],
+  ["mockups/fragment-04-devices.html","04 Devices"],
+  ["mockups/fragment-05-poster.html","05 Poster"],
+  ["mockups/fragment-06-demo01.html","06 Demo 01"],
+  ["mockups/fragment-07-flaps.html","07 Flaps"]
+];
+const pick=document.getElementById("pick"),frame=document.getElementById("frame");
+pick.innerHTML=FRAGMENTS.map(([,l],i)=>`<button type="button" data-i="${i}">${l}</button>`)
+  .join("")+`<button type="button" data-i="-1">Close</button>`;
+pick.addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  pick.querySelectorAll("button").forEach(x=>x.classList.remove("on"));
+  const i=+b.dataset.i;
+  if(i<0){frame.innerHTML="";return}
+  b.classList.add("on");
+  const[src,label]=FRAGMENTS[i];
+  frame.innerHTML='<iframe src="'+src+'" title="'+label+'" loading="lazy"></iframe>';
+});
+
+applyLinks(); paintImages(); paintResume(); bindLids(); setEditing(false);
+addEventListener("resize",bindLids);
+</script>
+</body>
+</html>
