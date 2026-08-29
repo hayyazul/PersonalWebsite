@@ -427,8 +427,8 @@ body.editing .card .shelf{display:flex}
         <canvas id="armback"></canvas>
         <canvas id="armview"></canvas>
         <canvas id="armfront"></canvas>
-        <div class="note" id="armnote">Cursor aims · hold to grip · shift-drag orbits ·
-          alt-drag for depth · double-click resets the view</div>
+        <div class="note" id="armnote">Cursor aims · hold to grip · wheel turns the wrist ·
+          shift-drag orbits · alt-drag for depth · double-click resets the view</div>
       </div>
       <div class="bx res b-title" data-label="Title">
         <span class="ed inl" data-t="demo.name" data-ghost="[DEMO NAME — 2 to 4 words]"></span>
@@ -1144,6 +1144,11 @@ function unproject(px,py){
 let q=START.slice();
 let target=CENTRE.slice();
 let gap=0, grip=JAW_OPEN, gripWanted=JAW_OPEN, running=false, last=0;
+/* The wrist roll is commanded, not solved. It can be, because the grasp point
+   sits almost exactly on the roll axis: turning it barely moves the point, so
+   its column in the Jacobian is near zero and the solver was never really using
+   it anyway. That makes it the one joint free to be handed to the wheel. */
+let rollWanted=START[4];
 function aimAt(point){ target=point; }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -1386,7 +1391,8 @@ function tick(now){
   const wanted=solve(q,target);
   gap=wanted.gap;
   const step=MAX_DEG_PER_S*dt;
-  for(let i=0;i<5;i++) q[i]+=Math.max(-step,Math.min(step,wanted.q[i]-q[i]));
+  for(let i=0;i<4;i++) q[i]+=Math.max(-step,Math.min(step,wanted.q[i]-q[i]));
+  q[4]+=Math.max(-step,Math.min(step,rollWanted-q[4]));
   grip+=Math.max(-step,Math.min(step,gripWanted-grip));
   const f=fk(q,grip);
   drawGround(f.grasp);
@@ -1440,13 +1446,17 @@ front.addEventListener("pointerup",()=>{orbit=null;gripWanted=JAW_OPEN});
 front.addEventListener("pointercancel",()=>{orbit=null;gripWanted=JAW_OPEN});
 /* a button released outside the box must not leave the hand clenched */
 addEventListener("blur",()=>{orbit=null;gripWanted=JAW_OPEN});
-front.addEventListener("dblclick",()=>{cam.az=HOME.az;cam.el=HOME.el;cam.depth=0});
+front.addEventListener("dblclick",()=>{cam.az=HOME.az;cam.el=HOME.el;cam.depth=0;rollWanted=START[4]});
 front.addEventListener("contextmenu",e=>e.preventDefault());
-/* No wheel handler, deliberately. Depth used to hang off shift+scroll, which
-   needs a non-passive listener, which makes every wheel event over this box wait
-   on the main thread - and this box fills the first screen while that same main
-   thread is solving inverse kinematics sixty times a second. The page stopped
-   scrolling. The wheel belongs to the document; depth moved to alt-drag. */
+/* The wheel turns the wrist, which means this box keeps the wheel to itself.
+   Everywhere else on the page it still belongs to the document. Shift and ctrl
+   pass through untouched so the browser's own horizontal scroll and zoom keep
+   working over the viewport. */
+front.addEventListener("wheel",e=>{
+  if(e.shiftKey||e.ctrlKey) return;
+  e.preventDefault();
+  rollWanted=Math.max(LO[4],Math.min(HI[4],rollWanted+e.deltaY*0.18));
+},{passive:false});
 
 /* nothing is gained by solving inverse kinematics for a box nobody is looking at */
 new IntersectionObserver(entries=>{
@@ -1459,7 +1469,7 @@ try{ buildMesh(); }catch(err){ meshFailed=err.message; }
 if(meshFailed){
   gl=null;
   note.textContent="Showing the chain only — "+meshFailed+
-    ". Cursor aims · hold to grip · shift-drag orbits";
+    ". Cursor aims · hold to grip · wheel turns the wrist";
 }
 resize();
 })();
@@ -1473,69 +1483,76 @@ resize();
   box.style.cssText="position:fixed;right:6px;top:6px;z-index:99999;background:#0b0b0b;"+
     "color:#5f5;font:11px/1.35 ui-monospace,monospace;padding:7px;width:46ch;"+
     "white-space:pre-wrap;border:1px solid #5f5;max-height:86vh;overflow:auto";
-  const bar=document.createElement("div");
-  const live=document.createElement("div"), log=document.createElement("div");
+  const bar=document.createElement("div"), live=document.createElement("div"),
+        log=document.createElement("div");
   box.append(bar,live,log); document.body.appendChild(box);
   const mk=(t,f)=>{const b=document.createElement("button");b.textContent=t;
-    b.style.cssText="font:11px monospace;margin:0 4px 6px 0";b.onclick=f;bar.appendChild(b);return b};
+    b.style.cssText="font:11px monospace;margin:0 4px 6px 0";b.onclick=f;bar.appendChild(b);};
 
-  const cs=e=>getComputedStyle(e);
-  const d=document.documentElement, b=document.body;
-  const facts=[
-    "UA "+navigator.userAgent.replace(/^Mozilla\/5\.0 \(|\) .*$/g,"|").slice(0,60),
-    "win "+innerWidth+"x"+innerHeight+"  dpr "+devicePixelRatio+
-      (window.visualViewport?"  vv scale "+visualViewport.scale.toFixed(2):""),
-    "html ov "+cs(d).overflowX+"/"+cs(d).overflowY+"  scrollH "+d.scrollHeight+" clientH "+d.clientHeight,
-    "body ov "+cs(b).overflowX+"/"+cs(b).overflowY+"  scrollH "+b.scrollHeight+" clientH "+b.clientHeight,
-    "scrollingElement = "+(document.scrollingElement&&document.scrollingElement.tagName),
-  ];
+  const d=document.documentElement, body=document.body, cs=getComputedStyle;
+  const name=e=>!e?"-":(e.nodeName+(e.id?"#"+e.id:"")+
+    (e.className&&typeof e.className==="string"&&e.className.trim()?"."+e.className.trim().split(/\s+/).join("."):"")).slice(0,28);
 
-  let wheels=0, scrolls=0, lines=[], chained=false;
-  const name=e=>!e?"-":(e.nodeName+(e.id?"#"+e.id:"")+(e.className&&e.className.baseVal===undefined?"."+String(e.className).trim().split(/\s+/).join("."):"")).slice(0,30);
+  let down=0, up=0, peak=0, chain="", lines=[], lastWheelAt=0, lastDir=0, lastUpAt=0;
+  const say=t=>{lines.push(t); if(lines.length>16) lines.shift();};
 
   addEventListener("wheel",e=>{
-    wheels++;
-    if(!chained){
-      chained=true;
-      lines.push("chain from "+name(e.target)+":");
+    if(e.deltaY>0){down++; lastDir=1} else if(e.deltaY<0){up++; lastDir=-1; lastUpAt=performance.now()}
+    lastWheelAt=performance.now();
+    if(!chain){
+      const bits=["chain from "+name(e.target)+":"];
       let n=e.target;
       while(n&&n!==document){
-        const st=cs(n), over=n.scrollHeight-n.clientHeight;
-        if(st.overflowY!=="visible"||over>1)
-          lines.push("  "+name(n).padEnd(26)+" ov "+st.overflowX+"/"+st.overflowY+" spare "+over);
+        const st=cs(n), spare=n.scrollHeight-n.clientHeight;
+        if(st.overflowY!=="visible"||spare>1)
+          bits.push("  "+name(n).padEnd(24)+" "+st.overflowX+"/"+st.overflowY+" spare "+spare);
         n=n.parentElement;
       }
+      chain=bits.join("\n");
     }
-    if(lines.length<40){
-      const y0=scrollY;
-      lines.push("wheel#"+wheels+" dy "+e.deltaY.toFixed(0)+" mode "+e.deltaMode+
-        " ctrl "+(e.ctrlKey?1:0)+" shift "+(e.shiftKey?1:0)+" tgt "+name(e.target));
-      requestAnimationFrame(()=>requestAnimationFrame(()=>{
-        lines.push("   -> prevented "+e.defaultPrevented+"   scrollY "+y0+" -> "+Math.round(scrollY));
-        paint();
-      }));
-    }
-    paint();
   },{capture:true,passive:true});
-  addEventListener("scroll",()=>{scrolls++},{passive:true});
 
-  mk("scrollBy(0,300)",()=>{const y=scrollY;scrollBy(0,300);
-    setTimeout(()=>{lines.push("scrollBy: "+y+" -> "+Math.round(scrollY));paint()},400)});
-  mk("copy",()=>{const t=box.innerText.replace(/^copy|^scrollBy\(0,300\)/gm,"");
-    navigator.clipboard&&navigator.clipboard.writeText(t)});
-  mk("hide",()=>box.remove());
-
-  const mast=document.querySelector(".mast");
-  function paint(){
-    live.textContent=facts.join("\n")+"\n"+
-      "scrollY "+Math.round(scrollY)+"  docTop "+Math.round(d.scrollTop)+
-      "  bodyTop "+Math.round(b.scrollTop)+"\n"+
-      "mast rect.top "+Math.round(mast?mast.getBoundingClientRect().top:0)+
-      "   wheels "+wheels+"  scroll events "+scrolls+"\n"+
-      "──────────────────────────────\n";
+  /* The question is not whether it scrolls - it does - but what pulls it back.
+     So: watch every frame for the page losing ground with no upward wheel
+     behind it, and for the document changing height, which clamps the scroll. */
+  let prevY=scrollY, prevH=d.scrollHeight, snaps=0, shrinks=0;
+  function watch(){
+    const y=scrollY, h=d.scrollHeight, now=performance.now();
+    if(h!==prevH){
+      shrinks++;
+      say("docH "+prevH+" -> "+h+"  (scrollY "+Math.round(y)+")");
+      prevH=h;
+    }
+    if(y>peak) peak=y;
+    if(prevY-y>6 && now-lastUpAt>350){
+      snaps++;
+      say("SNAPBACK "+Math.round(prevY)+" -> "+Math.round(y)+
+          "   "+Math.round(now-lastWheelAt)+"ms after the last wheel"+
+          (document.activeElement&&document.activeElement!==body?
+            "  focus="+name(document.activeElement):""));
+    }
+    prevY=y;
+    live.textContent=
+      "win "+innerWidth+"x"+innerHeight+" dpr "+devicePixelRatio+
+        "  docH "+h+"  spare "+(h-d.clientHeight)+"\n"+
+      "scrollY "+Math.round(y)+"   peak reached "+Math.round(peak)+"\n"+
+      "wheels down "+down+"  up "+up+"   snapbacks "+snaps+"  docH changes "+shrinks+"\n"+
+      "focus "+name(document.activeElement)+"   anchor "+cs(body).overflowAnchor+"\n"+
+      "────────────────────────────\n"+chain+(chain?"\n":"");
     log.textContent=lines.join("\n");
+    requestAnimationFrame(watch);
   }
-  (function loop(){paint();requestAnimationFrame(loop)})();
+  requestAnimationFrame(watch);
+
+  mk("scrollBy(0,600)",()=>{const y=scrollY;scrollBy(0,600);
+    setTimeout(()=>say("scrollBy: "+Math.round(y)+" -> "+Math.round(scrollY)),600)});
+  mk("anchor off",()=>{d.style.overflowAnchor="none";body.style.overflowAnchor="none";
+    document.querySelectorAll("*").forEach(n=>n.style.overflowAnchor="none");
+    say("overflow-anchor forced to none everywhere")});
+  mk("stop demo",()=>{const c=document.getElementById("armfront");
+    if(c) c.style.display="none"; say("armfront hidden")});
+  mk("copy",()=>navigator.clipboard&&navigator.clipboard.writeText(box.innerText));
+  mk("hide",()=>box.remove());
 })();
 </script>
 </body>
