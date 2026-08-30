@@ -13,6 +13,23 @@ fragments are frozen and kept only for reference (and are viewable from the
 archive section at the bottom of `index.html`). The v0 output from an earlier
 tool was rejected wholesale and is retained only as a counter-example.
 
+## Where it lives
+
+`git@github.com:hayyazul/the-website-of-all-time.git`, published at
+<https://hayyazul.github.io/the-website-of-all-time/>.
+
+One long-lived branch, `main`, which is the repo's default and the only branch
+Pages will deploy from - the `github-pages` environment admits the default
+branch and nothing else, which is why a push to any other branch runs the
+workflow and is then refused at the deploy step. Feature branches come and go
+off `main`.
+
+What a visitor gets is the finished page: `index.html`, `content.js` and
+`assets/`, with no editor, no placeholder brief and no working files. Publishing
+a draft is `Publish copy` then a commit of `content.js` - and since that file is
+written from the browser's draft in whole, publishing from a browser whose draft
+predates a hand edit to `content.js` will drop the edit.
+
 ## Filemap
 
 | Path | Role |
