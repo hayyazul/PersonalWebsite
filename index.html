@@ -20,7 +20,7 @@
   --edge:#4A3F34;                   /* the only rule colour that reads on black */
   --lift:6px;                       /* letterpress offset */
   --rule:3px solid var(--ink);
-  --face-body:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --face-body:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
   --face-display:"Bodoni Moda",Didot,"Times New Roman",serif;
   --bg:var(--kraft);--on:var(--ink);
 }
@@ -28,7 +28,7 @@
 html{scroll-behavior:smooth}
 body{
   background:var(--kraft);color:var(--ink);
-  font-family:var(--face-body);font-size:15.5px;line-height:1.45;
+  font-family:var(--face-body);font-size:14.5px;line-height:1.55;
   -webkit-font-smoothing:antialiased;overflow-x:hidden;position:relative;
 }
 /* The grain belongs to the paper, so it scrolls with the paper. It used to be
@@ -115,6 +115,11 @@ body.editing .ed:focus{outline:3px solid var(--chrome);outline-offset:4px}
 .desk button:active,.desk label.fbtn:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
 .desk button.on{background:var(--chrome)}
 .desk .said{padding:7px 0;color:var(--ink-60);max-width:44ch;text-transform:none;letter-spacing:.04em}
+.desk .named{display:flex;align-items:center;gap:7px;cursor:default}
+.desk .named input{font-family:"IBM Plex Mono",monospace;font-size:10px;
+  letter-spacing:.02em;padding:4px 6px;border:2px solid currentColor;
+  background:var(--chalk);color:var(--ink);width:18ch}
+.desk .named input:disabled{opacity:.4;background:none}
 .desk .said code{font-family:"IBM Plex Mono",monospace;font-size:.94em;
   border-bottom:2px solid currentColor}
 .desk .said b{color:var(--ink);font-weight:600}
@@ -413,6 +418,7 @@ body.editing .card .shelf{display:flex}
     <div class="row">
       <label class="fbtn">Upload PDF<input type="file" id="resumefile" accept="application/pdf" hidden></label>
       <button type="button" id="resumeclear">Clear</button>
+      <label class="named">Saves as<input type="text" id="resumeas" placeholder="resume.pdf"></label>
     </div>
     <div class="said" id="resumestate">No résumé uploaded.</div>
     <hr>
@@ -745,7 +751,7 @@ function applyLinks(){
   }
   const r=S.f.resume;
   document.querySelectorAll('[data-l="resume"]').forEach(a=>{
-    if(r){a.href=r.data;a.download=r.name;a.removeAttribute("target");a.classList.remove("none")}
+    if(r){a.href=r.data;a.download=resumeAs(r);a.removeAttribute("target");a.classList.remove("none")}
     else if(!S.l.resume) a.removeAttribute("download");
   });
 }
@@ -779,6 +785,7 @@ function syncLinkFields(k,except){
    property, and a family that is not already loaded gets its stylesheet
    appended the first time it is asked for rather than on every page load. */
 const BODY_FACES=[
+  ["IBM Plex Mono",'"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace',true],
   ["Archivo",'"Archivo","Helvetica Neue",Arial,sans-serif',true],
   ["Inter",'"Inter",system-ui,sans-serif',false],
   ["Work Sans",'"Work Sans",system-ui,sans-serif',false],
@@ -939,12 +946,23 @@ document.querySelectorAll("[data-imgclear]").forEach(b=>{
 });
 
 const resumestate=document.getElementById("resumestate");
+/* The file arrives under whatever it was called on disk, which is a working
+   name and nobody else's business. What it is downloaded as is asked for and
+   stored separately, so the two never have to agree. */
+function resumeAs(r){ return (r&&(r.as||r.name))||"resume.pdf"; }
+const resumeas=document.getElementById("resumeas");
 function paintResume(){
   const r=S.f.resume;
+  resumeas.value=r?resumeAs(r):"";
+  resumeas.disabled=!r;
   resumestate.textContent=r
-    ? r.name+" — "+Math.round(r.data.length/1365)+"KB. The Résumé links point at it."
+    ? "Stored, "+Math.round(r.data.length/1365)+"KB. It downloads as "+resumeAs(r)+"."
     : "No résumé uploaded. The Résumé links use the address above, if you set one.";
 }
+resumeas.addEventListener("input",()=>{
+  const r=S.f.resume; if(!r) return;
+  r.as=resumeas.value.trim(); applyLinks(); save();
+});
 document.getElementById("resumefile").addEventListener("change",e=>{
   const file=e.target.files[0]; if(!file) return;
   const fr=new FileReader();
@@ -952,8 +970,11 @@ document.getElementById("resumefile").addEventListener("change",e=>{
     const kb=Math.round(fr.result.length/1365);
     if(kb>3000){say("That PDF is about "+kb+"KB, past what this browser will "+
       "store. Compress it, or set a Résumé link instead.",true);return;}
-    S.f.resume={name:file.name,data:fr.result};
-    paintResume(); applyLinks(); save(); say("Résumé stored");
+    const ext=(file.name.match(/\.[a-z0-9]+$/i)||[".pdf"])[0].toLowerCase();
+    const asked=prompt("What should this file be called when someone downloads it?",
+                       (S.f.resume&&S.f.resume.as)||"resume"+ext);
+    S.f.resume={data:fr.result,as:(asked||"").trim()||"resume"+ext};
+    paintResume(); applyLinks(); save(); say("Résumé stored as "+S.f.resume.as);
   };
   fr.readAsDataURL(file);
   e.target.value="";
