@@ -530,13 +530,13 @@ body.editing .card .shelf{display:flex}
 <div class="slab field f-ultra">
   <div class="wrap">
     <div class="sh">
-      <h2 class="ed inl" data-t="pitch.claim" data-ghost="[The one-line claim]"></h2>
+      <h2 class="ed inl" data-t="pitch.claim" data-ghost="[One line. What do you build?]"></h2>
       <div class="idx">00</div>
     </div>
     <div class="two">
       <div class="col">
-        <div class="ed blk" data-t="pitch.headline" data-ghost="[HEADLINE — 6 to 12 words.] What you do and who for. Survives a three-second scan. Concrete nouns, no adjectives."></div>
-        <div class="ed blk" data-t="pitch.position" data-ghost="[POSITION — 2 to 3 sentences.] What you want and what you'll take. Reads as range, not as hedging. Name what you're building right now."></div>
+        <div class="ed blk" data-t="pitch.headline" data-ghost="[HEADLINE — 6 to 12 words.] The line above, said once more with the field named. What kind of thing, in what kind of place? Nouns, no adjectives."></div>
+        <div class="ed blk" data-t="pitch.position" data-ghost="[POSITION — 2 to 3 sentences.] What are you looking for, and what are you building right now? A reader deciding whether to reply needs both."></div>
         <div class="cta">
           <a class="btn btn-1" href="#" data-l="email">Email me</a>
           <a class="btn btn-2" href="#" data-l="resume">Résumé</a>
@@ -544,8 +544,8 @@ body.editing .card .shelf{display:flex}
         </div>
       </div>
       <div class="col">
-        <div class="ed blk" data-t="pitch.proof" data-ghost="[PROOF — 3 lines, numbers only.] Countable things a stranger can check in a minute."></div>
-        <div class="ed blk" data-t="pitch.forwhom" data-ghost="[FOR WHOM — 2 lines.] Name the reader so the right one recognises themselves."></div>
+        <div class="ed blk" data-t="pitch.proof" data-ghost="[PROOF — 3 lines.] Three things with a number in them that a stranger could go and check. Not adjectives about the work — the work, counted."></div>
+        <div class="ed blk" data-t="pitch.forwhom" data-ghost="[FOR WHOM — 2 lines.] Who do you want to email you? Name them, so that person knows this page is addressed to them."></div>
       </div>
     </div>
   </div>
@@ -579,11 +579,11 @@ body.editing .card .shelf{display:flex}
   <div class="wrap">
     <div class="sh">
       <h2 class="ed inl" data-t="contact.head" data-ghost="Say something"></h2>
-      <div class="idx ed inl" data-t="contact.idx" data-ghost="[reply time]"></div>
+      <div class="idx ed inl" data-t="contact.idx" data-ghost="[How fast do you answer?]"></div>
     </div>
     <div class="two">
       <div class="col">
-        <div class="ed blk" data-t="contact.closer" data-ghost="[CLOSER — 2 sentences.] What you want to hear and what happens next. No &quot;feel free to reach out&quot;."></div>
+        <div class="ed blk" data-t="contact.closer" data-ghost="[CLOSER — 2 sentences.] What do you want in the email, and what will you do when it arrives? Ask for the specific thing rather than for contact in general."></div>
         <div class="cta">
           <a class="btn btn-1" style="background:var(--chrome);color:var(--ink)" href="#" data-l="email">Email me</a>
           <a class="btn btn-2" href="#" data-l="linkedin">LinkedIn</a>
@@ -591,7 +591,7 @@ body.editing .card .shelf{display:flex}
         </div>
       </div>
       <div class="col">
-        <div class="ed blk" data-t="contact.avail" data-ghost="[AVAILABILITY — 1 line.] Dates, format, what you are looking for."></div>
+        <div class="ed blk" data-t="contact.avail" data-ghost="[AVAILABILITY — 1 line.] From when, for how long, in what form, and where? Four facts, no sentence needed."></div>
       </div>
     </div>
   </div>
@@ -1412,12 +1412,18 @@ function unproject(px,py){
 let q=START.slice();
 let target=CENTRE.slice();
 let gap=0, grip=JAW_OPEN, gripWanted=JAW_OPEN, running=false, last=0;
+/* An arm that has arrived where it was sent has nothing to recompute, and a
+   picture that is already right does not need drawing again. `touch()` is every
+   way the picture can stop being right; `still` counts the frames since the last
+   one that actually moved something, so a settled demo costs a returned call. */
+let dirty=true, still=0;
+function touch(){ dirty=true; still=0; }
 /* The wrist roll is commanded, not solved. It can be, because the grasp point
    sits almost exactly on the roll axis: turning it barely moves the point, so
    its column in the Jacobian is near zero and the solver was never really using
    it anyway. That makes it the one joint free to be handed to the wheel. */
 let rollWanted=START[4];
-function aimAt(point){ target=point; }
+function aimAt(point){ target=point; touch(); }
 
 /* ══════════════════════════════════════════════════════════════════════
    THE ARM ITSELF
@@ -1673,18 +1679,25 @@ function report(){
 const MAX_DEG_PER_S=260;
 function tick(now){
   if(!running) return;
+  requestAnimationFrame(tick);
   const dt=Math.min(0.05,(now-last)/1000||0.016); last=now;
+  /* Two settled frames rather than one: the first proves the joints stopped
+     moving, the second that nothing arrived in between. */
+  if(!dirty && still>1) return;
   const wanted=solve(q,target);
   gap=wanted.gap;
   const step=MAX_DEG_PER_S*dt;
-  for(let i=0;i<4;i++) q[i]+=Math.max(-step,Math.min(step,wanted.q[i]-q[i]));
-  q[4]+=Math.max(-step,Math.min(step,rollWanted-q[4]));
-  grip+=Math.max(-step,Math.min(step,gripWanted-grip));
+  let moved=0;
+  const drive=(from,to)=>{const d=Math.max(-step,Math.min(step,to-from)); moved+=Math.abs(d); return from+d;};
+  for(let i=0;i<4;i++) q[i]=drive(q[i],wanted.q[i]);
+  q[4]=drive(q[4],rollWanted);
+  grip=drive(grip,gripWanted);
   const f=fk(q,grip);
   drawGround(f.grasp);
   if(gl) drawArm(f.frames); else drawSkeleton(f);
   drawMarker(); report();
-  requestAnimationFrame(tick);
+  dirty=false;
+  still = moved<2e-4 ? still+1 : 0;
 }
 
 /* ── input ── */
@@ -1702,6 +1715,7 @@ function resize(){
      sit inside the box whichever way round the box is */
   cam.fit=Math.min(box.width,box.height*1.25)/0.52;
   setZoom(cam.zoom);
+  touch();
 }
 new ResizeObserver(resize).observe(front);
 
@@ -1719,22 +1733,23 @@ front.addEventListener("pointermove",e=>{
       cam.el=Math.max(-8*DEG,Math.min(78*DEG,cam.el+(e.clientY-orbit.y)*0.006));
     }
     orbit.x=e.clientX; orbit.y=e.clientY;
+    touch();
     return;
   }
   const box=front.getBoundingClientRect();
   aiming=true;
   aimAt(unproject(e.clientX-box.left,e.clientY-box.top));
 });
-front.addEventListener("pointerleave",()=>{aiming=false});
+front.addEventListener("pointerleave",()=>{aiming=false;touch()});
 front.addEventListener("pointerdown",e=>{
   front.setPointerCapture(e.pointerId);
   if(isOrbit(e)){orbit={x:e.clientX,y:e.clientY,depth:e.altKey};return}
-  gripWanted=JAW_SHUT;
+  gripWanted=JAW_SHUT; touch();
 });
-front.addEventListener("pointerup",()=>{orbit=null;gripWanted=JAW_OPEN});
-front.addEventListener("pointercancel",()=>{orbit=null;aiming=false;gripWanted=JAW_OPEN});
+front.addEventListener("pointerup",()=>{orbit=null;gripWanted=JAW_OPEN;touch()});
+front.addEventListener("pointercancel",()=>{orbit=null;aiming=false;gripWanted=JAW_OPEN;touch()});
 /* a button released outside the box must not leave the hand clenched */
-addEventListener("blur",()=>{orbit=null;aiming=false;gripWanted=JAW_OPEN});
+addEventListener("blur",()=>{orbit=null;aiming=false;gripWanted=JAW_OPEN;touch()});
 front.addEventListener("contextmenu",e=>e.preventDefault());
 /* The wheel turns the wrist and shift+wheel zooms, which means this box keeps
    the wheel to itself. Everywhere else on the page it still belongs to the
@@ -1744,22 +1759,31 @@ front.addEventListener("wheel",e=>{
   e.preventDefault();
   if(e.shiftKey) setZoom(cam.zoom*Math.exp(-e.deltaY*0.0012));
   else rollWanted=Math.max(LO[4],Math.min(HI[4],rollWanted+e.deltaY*0.18));
+  touch();
 },{passive:false});
 
 /* nothing is gained by solving inverse kinematics for a box nobody is looking at */
 new IntersectionObserver(entries=>{
   const visible=entries[0].isIntersecting;
-  if(visible&&!running){running=true;last=performance.now();requestAnimationFrame(tick)}
+  if(visible&&!running){running=true;last=performance.now();touch();requestAnimationFrame(tick)}
   else if(!visible) running=false;
 },{threshold:0.05}).observe(front);
 
-try{ buildMesh(); }catch(err){ meshFailed=err.message; }
-if(meshFailed){
-  gl=null;
-  note.textContent="Showing the chain only — "+meshFailed+
-    ". Cursor aims · hold to grip · wheel turns the wrist";
-}
 resize();
+/* The page should be legible before the arm is. Decoding the geometry and
+   compiling the shaders is about half a second of main thread, and until it is
+   done the demo draws the chain - which is what it falls back to permanently if
+   the geometry never arrives, so there is no second state to maintain. Two
+   frames of grace, because one only guarantees the paint was asked for. */
+requestAnimationFrame(()=>requestAnimationFrame(()=>{
+  try{ buildMesh(); }catch(err){ meshFailed=err.message; }
+  if(meshFailed){
+    gl=null;
+    note.textContent="Showing the chain only — "+meshFailed+
+      ". Cursor aims · hold to grip · wheel turns the wrist";
+  }
+  touch();
+}));
 })();
 </script>
 
