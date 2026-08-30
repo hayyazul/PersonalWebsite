@@ -34,11 +34,12 @@ tool was rejected wholesale and is retained only as a counter-example.
 | `iterations/` | Rejected v0 exploratory fragments (`iter1-88.html` … `iter5-06.html`) plus an index. Superseded. |
 | `iterations-clean/` | Rejected v0 second-round fragments (`iter1-editorial.html` … `iter5-plain.html`) plus an index. Superseded. |
 | `Cool Pics/` | Reference artwork by other artists (Fomenko, a gouache concert scene, a one-line figure study, the *Der Mensch* plate). Git-ignored — not ours to redistribute. Drives the palette and register defined in DESIGN.md. |
+| `.github/workflows/pages.yml` | Publishes the site on every push to `main`. Assembles `index.html`, `content.js` and `assets/` into the artifact rather than the whole checkout, because the repo also holds the design notes, the mockups and the mesh exporter and none of that is the site. Fails loudly if `content.js` is missing. |
 | `.gitignore` | Excludes build output, environment files, and the reference artwork. |
 
 ## Not yet present
 
-No `src/`, no build tooling, no tests, no linter config. Sound and mobile are
+No `src/`, no bundler, no tests, no linter config. Sound and mobile are
 deliberately deferred, as is the camera half of Demo 01 - its controls are out of
 the page entirely rather than sitting there disabled, and go back when there is
 something behind them.
