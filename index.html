@@ -115,6 +115,13 @@ body.editing .ed:focus{outline:3px solid var(--chrome);outline-offset:4px}
 .desk button:active,.desk label.fbtn:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
 .desk button.on{background:var(--chrome)}
 .desk .said{padding:7px 0;color:var(--ink-60);max-width:44ch;text-transform:none;letter-spacing:.04em}
+/* the served page is the finished thing: the instrument that made it, the
+   brief it was written against, and the working files all come off */
+body.visiting .desk,
+body.visiting .arch{display:none}
+body.visiting .ed:empty::before{content:""}
+body.visiting .ed.blk:empty{border:none;padding:0;background:none}
+body.visiting .ed.inl:empty{border-bottom:none}
 .desk .named{display:flex;align-items:center;gap:7px;cursor:default}
 .desk .named input{font-family:"IBM Plex Mono",monospace;font-size:10px;
   letter-spacing:.02em;padding:4px 6px;border:2px solid currentColor;
@@ -642,6 +649,17 @@ grid.innerHTML=PANELS.map(p=>`
    be told - words, addresses, uploaded files - goes in here and comes back
    out of here, so exporting is a stringify and importing is a parse.
    ══════════════════════════════════════════════════════════════════════ */
+/* ── who is looking ──
+   The editor is Ayyaz's instrument, not part of the site. It appears when the
+   page is opened off the disk or asked for by name, and a served page is the
+   finished thing: no desk, no placeholder brief, no working files, and the
+   browser's draft is not read at all - what ships in content.js is all there
+   is. #edit is a convenience, not a lock: everything here is public anyway. */
+const AUTHORING = location.protocol==="file:" ||
+  location.hash==="#edit" ||
+  location.hostname==="localhost" || location.hostname==="127.0.0.1";
+document.body.classList.toggle("visiting",!AUTHORING);
+
 const KEY="ayyaz.site.v1";
 /* Two copies, and they are not the same thing. content.js is what ships with
    the page and is all a visitor ever sees; this browser's storage is Ayyaz's
@@ -658,7 +676,7 @@ function say(msg,sticky){
   if(!sticky) sayTimer=setTimeout(()=>{says.textContent=""},3200);
 }
 try{
-  const raw=localStorage.getItem(KEY);
+  const raw=AUTHORING?localStorage.getItem(KEY):null;
   if(raw){const d=JSON.parse(raw);
     for(const part of ["t","l","f"]) Object.assign(S[part],d[part]||{});}
 }
@@ -666,6 +684,7 @@ catch(e){say("Saved content could not be read: "+e.message,true);}
 
 let saveTimer=0;
 function save(){
+  if(!AUTHORING) return;
   clearTimeout(saveTimer);
   saveTimer=setTimeout(()=>{
     try{localStorage.setItem(KEY,JSON.stringify(S));say("Saved");}
@@ -1039,7 +1058,8 @@ document.getElementById("wipe").addEventListener("click",()=>{
 let editing=false;
 const editbtn=document.getElementById("editbtn");
 function setEditing(on){
-  editing=on;
+  editing=on&&AUTHORING;
+  on=editing;
   document.body.classList.toggle("editing",on);
   editbtn.textContent="Edit: "+(on?"on":"off");
   editbtn.setAttribute("aria-pressed",on?"true":"false");
