@@ -115,6 +115,9 @@ body.editing .ed:focus{outline:3px solid var(--chrome);outline-offset:4px}
 .desk button:active,.desk label.fbtn:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
 .desk button.on{background:var(--chrome)}
 .desk .said{padding:7px 0;color:var(--ink-60);max-width:44ch;text-transform:none;letter-spacing:.04em}
+.desk .said code{font-family:"IBM Plex Mono",monospace;font-size:.94em;
+  border-bottom:2px solid currentColor}
+.desk .said b{color:var(--ink);font-weight:600}
 .desk .drawer{display:none;margin-bottom:11px;background:var(--kraft-hi);border:var(--rule);
   box-shadow:6px 6px 0 var(--ink);padding:15px;max-height:62vh;overflow:auto;
   max-width:min(480px,calc(100vw - 44px))}
@@ -251,12 +254,31 @@ body.editing .cta{align-items:flex-start}
 /* what is behind the lid */
 .reveal{position:absolute;inset:0;background:var(--black);overflow:hidden;
   display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer}
-.reveal .shot{position:absolute;inset:0;background-size:cover;background-position:center}
-.reveal .cap{position:relative;background:var(--black);border-top:2px solid var(--edge);
-  padding:11px 13px;display:flex;flex-direction:column;gap:5px}
+/* A frame the picture is seen through rather than a crop taken out of it: the
+   file is stored whole and the panel keeps a scale and an offset, so the crop
+   is reversible and the panel can be reshaped without a re-upload. Scale 1 is
+   the whole picture, letterboxed on the ink - nothing of it is lost by default.
+   The offsets are percentages of the picture's own laid-out box, so they hold
+   as the panel changes size. */
+.reveal .shot{position:absolute;inset:0;overflow:hidden;display:grid;place-items:center}
+.reveal .shot img{max-width:100%;max-height:100%;display:block;
+  transform:translate(calc(var(--ix,0) * 1%),calc(var(--iy,0) * 1%)) scale(var(--iz,1))}
+.reveal .shot:not(.has) img{display:none}
+/* A flat ink field laid over the picture, not a band cut out of it: the image
+   fills the panel and the words sit on top of the bottom of it. */
+.reveal .cap{position:relative;background:rgba(23,18,15,.84);border-top:2px solid var(--edge);
+  padding:11px 13px;display:flex;flex-direction:column;gap:5px;align-items:flex-start}
 .reveal .what{font-family:var(--face-display);font-size:1.2rem;color:var(--chalk);opacity:.9}
 .reveal .tag{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;
   text-transform:uppercase;color:var(--kraft);opacity:.45}
+/* An address with nothing in it is not a link, so it only shows while editing,
+   where it is the thing you type into. */
+.reveal .src{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--chalk);text-decoration:none;
+  border-bottom:2px solid var(--chrome);padding-bottom:1px}
+.reveal .src:hover{border-bottom-color:var(--vermillion)}
+.reveal .src.none{display:none}
+body.editing .reveal .src.none{display:inline-block;opacity:.5}
 .reveal .shut{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.16em;
   text-transform:uppercase;color:var(--kraft);opacity:0;transition:opacity .1s}
 .card.open .reveal:hover .shut{opacity:.62}
@@ -315,14 +337,22 @@ body.editing .card .reveal{position:static;height:auto;cursor:default;
 body.editing .card .reveal .cap{padding:11px 13px}
 /* an empty image slot is reserved space, and says so in the same hatch every
    other reserved box on the page uses */
-body.editing .card .reveal .shot{position:static;display:block;height:0;
-  padding-bottom:38%;background-color:var(--black);
+/* While editing, the picture's own box is the cropping stage, kept at the shut
+   panel's measured shape so what is framed here is what the panel will show.
+   An empty slot is reserved space and says so in the page's hatch. */
+body.editing .card .reveal .shot{position:static;height:auto;
+  aspect-ratio:var(--stage,3 / 2);background-color:var(--black);
   background-image:repeating-linear-gradient(45deg,
-    transparent 0 8px,rgba(233,220,192,.07) 8px 16px)}
+    transparent 0 8px,rgba(233,220,192,.07) 8px 16px);
+  touch-action:none}
+body.editing .card .reveal .shot.has{cursor:grab}
+body.editing .card .reveal .shot.has:active{cursor:grabbing}
 body.editing .card .reveal .shut{display:none}
 
 .card .shelf{display:none;gap:8px;padding:0 13px 12px;flex-wrap:wrap}
 body.editing .card .shelf{display:flex}
+.card .shelf .zoom{display:flex;align-items:center;gap:7px;cursor:default}
+.card .shelf .zoom input{width:96px;accent-color:currentColor;cursor:pointer}
 .card .shelf label,.card .shelf button{border:2px solid currentColor;padding:5px 9px;
   font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.13em;
   text-transform:uppercase;cursor:pointer;background:none;color:inherit}
@@ -389,12 +419,15 @@ body.editing .card .shelf{display:flex}
     <h4>Everything you have written</h4>
     <div class="row">
       <button type="button" id="export">Export</button>
+      <button type="button" id="publish">Publish copy</button>
       <label class="fbtn">Import<input type="file" id="importfile" accept="application/json" hidden></label>
       <button type="button" id="wipe">Erase all</button>
     </div>
-    <div class="said">Export writes one file with every word, link, and image in
-      it. Storage lives in this browser only — export before you clear your
-      browser data, and to move to another machine.</div>
+    <div class="said">Editing writes to this browser only, so a visitor sees
+      none of it. <b>Publish copy</b> downloads <code>content.js</code>; put that
+      beside <code>index.html</code> and commit it, and the page ships with the
+      words in it. Export is the same content as JSON, for moving between
+      machines or keeping a backup.</div>
   </div>
   <div class="row">
     <button type="button" id="editbtn" aria-pressed="false">Edit: off</button>
@@ -536,6 +569,7 @@ body.editing .card .shelf{display:flex}
   </div>
 </div>
 
+<script src="content.js"></script>
 <script>
 /* ══════════════════════════════════════════════════════════════════════
    THE PANELS
@@ -568,10 +602,11 @@ grid.innerHTML=PANELS.map(p=>`
   <div class="card field ${p.f}" data-k="${p.k}">
     <span class="hinge"></span>
     <div class="reveal">
-      <span class="shot" data-img="work.${p.k}.img"></span>
+      <span class="shot" data-img="work.${p.k}.img"><img alt=""></span>
       <span class="cap">
         <span class="what ed inl" data-t="work.${p.k}.what" data-ghost="${p.what}"></span>
         <span class="tag ed inl" data-t="work.${p.k}.tag" data-ghost="${p.tag}"></span>
+        <a class="src" data-l="work.${p.k}">Open</a>
         <span class="shut">Click anywhere to close</span>
       </span>
     </div>
@@ -587,6 +622,9 @@ grid.innerHTML=PANELS.map(p=>`
       </div>
       <div class="shelf">
         <label>Image<input type="file" accept="image/*" data-imgfor="work.${p.k}.img" hidden></label>
+        <button type="button" data-imgfit="work.${p.k}.img">Fit whole</button>
+        <button type="button" data-imgfill="work.${p.k}.img">Fill panel</button>
+        <label class="zoom">Zoom<input type="range" min="20" max="500" step="1" data-imgzoom="work.${p.k}.img" aria-label="Image zoom"></label>
         <button type="button" data-imgclear="work.${p.k}.img">Clear image</button>
       </div>
     </div>
@@ -599,7 +637,13 @@ grid.innerHTML=PANELS.map(p=>`
    out of here, so exporting is a stringify and importing is a parse.
    ══════════════════════════════════════════════════════════════════════ */
 const KEY="ayyaz.site.v1";
-let S={t:{},l:{},f:{}};
+/* Two copies, and they are not the same thing. content.js is what ships with
+   the page and is all a visitor ever sees; this browser's storage is Ayyaz's
+   working draft and sits on top of it, section by section so a draft that only
+   touched the words does not blank the links. Publishing is copying the draft
+   down into content.js. */
+const SHIPPED=window.SITE_CONTENT||{};
+let S={t:{...(SHIPPED.t||{})},l:{...(SHIPPED.l||{})},f:{...(SHIPPED.f||{})}};
 const says=document.getElementById("says");
 let sayTimer=0;
 function say(msg,sticky){
@@ -607,7 +651,11 @@ function say(msg,sticky){
   clearTimeout(sayTimer);
   if(!sticky) sayTimer=setTimeout(()=>{says.textContent=""},3200);
 }
-try{const raw=localStorage.getItem(KEY); if(raw) S=Object.assign(S,JSON.parse(raw));}
+try{
+  const raw=localStorage.getItem(KEY);
+  if(raw){const d=JSON.parse(raw);
+    for(const part of ["t","l","f"]) Object.assign(S[part],d[part]||{});}
+}
 catch(e){say("Saved content could not be read: "+e.message,true);}
 
 let saveTimer=0;
@@ -691,12 +739,13 @@ function applyLinks(){
     const href = !v ? "#" : (pre==="mailto:" && !/^[a-z]+:/i.test(v) ? "mailto:"+v : v);
     document.querySelectorAll('[data-l="'+k+'"]').forEach(a=>{
       a.href=href;
+      a.classList.toggle("none",!v);
       if(v && /^https?:/i.test(href)){a.target="_blank";a.rel="noopener"}
     });
   }
   const r=S.f.resume;
   document.querySelectorAll('[data-l="resume"]').forEach(a=>{
-    if(r){a.href=r.data;a.download=r.name;a.removeAttribute("target")}
+    if(r){a.href=r.data;a.download=r.name;a.removeAttribute("target");a.classList.remove("none")}
     else if(!S.l.resume) a.removeAttribute("download");
   });
 }
@@ -803,16 +852,81 @@ function shrink(file,maxEdge,cb){
 }
 function paintImages(){
   document.querySelectorAll("[data-img]").forEach(el=>{
-    const d=S.f[el.dataset.img];
-    el.style.backgroundImage=d?'url("'+d.data+'")':"";
+    const d=S.f[el.dataset.img], img=el.querySelector("img");
+    el.classList.toggle("has",!!d);
+    if(img && img.getAttribute("src")!==(d?d.data:"")) img.src=d?d.data:"";
+    el.style.setProperty("--ix",d&&d.x||0);
+    el.style.setProperty("--iy",d&&d.y||0);
+    el.style.setProperty("--iz",d&&d.z||1);
+    document.querySelectorAll('[data-imgzoom="'+el.dataset.img+'"]').forEach(r=>{
+      r.value=Math.round((d&&d.z||1)*100);
+      r.disabled=!d;
+    });
   });
 }
+/* One way in for every change of framing, so the picture, the slider and the
+   store can never disagree about where the frame is. */
+function reframe(k,f){
+  const d=S.f[k]; if(!d) return;
+  Object.assign(d,f); paintImages(); save();
+}
+/* "Fill" is measured rather than computed from the natural size: the scale
+   that takes the picture as laid out to the stage's larger side is exactly
+   the scale that leaves no ink showing. */
+function fillFrame(k){
+  const el=document.querySelector('[data-img="'+k+'"]');
+  const img=el&&el.querySelector("img"), d=S.f[k];
+  if(!img||!d) return;
+  const box=el.getBoundingClientRect(), r=img.getBoundingClientRect();
+  if(!r.width||!r.height) return;
+  reframe(k,{x:0,y:0,z:(d.z||1)*Math.max(box.width/r.width,box.height/r.height)});
+}
+document.querySelectorAll("[data-imgfit]").forEach(b=>b.addEventListener("click",e=>{
+  e.stopPropagation(); reframe(b.dataset.imgfit,{x:0,y:0,z:1}); say("Whole picture shown");
+}));
+document.querySelectorAll("[data-imgfill]").forEach(b=>b.addEventListener("click",e=>{
+  e.stopPropagation(); fillFrame(b.dataset.imgfill); say("Picture fills the panel");
+}));
+document.querySelectorAll("[data-imgzoom]").forEach(r=>{
+  r.addEventListener("input",()=>reframe(r.dataset.imgzoom,{z:+r.value/100}));
+  r.addEventListener("click",e=>e.stopPropagation());
+});
+/* Dragging the stage moves the picture inside its frame. The offsets are
+   percentages of the picture's unscaled box because that is what a percentage
+   in a translate resolves against - the scale that follows does not touch it. */
+document.querySelectorAll("[data-img]").forEach(el=>{
+  const k=el.dataset.img;
+  let drag=null;
+  el.addEventListener("pointerdown",e=>{
+    if(!editing||!S.f[k]) return;
+    e.preventDefault(); e.stopPropagation();
+    drag={x:e.clientX,y:e.clientY,ox:S.f[k].x||0,oy:S.f[k].y||0};
+    try{el.setPointerCapture(e.pointerId)}catch(err){}
+  });
+  el.addEventListener("pointermove",e=>{
+    if(!drag) return;
+    const img=el.querySelector("img");
+    if(!img.offsetWidth||!img.offsetHeight) return;
+    reframe(k,{x:drag.ox+(e.clientX-drag.x)/img.offsetWidth*100,
+               y:drag.oy+(e.clientY-drag.y)/img.offsetHeight*100});
+  });
+  const drop=()=>{drag=null};
+  el.addEventListener("pointerup",drop);
+  el.addEventListener("pointercancel",drop);
+  el.addEventListener("wheel",e=>{
+    if(!editing||!S.f[k]) return;
+    e.preventDefault();
+    reframe(k,{z:Math.max(0.2,Math.min(5,(S.f[k].z||1)*Math.exp(-e.deltaY*0.0015)))});
+  },{passive:false});
+});
 document.querySelectorAll("[data-imgfor]").forEach(inp=>{
   inp.addEventListener("change",()=>{
     const file=inp.files[0]; if(!file) return;
     shrink(file,1400,dataUrl=>{
-      S.f[inp.dataset.imgfor]={name:file.name,data:dataUrl};
-      paintImages(); save(); say("Image set on panel "+inp.dataset.imgfor.split(".")[1]);
+      S.f[inp.dataset.imgfor]={name:file.name,data:dataUrl,x:0,y:0,z:1};
+      paintImages(); reframe(inp.dataset.imgfor,{});
+      say("Image set on panel "+inp.dataset.imgfor.split(".")[1]+
+          " — drag it to move, wheel or Zoom to scale");
     });
     inp.value="";
   });
@@ -857,6 +971,17 @@ document.getElementById("export").addEventListener("click",()=>{
   setTimeout(()=>URL.revokeObjectURL(a.href),1000);
   say("Exported");
 });
+document.getElementById("publish").addEventListener("click",()=>{
+  const body="/* Written by the Publish copy button. Replace content.js with this "+
+    "file\n   and commit it: this is the only copy a visitor sees. */\n"+
+    "window.SITE_CONTENT="+JSON.stringify(S)+";\n";
+  const blob=new Blob([body],{type:"text/javascript"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="content.js"; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  say("content.js downloaded — put it beside index.html and commit it.",true);
+});
 document.getElementById("importfile").addEventListener("change",e=>{
   const file=e.target.files[0]; if(!file) return;
   const fr=new FileReader();
@@ -866,7 +991,7 @@ document.getElementById("importfile").addEventListener("change",e=>{
       if(!next||typeof next!=="object"||!("t" in next))
         throw new Error("this file has no site content in it");
       S={t:next.t||{},l:next.l||{},f:next.f||{}};
-      for(const el of eds){el.textContent=S.t[el.dataset.t]||"";normalise(el)}
+      for(const el of eds){el.innerHTML=clean(S.t[el.dataset.t]||"");normalise(el)}
       document.querySelectorAll("input[data-lk]").forEach(i=>i.value=S.l[i.dataset.lk]||"");
       applyLinks(); paintImages(); paintResume(); applyRule(); save(); say("Imported");
     }catch(err){say("Import failed — "+err.message,true)}
@@ -876,9 +1001,10 @@ document.getElementById("importfile").addEventListener("change",e=>{
 });
 document.getElementById("wipe").addEventListener("click",()=>{
   if(!confirm("Erase every word, link and image stored in this browser?")) return;
-  S={t:{},l:{},f:{}};
-  for(const el of eds){el.textContent="";normalise(el)}
-  document.querySelectorAll("input[data-lk]").forEach(i=>i.value="");
+  /* the draft goes; what ships with the page stays, because that is the file */
+  S={t:{...(SHIPPED.t||{})},l:{...(SHIPPED.l||{})},f:{...(SHIPPED.f||{})}};
+  for(const el of eds){el.innerHTML=clean(S.t[el.dataset.t]||"");normalise(el)}
+  document.querySelectorAll("input[data-lk]").forEach(i=>i.value=S.l[i.dataset.lk]||"");
   applyLinks(); paintImages(); paintResume(); applyRule();
   try{localStorage.removeItem(KEY)}catch(e){}
   say("Erased");
@@ -924,6 +1050,8 @@ function bindLids(){
     let edge="left";
     for(const k of ["left","right","up","down"]) if(free[k]<free[edge]) edge=k;
     c.dataset.open=edge;
+    /* only meaningful while the panels are shut: editing lays them flat */
+    if(!editing && c.offsetHeight) c.style.setProperty("--stage",c.offsetWidth+" / "+c.offsetHeight);
   }
 }
 
@@ -954,8 +1082,10 @@ grid.querySelectorAll(".card").forEach(card=>{
     if(editing) return;
     if(e.key==="Enter"||e.key===" "){e.preventDefault();setOpen(card,!card.classList.contains("open"))}
   });
-  card.querySelector(".reveal").addEventListener("click",()=>{
+  card.querySelector(".reveal").addEventListener("click",e=>{
     if(editing) return;
+    /* the panel's own address is the one thing in here that is not "close me" */
+    if(e.target.closest(".linkslot")) return;
     setOpen(card,false);
     door.focus();
   });
@@ -1371,8 +1501,17 @@ function line(c,a,b,w,colour,dash){
   c.lineWidth=w; c.strokeStyle=colour; c.stroke();
   c.setLineDash([]);
 }
+/* Clearing under the dpr transform clears view.w*dpr device pixels, and the
+   canvas is round(view.w*dpr) wide - so at a fractional device ratio the last
+   half pixel down each edge never gets cleared, and anything drawn against the
+   edge leaves a sliver behind. Clear in device pixels instead. */
+function clearLayer(ctx){
+  ctx.save(); ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+  ctx.restore();
+}
 function drawGround(tool){
-  bg.clearRect(0,0,view.w,view.h);
+  clearLayer(bg);
   const n=5,step=0.07,ext=n*step;
   bg.lineCap="butt";
   for(let i=-n;i<=n;i++){
@@ -1385,8 +1524,12 @@ function drawGround(tool){
   bg.strokeStyle=EDGE; bg.lineWidth=2;
   bg.strokeRect(f[0]-3,f[1]-3,6,6);
 }
+/* The marker belongs to the cursor, so it leaves with it. Without this the
+   last one drawn sits frozen against whichever edge the pointer left by, and
+   reads as paint the canvas failed to wipe. */
 function drawMarker(){
-  fg.clearRect(0,0,view.w,view.h);
+  clearLayer(fg);
+  if(!aiming) return;
   const reachable=gap<TOL, p=project(target);
   fg.lineWidth=2.5; fg.strokeStyle=reachable?GOLD:VERM;
   fg.strokeRect(p[0]-7,p[1]-7,14,14);
@@ -1471,7 +1614,7 @@ new ResizeObserver(resize).observe(front);
    version will inherit, so orbiting cannot also be the plain left drag: it
    takes a modifier or one of the other buttons. Aiming continues throughout,
    so the arm can be carried somewhere while it is holding something. */
-let orbit=null;
+let orbit=null,aiming=false;
 const isOrbit=e=>e.shiftKey||e.altKey||e.button===1||e.button===2;
 front.addEventListener("pointermove",e=>{
   if(orbit){
@@ -1484,17 +1627,19 @@ front.addEventListener("pointermove",e=>{
     return;
   }
   const box=front.getBoundingClientRect();
+  aiming=true;
   aimAt(unproject(e.clientX-box.left,e.clientY-box.top));
 });
+front.addEventListener("pointerleave",()=>{aiming=false});
 front.addEventListener("pointerdown",e=>{
   front.setPointerCapture(e.pointerId);
   if(isOrbit(e)){orbit={x:e.clientX,y:e.clientY,depth:e.altKey};return}
   gripWanted=JAW_SHUT;
 });
 front.addEventListener("pointerup",()=>{orbit=null;gripWanted=JAW_OPEN});
-front.addEventListener("pointercancel",()=>{orbit=null;gripWanted=JAW_OPEN});
+front.addEventListener("pointercancel",()=>{orbit=null;aiming=false;gripWanted=JAW_OPEN});
 /* a button released outside the box must not leave the hand clenched */
-addEventListener("blur",()=>{orbit=null;gripWanted=JAW_OPEN});
+addEventListener("blur",()=>{orbit=null;aiming=false;gripWanted=JAW_OPEN});
 front.addEventListener("contextmenu",e=>e.preventDefault());
 /* The wheel turns the wrist and shift+wheel zooms, which means this box keeps
    the wheel to itself. Everywhere else on the page it still belongs to the
