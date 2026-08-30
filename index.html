@@ -6,7 +6,7 @@
 <title>Ayyazul Hassan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 
 <style>
 :root{
@@ -20,7 +20,7 @@
   --edge:#4A3F34;                   /* the only rule colour that reads on black */
   --lift:6px;                       /* letterpress offset */
   --rule:3px solid var(--ink);
-  --face-body:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --face-body:"Space Grotesk",system-ui,sans-serif;
   --face-display:"Bodoni Moda",Didot,"Times New Roman",serif;
   --bg:var(--kraft);--on:var(--ink);
 }
@@ -28,7 +28,7 @@
 html{scroll-behavior:smooth}
 body{
   background:var(--kraft);color:var(--ink);
-  font-family:var(--face-body);font-size:14.5px;line-height:1.55;
+  font-family:var(--face-body);font-size:15.5px;line-height:1.5;
   -webkit-font-smoothing:antialiased;overflow-x:hidden;position:relative;
 }
 /* The grain belongs to the paper, so it scrolls with the paper. It used to be
@@ -370,8 +370,26 @@ body.editing .card .shelf{display:flex}
   text-transform:uppercase;cursor:pointer;background:none;color:inherit}
 
 /* the calm pocket: one section that is allowed to be empty */
-.quiet{padding:clamp(60px,11vw,140px) 0;border-bottom:var(--rule);text-align:center}
-.quiet .ed{display:inline-block;text-align:left;max-width:52ch}
+.quiet{padding:clamp(60px,11vw,140px) 0;border-bottom:var(--rule)}
+/* The one screen that gets to be loud. A quotation is display work, so it is
+   set in the display face at display size; the attribution is chrome and
+   stays in the chrome face, held off the words by a rule. */
+/* the measure is set in length, not in ch: ch here resolves against the body
+   face this element inherits and not the display face the words are set in,
+   which collapsed the column to a third of its width */
+.pull{max-width:min(780px,88vw);margin:0 auto}
+.pull .say{font-family:var(--face-display);font-weight:500;
+  font-size:clamp(1.9rem,4.4vw,3.2rem);line-height:1.07;letter-spacing:-.004em}
+.pull .attrib{margin-top:clamp(16px,2.4vw,26px);display:flex;flex-wrap:wrap;
+  align-items:center;gap:6px 15px;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase}
+.pull .attrib::before{content:"";width:46px;height:3px;background:currentColor;flex:none}
+.pull .cite{color:inherit;text-decoration:none;
+  border-bottom:2px solid currentColor;opacity:.6}
+.pull .cite:hover{opacity:1}
+.pull .cite.none{display:none}
+body.editing .pull .cite.none{display:inline-block;opacity:.45}
 
 /* ══════════════ THE ARCHIVE ══════════════
    Not part of the site. It is here so the fragments can be looked at without
@@ -545,7 +563,13 @@ body.editing .card .shelf{display:flex}
 <!-- the calm pocket -->
 <div class="quiet field f-chrome">
   <div class="wrap">
-    <div class="ed blk" data-t="quiet.line" data-ghost="[ONE LINE. Nothing else on this screen.] Whatever you want a reader to carry away after they close the tab. Not a slogan."></div>
+    <blockquote class="pull">
+      <div class="say ed blk" data-t="quiet.line" data-ghost="[ONE LINE. Nothing else on this screen.] Whatever you want a reader to carry away after they close the tab. Not a slogan."></div>
+      <div class="attrib">
+        <span class="ed inl" data-t="quiet.by" data-ghost="[who said it]"></span>
+        <a class="cite" data-l="quiet.src">Source</a>
+      </div>
+    </blockquote>
   </div>
 </div>
 
@@ -758,7 +782,8 @@ for(const el of eds){
 /* ── addresses ── */
 const LINKS=[
   ["email","Email","mailto:"],["github","GitHub",""],["linkedin","LinkedIn",""],
-  ["twitter","Twitter",""],["resume","Résumé","file"]
+  ["twitter","Twitter",""],["resume","Résumé","file"],
+  ["quiet.src","Quote source",""]
 ].concat(PANELS.map(p=>["work."+p.k,"Panel "+p.k,""]));
 function applyLinks(){
   for(const[k,,pre] of LINKS){
@@ -806,12 +831,12 @@ function syncLinkFields(k,except){
    property, and a family that is not already loaded gets its stylesheet
    appended the first time it is asked for rather than on every page load. */
 const BODY_FACES=[
+  ["Space Grotesk",'"Space Grotesk",system-ui,sans-serif',true],
   ["IBM Plex Mono",'"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace',true],
   ["Archivo",'"Archivo","Helvetica Neue",Arial,sans-serif',true],
   ["Inter",'"Inter",system-ui,sans-serif',false],
   ["Work Sans",'"Work Sans",system-ui,sans-serif',false],
   ["IBM Plex Sans",'"IBM Plex Sans",system-ui,sans-serif',false],
-  ["Space Grotesk",'"Space Grotesk",system-ui,sans-serif',false],
   ["Söhne-ish (system)",'system-ui,-apple-system,"Segoe UI",sans-serif',true]
 ];
 const DISPLAY_FACES=[
@@ -832,17 +857,23 @@ function ensureFace(name,preloaded){
   link.onerror=()=>say("Could not load "+name+" — it needs a connection.",true);
   document.head.appendChild(link);
 }
+/* A face is remembered by name, not by where it sits in the list: reordering
+   the list used to re-point every choice already made at whatever had taken
+   that number. A number read back from before this is still honoured once. */
 function buildFacePicker(sel,faces,tokenName,stateKey){
   sel.innerHTML=faces.map(([label],i)=>`<option value="${i}">${label}</option>`).join("");
   function apply(i){
     const[name,stack,pre]=faces[i];
     ensureFace(name,pre);
     document.documentElement.style.setProperty(tokenName,stack);
-    S.t[stateKey]=String(i);
+    S.t[stateKey]=name;
   }
-  const start=faces.findIndex((f,i)=>String(i)===S.t[stateKey]);
-  sel.value=String(start<0?0:start);
-  apply(start<0?0:start);
+  const held=S.t[stateKey];
+  let start=faces.findIndex(f=>f[0]===held);
+  if(start<0 && /^\d+$/.test(held||"")) start=+held<faces.length?+held:-1;
+  if(start<0) start=0;
+  sel.value=String(start);
+  apply(start);
   sel.addEventListener("change",()=>{apply(+sel.value);save()});
 }
 buildFacePicker(document.getElementById("facebody"),BODY_FACES,"--face-body","face.body");
