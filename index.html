@@ -385,11 +385,13 @@ body.editing .card .shelf{display:flex}
   font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.16em;
   text-transform:uppercase}
 .pull .attrib::before{content:"";width:46px;height:3px;background:currentColor;flex:none}
+/* The name is the link. An attribution and a source are the same fact, and
+   printing both put two things in a place that only earns one. With no address
+   behind it the name is simply a name: the rule under it goes, not the name. */
 .pull .cite{color:inherit;text-decoration:none;
-  border-bottom:2px solid currentColor;opacity:.6}
+  border-bottom:2px solid currentColor;opacity:.72}
 .pull .cite:hover{opacity:1}
-.pull .cite.none{display:none}
-body.editing .pull .cite.none{display:inline-block;opacity:.45}
+.pull .cite.none{border-bottom-color:transparent}
 
 /* ══════════════ THE ARCHIVE ══════════════
    Not part of the site. It is here so the fragments can be looked at without
@@ -566,8 +568,7 @@ body.editing .pull .cite.none{display:inline-block;opacity:.45}
     <blockquote class="pull">
       <div class="say ed blk" data-t="quiet.line" data-ghost="[ONE LINE. Nothing else on this screen.] Whatever you want a reader to carry away after they close the tab. Not a slogan."></div>
       <div class="attrib">
-        <span class="ed inl" data-t="quiet.by" data-ghost="[who said it]"></span>
-        <a class="cite" data-l="quiet.src">Source</a>
+        <a class="cite" data-l="quiet.src"><span class="ed inl" data-t="quiet.by" data-ghost="[who said it]"></span></a>
       </div>
     </blockquote>
   </div>
@@ -1206,6 +1207,11 @@ pick.addEventListener("click",e=>{
   frame.innerHTML='<iframe src="'+src+'" title="'+label+'" loading="lazy"></iframe>';
 });
 
+/* the caret goes in the name while editing, and a name with no address behind
+   it is not something to follow */
+document.querySelectorAll(".pull .cite").forEach(a=>{
+  a.addEventListener("click",e=>{ if(editing||a.classList.contains("none")) e.preventDefault(); });
+});
 fieldsForLinks(); applyLinks(); paintImages(); paintResume(); applyRule();
 bindLids(); setEditing(false);
 addEventListener("resize",bindLids);
