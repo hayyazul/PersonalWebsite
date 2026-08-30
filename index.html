@@ -437,10 +437,12 @@ body.editing .card .shelf{display:flex}
       <button type="button" id="wipe">Erase all</button>
     </div>
     <div class="said">Editing writes to this browser only, so a visitor sees
-      none of it. <b>Publish copy</b> downloads <code>content.js</code>; put that
-      beside <code>index.html</code> and commit it, and the page ships with the
-      words in it. Export is the same content as JSON, for moving between
-      machines or keeping a backup.</div>
+      none of it. <b>Publish copy</b> writes <code>content.js</code>, which is the
+      copy that ships — commit it and the live page has the words in it. Run
+      <code>node tools/edit-server.mjs</code> and edit at
+      <code>localhost:5173</code> and it writes the file in place; opened
+      straight off the disk it downloads instead. Export is the same content as
+      JSON, for a backup or another machine.</div>
   </div>
   <div class="row">
     <button type="button" id="editbtn" aria-pressed="false">Edit: off</button>
@@ -1011,10 +1013,25 @@ document.getElementById("export").addEventListener("click",()=>{
   setTimeout(()=>URL.revokeObjectURL(a.href),1000);
   say("Exported");
 });
-document.getElementById("publish").addEventListener("click",()=>{
-  const body="/* Written by the Publish copy button. Replace content.js with this "+
-    "file\n   and commit it: this is the only copy a visitor sees. */\n"+
+/* Publishing is one act with two floors under it. Served by tools/edit-server,
+   the file is written where it lives and the next thing to do is a commit;
+   opened straight off the disk, a page cannot write to the disk, so it comes
+   down through the browser and Ayyaz puts it where it goes. The button does
+   not ask which - it tries the floor that exists. */
+document.getElementById("publish").addEventListener("click",async()=>{
+  const body="/* Written by the Publish copy button. This is the only copy of the "+
+    "site's\n   words a visitor ever sees: commit it. */\n"+
     "window.SITE_CONTENT="+JSON.stringify(S)+";\n";
+  if(location.protocol==="http:"||location.protocol==="https:"){
+    try{
+      const r=await fetch("content.js",{method:"PUT",
+        headers:{"content-type":"text/javascript"},body});
+      if(r.ok){say("content.js written in place. Commit it and push.",true);return}
+      throw new Error(r.status+" "+(await r.text()||r.statusText));
+    }catch(err){
+      say("Could not write the file ("+err.message+") — downloading it instead.",true);
+    }
+  }
   const blob=new Blob([body],{type:"text/javascript"});
   const a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
