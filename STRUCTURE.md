@@ -6,7 +6,7 @@ docs and throwaway HTML mockups.
 
 ## State
 
-Branch `build/editable-site`. The site is one file, `index.html`, which carries
+Branch `main`. The site is one file, `index.html`, which carries
 its own content editor: Ayyaz writes into the page and it persists to the
 browser, with export/import to move the writing off one machine. The design
 fragments are frozen and kept only for reference (and are viewable from the
@@ -30,6 +30,44 @@ a draft is `Publish copy` then a commit of `content.js` - and since that file is
 written from the browser's draft in whole, publishing from a browser whose draft
 predates a hand edit to `content.js` will drop the edit.
 
+## Reaching it
+
+Structure carries the page for anyone not reading it with their eyes: the
+masthead is the `h1` (labelled, because the letters are set one span apiece),
+each slab is a `section` named by its own heading, the rail's addresses are a
+`nav`, and everything a visitor reads sits inside `main` - the desk and the
+archive do not. A shut panel's back is `inert`: it is at `inset:0` behind the
+lid with nothing but paint hiding it, so every card used to be announced twice,
+front and then back, including the line telling you how to close a panel that is
+not open. Editing lays both out side by side on purpose, so that is the one time
+both are live.
+
+The demo can be flown from the keyboard. The box takes focus and the arrows walk
+a point through the same plane the cursor would have moved through, handing it to
+the same `unproject()`, so nothing below that line knows which is driving and the
+point survives a switch in either direction. Space latches the grip rather than
+holding it, because no one can hold a key down and steer with the others at the
+same time; comma and full stop turn the wrist. Its own caveat is the description
+the canvas points `aria-describedby` at, so the page never says the same thing
+twice in two voices.
+
+A panel picture carries its alt text in the store beside its frame, typed on the
+panel it belongs to. Until Ayyaz writes one it is `alt=""`, which is exactly what
+`alt=""` means and the only honest thing to say.
+
+Nine **legibility switches** live in the desk under *Legibility* and in `S.a`,
+which is why they ship: the served page reads them out of `content.js` and puts
+them on the root element before anything else runs. Each lifts one thing to the
+contrast a small size needs, and where something gets lighter it is mixed flat
+rather than faded - fading kraft over the black was the one place the page
+blended pigment at render time, which the ground rules forbid everywhere else.
+Six are contrast repairs at their measured ratios; three (`edge`, `pigments`,
+`mono`) change a locked decision and are Ayyaz's call, not a defect. They start
+off.
+
+Motion already answers `prefers-reduced-motion`: transitions and animations
+stop, lids do not flap, and smooth scrolling goes.
+
 ## Filemap
 
 | Path | Role |
@@ -39,7 +77,7 @@ predates a hand edit to `content.js` will drop the edit.
 | `FEATURES.md` | Ayyaz's own brief: background, hiring thesis, required features, style references. The source of intent; not edited by Claude. |
 | `STRUCTURE.md` | This file. Architecture summary and filemap. |
 | `content.js` | The words, links and framed pictures that **ship** with the page, as `window.SITE_CONTENT`. The editor writes to the browser, which no visitor has; the drawer's *Publish copy* button rewrites this file, and committing it is what publishes a draft. A script rather than JSON because a page opened from the filesystem cannot `fetch()` a sibling. |
-| `index.html` | **The site**, and the instrument that writes it. A served page is the finished thing - no desk, no placeholder brief, no working files, and the browsers draft is not read at all, so a visitor sees exactly what `content.js` ships. The editor appears when the page is opened off the disk, from localhost, or with `#edit` on the URL. One file: fold with the left-rail demo slot, pitch, work grid (six panels, one two or three across so the slab is never gap-toothed; lids open at 65ms toward the viewer), calm pocket, contact, and a reference archive. Also the content editor - every prose block is an `.ed` element that wears placeholder grammar while empty, carries bold/italic/underline through storage behind a five-tag whitelist, and persists with links, resume and panel images to localStorage - layered over `content.js`, section by section, so the shipped copy shows through wherever the local draft is silent - with JSON export and import; a panel picture is stored whole and framed by a scale and an offset that the edit-mode stage lets you drag and zoom, so cropping stays reversible; addresses are typed beside the link they belong to, panels included, and the two type faces are custom-property tokens chosen from the desk - body is Space Grotesk and a face is remembered by name rather than by its place in the list, so reordering the list never re-points a choice already made. The resume is downloaded under a name Ayyaz is asked for on upload, never the one it had on disk. The demo stops solving and drawing when the viewport scrolls out of sight and again once the arm has arrived and nothing has changed, so a settled page costs a returned call rather than a solve and a redraw. Demo 01 runs here: the SO-100 chain, a damped-least-squares solver and a flat WebGL renderer of the URDF's own meshes, driven by the cursor. |
+| `index.html` | **The site**, and the instrument that writes it. A served page is the finished thing - no desk, no placeholder brief, no working files, and the browsers draft is not read at all, so a visitor sees exactly what `content.js` ships. The editor appears when the page is opened off the disk, from localhost, or with `#edit` on the URL. One file: fold with the left-rail demo slot, pitch, work grid (six panels, one two or three across so the slab is never gap-toothed; lids open at 65ms toward the viewer), calm pocket, contact, and a reference archive. Also the content editor - every prose block is an `.ed` element that wears placeholder grammar while empty, carries bold/italic/underline through storage behind a five-tag whitelist, and persists with links, resume and panel images to localStorage - layered over `content.js`, section by section, so the shipped copy shows through wherever the local draft is silent - with JSON export and import; a panel picture is stored whole and framed by a scale and an offset that the edit-mode stage lets you drag and zoom, so cropping stays reversible; addresses are typed beside the link they belong to, panels included, and the two type faces are custom-property tokens chosen from the desk - body is Space Grotesk and a face is remembered by name rather than by its place in the list, so reordering the list never re-points a choice already made. The resume is downloaded under a name Ayyaz is asked for on upload, never the one it had on disk. The demo stops solving and drawing when the viewport scrolls out of sight and again once the arm has arrived and nothing has changed, so a settled page costs a returned call rather than a solve and a redraw. Demo 01 runs here: the SO-100 chain, a damped-least-squares solver and a flat WebGL renderer of the URDF's own meshes, driven by the cursor or the arrow keys. Landmarks, headings, `inert` panel backs, per-picture alt text and the nine legibility switches are described under *Reaching it*. |
 | `assets/so100-mesh.js` | Generated. The SO-100's thirteen visual meshes, welded and quantised, as one base64 payload on `window.SO100_MESH`. A script file rather than a binary because a page opened from the filesystem cannot `fetch()` a sibling. |
 | `tools/edit-server.mjs` | The desk with a floor under it: serves the repo on `localhost:5173` (`node tools/edit-server.mjs`) and accepts one `PUT /content.js`, so Publish copy writes the file in place instead of downloading it. Loopback only, one writable path, and the body is checked for `window.SITE_CONTENT` before the file is replaced. Never deployed. |
 | `tools/export_so100_mesh.py` | Builds the above from the robot repo's URDF and STLs. Run it again if the arm's geometry changes. |
@@ -102,7 +140,9 @@ marker, the drop line and the ground, and the arm appeared to aim past the curso
 
 The gestures are: the cursor aims, holding the left button closes the hand, the
 wheel turns the wrist, shift+wheel zooms, shift-drag orbits, and alt-drag slides
-the cursor plane along the view direction. They are listed under the viewport in
+the cursor plane along the view direction. The arrow keys do the
+same aiming, space latches the grip and comma and full stop turn the wrist, for
+anyone without a pointer. They are listed under the viewport in
 the state panel rather than over the picture.
 The viewport therefore keeps the wheel to itself; ctrl passes through so the
 browser's own zoom still works over it. The wrist roll is commanded rather than

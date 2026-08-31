@@ -146,6 +146,12 @@ body.visiting .ed.inl:empty{border-bottom:none}
   border:2px solid var(--ink);background:var(--chalk);color:var(--ink);width:100%}
 .desk .drawer .chk{display:flex;gap:9px;align-items:center;cursor:pointer;
   text-transform:none;letter-spacing:.04em;color:var(--ink-60)}
+.desk .drawer .ax{display:flex;flex-direction:column;gap:7px;margin-bottom:11px}
+.desk .drawer .ax .chk{align-items:flex-start;gap:8px}
+.desk .drawer .ax input{margin-top:2px;flex:none}
+.desk .drawer .ax .was{margin-left:auto;padding-left:10px;flex:none;
+  font-size:10px;letter-spacing:.08em;color:var(--ink);white-space:nowrap}
+.desk .drawer .ax .chk.tierc .was{color:var(--oxblood)}
 
 /* an address belongs beside the thing it is the address of. While editing, every
    link grows its own field; they share a key, so filling one fills the rest. */
@@ -168,11 +174,13 @@ body.editing .cta{align-items:flex-start}
 .rail .live{display:inline-flex;align-items:center;gap:7px;color:var(--ink)}
 .rail .live i{width:9px;height:9px;background:var(--vermillion);border:2px solid var(--ink);
   display:block;flex:none}
-.rail .spacer{margin-left:auto}
+.rail .links{margin-left:auto;display:flex;flex-wrap:wrap;gap:6px 20px;align-items:center}
 .rail a{color:var(--ink);text-decoration:none;border-bottom:2px solid var(--ink-38)}
 .rail a:hover{border-bottom-color:var(--vermillion)}
 
 .mast{padding:clamp(9px,1.5vh,18px) 0 0}
+/* the name is the page's heading; the letters are how it is set, not what it is */
+.mast .name{font:inherit;display:block}
 .mast .line{display:flex;justify-content:space-between;align-items:baseline;
   font-family:var(--face-display);font-weight:500;
   font-size:clamp(1.7rem,6.2vw,4.7rem);line-height:.96;font-optical-sizing:auto}
@@ -200,7 +208,7 @@ body.editing .cta{align-items:flex-start}
 .bx.res{background:var(--black) repeating-linear-gradient(45deg,
   transparent 0 8px,rgba(233,220,192,.05) 8px 16px)}
 .b-view{padding:0}
-.b-view::before{z-index:2}
+.b-view::before{z-index:2;content:"Viewport · robot arm"}
 .b-view canvas{position:absolute;inset:0;width:100%;height:100%;display:block;
   pointer-events:none}
 /* pan-y, not none: the page must still scroll under a gesture that is
@@ -209,6 +217,8 @@ body.editing .cta{align-items:flex-start}
 /* three layers, one picture: the ground under the arm, the arm, and the marker
    over it. Only the top one takes the pointer. */
 .b-view #armfront{pointer-events:auto;cursor:crosshair}
+/* the viewport takes the keyboard, so it has to say where the keyboard is */
+.b-view #armfront:focus-visible{outline:3px solid var(--chrome);outline-offset:-3px}
 .slot .note{font-family:"IBM Plex Mono",monospace;font-size:11.5px;line-height:1.5;
   color:var(--kraft);opacity:.44}
 .slot .mono{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.13em;
@@ -365,6 +375,14 @@ body.editing .card .reveal .shut{display:none}
 body.editing .card .shelf{display:flex}
 .card .shelf .zoom{display:flex;align-items:center;gap:7px;cursor:default}
 .card .shelf .zoom input{width:96px;accent-color:currentColor;cursor:pointer}
+/* the description of a picture belongs with the picture, not in a list of
+   descriptions somewhere else, so it is typed on the panel it is about */
+.card .shelf .alt{display:flex;align-items:center;gap:7px;cursor:default;
+  flex-basis:100%;border-color:transparent;padding-left:0;padding-right:0}
+.card .shelf .alt input{flex:1;min-width:0;font:inherit;text-transform:none;
+  letter-spacing:.02em;padding:5px 7px;border:2px solid currentColor;
+  background:rgba(248,244,236,.9);color:var(--ink)}
+.card .shelf .alt input:disabled{opacity:.45;background:none;color:inherit}
 .card .shelf label,.card .shelf button{border:2px solid currentColor;padding:5px 9px;
   font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.13em;
   text-transform:uppercase;cursor:pointer;background:none;color:inherit}
@@ -422,6 +440,35 @@ body.editing .card .shelf{display:flex}
     grid-template-areas:"title" "view" "caveat"}
   .b-state{display:none}
 }
+/* ══════════════ LEGIBILITY SWITCHES ══════════════
+   Nine decisions about contrast, each off until it is switched on and written
+   into content.js, so the choice ships with the words instead of living in one
+   browser. Where something gets lighter it is mixed flat rather than faded:
+   fading kraft over the black was the one place the page blended pigment at
+   render time, which is what the ground rules forbid everywhere else. */
+:root{
+  --kraft-dim:#8E8574;   /* kraft over black, 5.3:1 — small type can hold it */
+  --kraft-cap:#998F7D;   /* the same over the caption film, 5.9:1 */
+  --rule-dim:#655E52;    /* 3.0:1 on black — a rule you can actually see */
+}
+html.ax-keys .keys{color:var(--kraft-dim);opacity:1}
+html.ax-labels .bx::before{color:var(--kraft-dim);opacity:1}
+html.ax-note .slot .note,html.ax-note .slot .mono{color:var(--kraft-dim);opacity:1}
+html.ax-tag .reveal .tag{color:var(--kraft-cap);opacity:1}
+html.ax-chips .chip{border-color:var(--rule-dim)}
+html.ax-chips .chip b{opacity:.78}
+html.ax-chips .chip.off{opacity:.58}
+html.ax-idx .sh .idx{opacity:.92}
+html.ax-edge{--edge:#655E52}
+/* DESIGN.md says these three are bright pigments that take ink type and never
+   ground a card; the stylesheet handed them chalk, which no size can read. */
+html.ax-pigments .f-vermillion,
+html.ax-pigments .f-rose,
+html.ax-pigments .f-cerulean{--on:var(--ink)}
+html.ax-mono .keys,html.ax-mono .chip,html.ax-mono .bx::before,
+html.ax-mono .slot .mono,html.ax-mono .reveal .tag,
+html.ax-mono .reveal .src,html.ax-mono .reveal .shut{font-size:11px}
+
 @media (prefers-reduced-motion:reduce){
   *{transition:none!important;animation:none!important}
   .card .door{transform:none!important}
@@ -449,6 +496,13 @@ body.editing .card .shelf{display:flex}
     </div>
     <div class="said" id="resumestate">No résumé uploaded.</div>
     <hr>
+    <h4>Legibility</h4>
+    <div class="ax" id="ax"></div>
+    <div class="said">Each switch lifts one thing to the contrast a small size
+      needs, by mixing a flatter colour rather than fading the old one. The
+      numbers are the ratio now and after. These are stored with the words, so
+      what is on here is what the published page does.</div>
+    <hr>
     <h4>Everything you have written</h4>
     <div class="row">
       <button type="button" id="export">Export</button>
@@ -471,44 +525,51 @@ body.editing .card .shelf{display:flex}
   <div class="said" id="says"></div>
 </div>
 
+<main>
+
 <!-- ═══════════════ FOLD ═══════════════ -->
 <div class="fold">
   <div class="wrap">
     <div class="rail">
       <span class="live"><i></i><span class="ed inl" data-t="rail.live" data-ghost="[status — 3 words]"></span></span>
       <span class="place ed inl" data-t="rail.place" data-ghost="[where you are]"></span>
-      <span class="spacer"></span>
-      <span><a href="#" data-l="email">Email</a></span>
-      <span><a href="#" data-l="github">GitHub</a></span>
-      <span><a href="#" data-l="linkedin">LinkedIn</a></span>
-      <span><a href="#" data-l="resume">Résumé</a></span>
+      <nav class="links" aria-label="Elsewhere">
+        <a href="#" data-l="email">Email</a>
+        <a href="#" data-l="github">GitHub</a>
+        <a href="#" data-l="linkedin">LinkedIn</a>
+        <a href="#" data-l="resume">Résumé</a>
+      </nav>
     </div>
   </div>
 
   <div class="wrap">
-    <div class="mast">
-      <div class="line"><span>A</span><span>Y</span><span>Y</span><span>A</span><span>Z</span><span>U</span><span>L</span></div>
-      <div class="line"><span>H</span><span>A</span><span>S</span><span>S</span><span>A</span><span>N</span></div>
+    <header class="mast">
+      <h1 class="name" aria-label="Ayyazul Hassan">
+        <span class="line"><span>A</span><span>Y</span><span>Y</span><span>A</span><span>Z</span><span>U</span><span>L</span></span>
+        <span class="line"><span>H</span><span>A</span><span>S</span><span>S</span><span>A</span><span>N</span></span>
+      </h1>
       <div class="kicker">
         <span class="ed inl" data-t="mast.role" data-ghost="[ROLE LINE — 3 to 6 words]"></span>
         <span class="ed inl" data-t="mast.right" data-ghost="[right-hand line]"></span>
       </div>
-    </div>
+    </header>
   </div>
 
   <div class="wrap stage">
     <div class="slot">
-      <div class="bx b-view" data-label="Viewport · robot arm">
-        <canvas id="armback"></canvas>
-        <canvas id="armview"></canvas>
-        <canvas id="armfront"></canvas>
+      <div class="bx b-view" role="group" aria-label="Robot arm viewport">
+        <canvas id="armback" aria-hidden="true"></canvas>
+        <canvas id="armview" aria-hidden="true"></canvas>
+        <canvas id="armfront" tabindex="0" role="application"
+          aria-label="Robot arm. Arrow keys move the target, space opens and closes the grip, comma and full stop turn the wrist."
+          aria-describedby="democaveat"></canvas>
       </div>
       <div class="bx res b-title" data-label="Title">
         <span class="ed inl" data-t="demo.name" data-ghost="[DEMO NAME — 2 to 4 words]"></span>
         <span class="t bld"><i></i><span class="ed inl" data-t="demo.tense" data-ghost="Building"></span></span>
       </div>
       <div class="bx res b-caveat" data-label="Caveat">
-        <div class="ed blk" data-t="demo.caveat" data-ghost="[ONE LINE — what it does, and what it does not.]"></div>
+        <div class="ed blk" id="democaveat" data-t="demo.caveat" data-ghost="[ONE LINE — what it does, and what it does not.]"></div>
       </div>
       <div class="bx res b-state" data-label="State">
         <div class="chips">
@@ -516,7 +577,7 @@ body.editing .card .shelf{display:flex}
           <span class="chip"><b>J3</b>—</span><span class="chip"><b>Target</b>—,—</span>
           <span class="chip off"><b>Grip</b>—</span>
         </div>
-        <div class="keys" id="armnote"><span>Aim <b>move</b></span><span>Grip <b>hold</b></span><span>Wrist <b>wheel</b></span><span>Zoom <b>shift+wheel</b></span><span>Orbit <b>shift+drag</b></span></div>
+        <div class="keys" id="armnote"><span>Aim <b>move</b></span><span>Grip <b>hold</b></span><span>Wrist <b>wheel</b></span><span>Zoom <b>shift+wheel</b></span><span>Orbit <b>shift+drag</b></span><span>Or <b>arrow keys</b></span></div>
       </div>
     </div>
   </div>
@@ -527,10 +588,10 @@ body.editing .card .shelf{display:flex}
 </div>
 
 <!-- ═══════════════ PITCH ═══════════════ -->
-<div class="slab field f-ultra">
+<section class="slab field f-ultra" aria-labelledby="pitch-h">
   <div class="wrap">
     <div class="sh">
-      <h2 class="ed inl" data-t="pitch.claim" data-ghost="[One line. What do you build?]"></h2>
+      <h2 id="pitch-h" class="ed inl" data-t="pitch.claim" data-ghost="[One line. What do you build?]"></h2>
       <div class="idx">00</div>
     </div>
     <div class="two">
@@ -549,21 +610,21 @@ body.editing .card .shelf{display:flex}
       </div>
     </div>
   </div>
-</div>
+</section>
 
 <!-- ═══════════════ WORK ═══════════════ -->
-<div class="slab">
+<section class="slab" aria-labelledby="work-h">
   <div class="wrap">
     <div class="sh">
-      <h2 class="ed inl" data-t="work.head" data-ghost="Everything else"></h2>
+      <h2 id="work-h" class="ed inl" data-t="work.head" data-ghost="Everything else"></h2>
       <div class="idx ed inl" data-t="work.idx" data-ghost="[index line]"></div>
     </div>
     <div class="grid" id="grid"></div>
   </div>
-</div>
+</section>
 
 <!-- the calm pocket -->
-<div class="quiet field f-chrome">
+<section class="quiet field f-chrome" aria-label="Quotation">
   <div class="wrap">
     <blockquote class="pull">
       <div class="say ed blk" data-t="quiet.line" data-ghost="[ONE LINE. Nothing else on this screen.] Whatever you want a reader to carry away after they close the tab. Not a slogan."></div>
@@ -572,13 +633,13 @@ body.editing .card .shelf{display:flex}
       </div>
     </blockquote>
   </div>
-</div>
+</section>
 
 <!-- ═══════════════ CONTACT ═══════════════ -->
-<div class="slab field f-oxblood">
+<section class="slab field f-oxblood" aria-labelledby="contact-h">
   <div class="wrap">
     <div class="sh">
-      <h2 class="ed inl" data-t="contact.head" data-ghost="Say something"></h2>
+      <h2 id="contact-h" class="ed inl" data-t="contact.head" data-ghost="Say something"></h2>
       <div class="idx ed inl" data-t="contact.idx" data-ghost="[How fast do you answer?]"></div>
     </div>
     <div class="two">
@@ -595,7 +656,9 @@ body.editing .card .shelf{display:flex}
       </div>
     </div>
   </div>
-</div>
+</section>
+
+</main>
 
 <!-- ═══════════════ ARCHIVE ═══════════════ -->
 <div class="slab arch" style="border-bottom:none">
@@ -666,6 +729,9 @@ grid.innerHTML=PANELS.map(p=>`
         <button type="button" data-imgfill="work.${p.k}.img">Fill panel</button>
         <label class="zoom">Zoom<input type="range" min="20" max="500" step="1" data-imgzoom="work.${p.k}.img" aria-label="Image zoom"></label>
         <button type="button" data-imgclear="work.${p.k}.img">Clear image</button>
+        <label class="alt">Alt<input type="text" data-imgalt="work.${p.k}.img"
+          placeholder="what someone who cannot see it would need to be told"
+          aria-label="Alt text for the panel ${p.k} image"></label>
       </div>
     </div>
   </div>`).join("");
@@ -694,7 +760,9 @@ const KEY="ayyaz.site.v1";
    touched the words does not blank the links. Publishing is copying the draft
    down into content.js. */
 const SHIPPED=window.SITE_CONTENT||{};
-let S={t:{...(SHIPPED.t||{})},l:{...(SHIPPED.l||{})},f:{...(SHIPPED.f||{})}};
+const PARTS=["t","l","f","a"];
+let S={t:{...(SHIPPED.t||{})},l:{...(SHIPPED.l||{})},
+       f:{...(SHIPPED.f||{})},a:{...(SHIPPED.a||{})}};
 const says=document.getElementById("says");
 let sayTimer=0;
 function say(msg,sticky){
@@ -705,7 +773,7 @@ function say(msg,sticky){
 try{
   const raw=AUTHORING?localStorage.getItem(KEY):null;
   if(raw){const d=JSON.parse(raw);
-    for(const part of ["t","l","f"]) Object.assign(S[part],d[part]||{});}
+    for(const part of PARTS) Object.assign(S[part],d[part]||{});}
 }
 catch(e){say("Saved content could not be read: "+e.message,true);}
 
@@ -880,6 +948,43 @@ function buildFacePicker(sel,faces,tokenName,stateKey){
 buildFacePicker(document.getElementById("facebody"),BODY_FACES,"--face-body","face.body");
 buildFacePicker(document.getElementById("facedisplay"),DISPLAY_FACES,"--face-display","face.display");
 
+/* ── legibility ──
+   Nine named decisions, each one class on the root element. They are read out
+   of S like everything else, which is what makes them ship: the served page
+   applies them before it applies anything else, without the desk existing. */
+const ADJUST=[
+  ["keys","Demo control legend","3.1","5.3"],
+  ["labels","Labels on the demo's boxes","3.3","5.3"],
+  ["note","Demo caption and mono lines","3.5","5.3"],
+  ["tag","Line under a panel's picture","3.6","5.9"],
+  ["chips","Joint chips: labels, idle state, rule","2.6","5.3"],
+  ["idx","Section index lines","3.9","5.6"],
+  ["edge","Rules and seams drawn on black","1.9","3.0",true],
+  ["pigments","Vermillion, rose and cerulean take ink type","chalk","ink",true],
+  ["mono","Smallest mono, 9.5px up to 11px","9.5px","11px",true]
+];
+function applyAdjust(){
+  for(const[k] of ADJUST)
+    document.documentElement.classList.toggle("ax-"+k,S.a[k]==="on");
+}
+const axbox=document.getElementById("ax");
+function paintAdjust(){
+  applyAdjust();
+  if(!axbox) return;
+  axbox.querySelectorAll("input[data-ax]").forEach(i=>{i.checked=S.a[i.dataset.ax]==="on"});
+}
+if(axbox){
+  axbox.innerHTML=ADJUST.map(([k,label,was,now,tierc])=>
+    `<label class="chk${tierc?" tierc":""}"><input type="checkbox" data-ax="${k}">`+
+    `<span>${label}</span><span class="was">${was} → ${now}</span></label>`).join("");
+  axbox.addEventListener("change",e=>{
+    const k=e.target.dataset.ax; if(!k) return;
+    S.a[k]=e.target.checked?"on":"off"; applyAdjust(); save();
+    say((e.target.checked?"On":"Off")+" — "+ADJUST.find(a=>a[0]===k)[1]);
+  });
+}
+paintAdjust();
+
 const ruletoggle=document.getElementById("ruletoggle");
 function applyRule(){
   const on=S.t["face.rule"]!=="off";
@@ -915,12 +1020,20 @@ function paintImages(){
     const d=S.f[el.dataset.img], img=el.querySelector("img");
     el.classList.toggle("has",!!d);
     if(img && img.getAttribute("src")!==(d?d.data:"")) img.src=d?d.data:"";
+    /* No description is not the same as nothing worth describing, but alt="" is
+       exactly what alt="" means, and it is the only honest thing to say until
+       Ayyaz has written one. */
+    if(img) img.alt=(d&&d.alt)||"";
     el.style.setProperty("--ix",d&&d.x||0);
     el.style.setProperty("--iy",d&&d.y||0);
     el.style.setProperty("--iz",d&&d.z||1);
     document.querySelectorAll('[data-imgzoom="'+el.dataset.img+'"]').forEach(r=>{
       r.value=Math.round((d&&d.z||1)*100);
       r.disabled=!d;
+    });
+    document.querySelectorAll('[data-imgalt="'+el.dataset.img+'"]').forEach(i=>{
+      if(document.activeElement!==i) i.value=(d&&d.alt)||"";
+      i.disabled=!d;
     });
   });
 }
@@ -983,13 +1096,22 @@ document.querySelectorAll("[data-imgfor]").forEach(inp=>{
   inp.addEventListener("change",()=>{
     const file=inp.files[0]; if(!file) return;
     shrink(file,1400,dataUrl=>{
-      S.f[inp.dataset.imgfor]={name:file.name,data:dataUrl,x:0,y:0,z:1};
+      const held=S.f[inp.dataset.imgfor];
+      S.f[inp.dataset.imgfor]={name:file.name,data:dataUrl,x:0,y:0,z:1,
+                               alt:(held&&held.alt)||""};
       paintImages(); reframe(inp.dataset.imgfor,{});
       say("Image set on panel "+inp.dataset.imgfor.split(".")[1]+
           " — drag it to move, wheel or Zoom to scale");
     });
     inp.value="";
   });
+});
+document.querySelectorAll("[data-imgalt]").forEach(inp=>{
+  inp.addEventListener("input",()=>{
+    const d=S.f[inp.dataset.imgalt]; if(!d) return;
+    d.alt=inp.value; paintImages(); save();
+  });
+  inp.addEventListener("click",e=>e.stopPropagation());
 });
 document.querySelectorAll("[data-imgclear]").forEach(b=>{
   b.addEventListener("click",e=>{
@@ -1079,10 +1201,10 @@ document.getElementById("importfile").addEventListener("change",e=>{
       const next=JSON.parse(fr.result);
       if(!next||typeof next!=="object"||!("t" in next))
         throw new Error("this file has no site content in it");
-      S={t:next.t||{},l:next.l||{},f:next.f||{}};
+      S={t:next.t||{},l:next.l||{},f:next.f||{},a:next.a||{}};
       for(const el of eds){el.innerHTML=clean(S.t[el.dataset.t]||"");normalise(el)}
       document.querySelectorAll("input[data-lk]").forEach(i=>i.value=S.l[i.dataset.lk]||"");
-      applyLinks(); paintImages(); paintResume(); applyRule(); save(); say("Imported");
+      applyLinks(); paintImages(); paintResume(); applyRule(); paintAdjust(); save(); say("Imported");
     }catch(err){say("Import failed — "+err.message,true)}
   };
   fr.readAsText(file);
@@ -1091,10 +1213,11 @@ document.getElementById("importfile").addEventListener("change",e=>{
 document.getElementById("wipe").addEventListener("click",()=>{
   if(!confirm("Erase every word, link and image stored in this browser?")) return;
   /* the draft goes; what ships with the page stays, because that is the file */
-  S={t:{...(SHIPPED.t||{})},l:{...(SHIPPED.l||{})},f:{...(SHIPPED.f||{})}};
+  S={t:{...(SHIPPED.t||{})},l:{...(SHIPPED.l||{})},
+     f:{...(SHIPPED.f||{})},a:{...(SHIPPED.a||{})}};
   for(const el of eds){el.innerHTML=clean(S.t[el.dataset.t]||"");normalise(el)}
   document.querySelectorAll("input[data-lk]").forEach(i=>i.value=S.l[i.dataset.lk]||"");
-  applyLinks(); paintImages(); paintResume(); applyRule();
+  applyLinks(); paintImages(); paintResume(); applyRule(); paintAdjust();
   try{localStorage.removeItem(KEY)}catch(e){}
   say("Erased");
 });
@@ -1116,6 +1239,7 @@ function setEditing(on){
   for(const el of eds) el.contentEditable=on?"true":"false";
   says.textContent=on?"Ctrl+B bold · Ctrl+I italic · Ctrl+U underline. Everything saves as you type.":"";
   if(on) closeAll();
+  syncReveals();
 }
 editbtn.addEventListener("click",()=>setEditing(!editing));
 const drawer=document.getElementById("drawer"),drawerbtn=document.getElementById("drawerbtn");
@@ -1149,18 +1273,30 @@ function bindLids(){
    One panel at a time, and every way out of an open one leads to the same
    place: the panel underneath takes the click, Escape takes the keyboard, and
    opening another shuts the first. */
+/* A lid hides a panel's back from the eye and from nothing else: every card was
+   being read out twice, its front and then the back standing behind it —
+   including the line that says how to close a panel that is not open, and, once
+   a panel has an address, a link nobody can see. Editing lays both out side by
+   side on purpose, so that is the one time both are really there. */
+function syncReveals(){
+  grid.querySelectorAll(".card").forEach(c=>{
+    c.querySelector(".reveal").inert = !editing && !c.classList.contains("open");
+  });
+}
 function closeAll(except){
   grid.querySelectorAll(".card.open").forEach(c=>{
     if(c===except) return;
     c.classList.remove("open");
     c.querySelector(".door").setAttribute("aria-expanded","false");
   });
+  syncReveals();
 }
 function setOpen(card,open){
   if(editing) return;
   if(open) closeAll(card);
   card.classList.toggle("open",open);
   card.querySelector(".door").setAttribute("aria-expanded",open?"true":"false");
+  syncReveals();
 }
 grid.querySelectorAll(".card").forEach(card=>{
   const door=card.querySelector(".door");
@@ -1738,9 +1874,14 @@ front.addEventListener("pointermove",e=>{
   }
   const box=front.getBoundingClientRect();
   aiming=true;
-  aimAt(unproject(e.clientX-box.left,e.clientY-box.top));
+  keyAim.x=e.clientX-box.left; keyAim.y=e.clientY-box.top;
+  aimAt(unproject(keyAim.x,keyAim.y));
 });
-front.addEventListener("pointerleave",()=>{aiming=false;touch()});
+/* the pointer leaving is only the end of aiming if the pointer was the one
+   doing it - a focused box is still being aimed by the keys */
+front.addEventListener("pointerleave",()=>{
+  if(document.activeElement!==front){aiming=false;touch()}
+});
 front.addEventListener("pointerdown",e=>{
   front.setPointerCapture(e.pointerId);
   if(isOrbit(e)){orbit={x:e.clientX,y:e.clientY,depth:e.altKey};return}
@@ -1761,6 +1902,45 @@ front.addEventListener("wheel",e=>{
   else rollWanted=Math.max(LO[4],Math.min(HI[4],rollWanted+e.deltaY*0.18));
   touch();
 },{passive:false});
+
+/* ── the same arm, without a pointer ──
+   Aiming was a cursor position and nothing else, which is a control not everyone
+   has. The keys walk a point through the same plane the cursor would have moved
+   through and hand it to the same unproject(), so nothing below this line knows
+   which one is driving. The point survives the switch in both directions: arrow
+   keys carry on from where the mouse stopped, and the mouse from where the keys
+   did. */
+const keyAim={x:0,y:0};
+const ARROWS={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};
+front.addEventListener("focus",()=>{
+  if(!keyAim.x&&!keyAim.y){keyAim.x=view.cx;keyAim.y=view.cy}
+});
+front.addEventListener("keydown",e=>{
+  const d=ARROWS[e.key];
+  if(d){
+    e.preventDefault();
+    const step=e.shiftKey?26:9;
+    keyAim.x=Math.max(0,Math.min(view.w,keyAim.x+d[0]*step));
+    keyAim.y=Math.max(0,Math.min(view.h,keyAim.y+d[1]*step));
+    aiming=true; aimAt(unproject(keyAim.x,keyAim.y));
+    return;
+  }
+  if(e.key===" "||e.key==="Enter"){
+    /* held on the pointer, latched on the keyboard: there is no way to hold a
+       key down and steer with the other ones at the same time */
+    e.preventDefault();
+    gripWanted = gripWanted===JAW_OPEN?JAW_SHUT:JAW_OPEN; touch();
+    return;
+  }
+  if(e.key===","||e.key==="."){
+    e.preventDefault();
+    rollWanted=Math.max(LO[4],Math.min(HI[4],rollWanted+(e.key===","?-7:7)));
+    touch();
+    return;
+  }
+  if(e.key==="Escape"&&aiming){ aiming=false; gripWanted=JAW_OPEN; touch(); }
+});
+front.addEventListener("blur",()=>{aiming=false;gripWanted=JAW_OPEN;touch()});
 
 /* nothing is gained by solving inverse kinematics for a box nobody is looking at */
 new IntersectionObserver(entries=>{
